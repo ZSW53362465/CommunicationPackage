@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chioy.Communication.Networking.Client", "..\..\KRWcfServiceLibCopy\KRWcfServiceLibCopy\KRWcfServiceLibCopy\Chioy.Communication.Networking.Client\Chioy.Communication.Networking.Client.csproj", "{7F905FBE-6643-425A-8B40-7283032FE013}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chioy.Communication.Networking.Common", "..\..\KRWcfServiceLibCopy\KRWcfServiceLibCopy\KRWcfServiceLibCopy\Chioy.Communication.Networking.Common\Chioy.Communication.Networking.Common.csproj", "{5E0CA531-FC69-4826-9BBD-59F8A37F4B7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chioy.Communication.Networking.Interface", "..\..\KRWcfServiceLibCopy\KRWcfServiceLibCopy\KRWcfServiceLibCopy\Chioy.Communication.Networking.Interface\Chioy.Communication.Networking.Interface.csproj", "{51376E37-3293-4FC8-A113-A6C546F03BC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chioy.Communication.Networking.Models", "..\..\KRWcfServiceLibCopy\KRWcfServiceLibCopy\KRWcfServiceLibCopy\Chioy.Communication.Networking.Models\Chioy.Communication.Networking.Models.csproj", "{6FD32669-24FB-423A-9F00-D22BD764923A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F905FBE-6643-425A-8B40-7283032FE013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F905FBE-6643-425A-8B40-7283032FE013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F905FBE-6643-425A-8B40-7283032FE013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F905FBE-6643-425A-8B40-7283032FE013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E0CA531-FC69-4826-9BBD-59F8A37F4B7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E0CA531-FC69-4826-9BBD-59F8A37F4B7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E0CA531-FC69-4826-9BBD-59F8A37F4B7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E0CA531-FC69-4826-9BBD-59F8A37F4B7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51376E37-3293-4FC8-A113-A6C546F03BC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51376E37-3293-4FC8-A113-A6C546F03BC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51376E37-3293-4FC8-A113-A6C546F03BC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51376E37-3293-4FC8-A113-A6C546F03BC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FD32669-24FB-423A-9F00-D22BD764923A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD32669-24FB-423A-9F00-D22BD764923A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD32669-24FB-423A-9F00-D22BD764923A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FD32669-24FB-423A-9F00-D22BD764923A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

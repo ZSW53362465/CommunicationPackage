@@ -243,3 +243,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/KRWcfLib/Chioy.Communication.Networking.Client.dll

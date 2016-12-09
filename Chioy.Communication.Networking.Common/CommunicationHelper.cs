@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -175,46 +176,60 @@ namespace Chioy.Communication.Networking.Common
 
             return bmp;
         }
-        public class UIHelper
+        public static ConfigSetting GetConfigSetting()
         {
-            private static DispatcherOperationCallback exitFrameCallback = new DispatcherOperationCallback(ExitFrame);
 
-            /// <summary>  
-            /// Processes all UI messages currently in the message queue.  
-            /// </summary>  
-            public static void DoEvents()
-            {
-                // Create new nested message pump.  
-                DispatcherFrame nestedFrame = new DispatcherFrame();
+            Configuration config = ConfigurationManager.OpenExeConfiguration( ConfigurationUserLevel.None);
 
-                // Dispatch a callback to the current message queue, when getting called,   
-                // this callback will end the nested message loop.  
-                // note that the priority of this callback should be lower than the that of UI event messages.  
-                DispatcherOperation exitOperation = Dispatcher.CurrentDispatcher.BeginInvoke(
-                    DispatcherPriority.Background, exitFrameCallback, nestedFrame);
-
-                // pump the nested message loop, the nested message loop will   
-                // immediately process the messages left inside the message queue.  
-                Dispatcher.PushFrame(nestedFrame);
-
-                // If the "exitFrame" callback doesn't get finished, Abort it.  
-                if (exitOperation.Status != DispatcherOperationStatus.Completed)
-                {
-                    exitOperation.Abort();
-                }
-            }
-
-            private static Object ExitFrame(Object state)
-            {
-                DispatcherFrame frame = state as DispatcherFrame;
-                // Exit the nested message loop.  
-                if (frame != null)
-                {
-                    frame.Continue = false;
-                }
-                return null;
-            }
-
+            var baseAddress = config.AppSettings.Settings["BaseAddress"].Value;
+            var wPort = config.AppSettings.Settings["WCFPort"].Value;
+            var hPort = config.AppSettings.Settings["HttpPort"].Value;
+            int wcfPort = 0;
+            int httpPort = 0;
+            int.TryParse(wPort, out wcfPort);
+            int.TryParse(hPort, out httpPort);
+            return new ConfigSetting(wcfPort, httpPort, baseAddress);
         }
+    }
+    public class UIHelper
+    {
+        private static DispatcherOperationCallback exitFrameCallback = new DispatcherOperationCallback(ExitFrame);
+
+        /// <summary>  
+        /// Processes all UI messages currently in the message queue.  
+        /// </summary>  
+        public static void DoEvents()
+        {
+            // Create new nested message pump.  
+            DispatcherFrame nestedFrame = new DispatcherFrame();
+
+            // Dispatch a callback to the current message queue, when getting called,   
+            // this callback will end the nested message loop.  
+            // note that the priority of this callback should be lower than the that of UI event messages.  
+            DispatcherOperation exitOperation = Dispatcher.CurrentDispatcher.BeginInvoke(
+                DispatcherPriority.Background, exitFrameCallback, nestedFrame);
+
+            // pump the nested message loop, the nested message loop will   
+            // immediately process the messages left inside the message queue.  
+            Dispatcher.PushFrame(nestedFrame);
+
+            // If the "exitFrame" callback doesn't get finished, Abort it.  
+            if (exitOperation.Status != DispatcherOperationStatus.Completed)
+            {
+                exitOperation.Abort();
+            }
+        }
+
+        private static Object ExitFrame(Object state)
+        {
+            DispatcherFrame frame = state as DispatcherFrame;
+            // Exit the nested message loop.  
+            if (frame != null)
+            {
+                frame.Continue = false;
+            }
+            return null;
+        }
+     
     }
 }

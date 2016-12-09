@@ -17,7 +17,7 @@ namespace Chioy.Communication.Networking.Service
             //callback = OperationContext.Current.GetCallbackChannel<IKRDuplexCallback>();
         }
 
-        List<UserInfo> _userList = new List<UserInfo>();
+        public List<UserInfo> _userList = new List<UserInfo>();
         public UserInfo CreateNewUser(string name)
         {
             var newUser = new UserInfo() { Name = name, ID = Guid.NewGuid().ToString(), Age = 21, Sex = 1 };

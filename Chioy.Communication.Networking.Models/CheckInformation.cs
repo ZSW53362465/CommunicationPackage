@@ -78,20 +78,5 @@ namespace Chioy.Communication.Networking.Models
             return newChecker;
         }
     }
-    [DataContract]
-    public class UserInfo
-    {
-        [DataMember]
-        public string ID { get; set; }
-
-        [DataMember]
-        public string Name { get; set; }
-
-        [DataMember]
-        public int Age { get; set; }
-
-        [DataMember]
-        public int Sex { get; set; }
-
-    }
+  
 }

@@ -7,20 +7,25 @@ using System.Threading.Tasks;
 
 namespace Chioy.Communication.Networking.Models
 {
-    //[DataContract]
-    //public class UserInfo
-    //{
-    //    [DataMember]
-    //    public string ID { get; set; }
+    [DataContract]
+    public class UserInfo
+    {
+        [DataMember]
+        public string ID { get; set; }
 
-    //    [DataMember]
-    //    public string Name { get; set; }
+        [DataMember]
+        public string Name { get; set; }
 
-    //    [DataMember]
-    //    public int Age { get; set; }
+        [DataMember]
+        public int Age { get; set; }
 
-    //    [DataMember]
-    //    public int Sex { get; set; }
+        [DataMember]
+        public int Sex { get; set; }
 
-    //}
+    }
+    public class Employee
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
 }

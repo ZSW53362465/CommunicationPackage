@@ -1,4 +1,5 @@
 ﻿using Chioy.Communication.Networking.Interface;
+using Chioy.Communication.Networking.Service.ProductService;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,8 +14,8 @@ namespace Chioy.Communication.Networking.Service
     public delegate void NewClientSubscribedEventHandler(SubscribeArg arg);
     public delegate void ClientLostEventHandler(SubscribeArg arg);
 
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
-    public class EventService : IEventService
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    public class EventService : KRService, IEventService
     {
 
         public static readonly ConcurrentDictionary<string, SubscribeContext> _Subscribers = new ConcurrentDictionary<string, SubscribeContext>();

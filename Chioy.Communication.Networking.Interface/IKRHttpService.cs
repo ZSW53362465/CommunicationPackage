@@ -16,9 +16,9 @@ namespace Chioy.Communication.Networking.Interface
         [Description("获取所有员工列表")]
         IEnumerable<Employee> GetAll();
 
-        [WebGet(UriTemplate = "{id}", ResponseFormat = WebMessageFormat.Json)]
+        [WebGet(UriTemplate = "id={id}&test={test}", ResponseFormat = WebMessageFormat.Json)]
         [Description("获取指定ID的员工")]
-        Employee Get(string id);
+        Employee Get(string id,string test);
 
         [WebInvoke(UriTemplate = "/Create", Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         [Description("创建一个新的员工")]

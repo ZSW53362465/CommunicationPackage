@@ -18,6 +18,11 @@ using System.Xml.Serialization;
 
 namespace Chioy.Communication.Networking.Common
 {
+    public enum ProductType
+    {
+        BMD = 0,
+        KRTCD
+    }
     public class CommunicationHelper
     {
         [DllImport("kernel32", CharSet = CharSet.Unicode)]

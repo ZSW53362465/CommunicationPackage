@@ -7,9 +7,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Client
 {
@@ -26,10 +28,14 @@ namespace Chioy.Communication.Networking.Client
 
         public static int _heartbeatInterval = 1000 * 10;//10秒一次心跳检测
 
-        IKRService _krProxy = null;
+        IService _krProxy = null;
         IEventService _krEventproxy = null;
 
         private int _errCounter = 0;
+
+        private string _address = string.Empty;
+
+        private string _port = string.Empty;
 
         #endregion
 
@@ -57,9 +63,18 @@ namespace Chioy.Communication.Networking.Client
         }
         #region Public
 
-        public IKRService KRService { get { return this._krProxy; } }
+        public IService KRService { get { return _krProxy; } }
+
+        public IEventService KRHeartService { get { return _krEventproxy; } }
 
         public bool Enabled { get; set; }
+
+        private ProductType _type;
+
+        public ProductType Type
+        {
+            get { return _type; }
+         }
 
         /// <summary>
         /// Server 主动发送过来的消息，由子线程弹出，如果想更新UI，需先回到主线程
@@ -71,8 +86,11 @@ namespace Chioy.Communication.Networking.Client
             OnEventReceivedEvent?.Invoke(arg);
         }
 
-        public void RegisterServices(string name = null)
+        public void RegisterServices(ProductType type,string baseAddress,string port, string name = null)
         {
+            _type = type;
+            _address = baseAddress;
+            _port = port;
             ConnectServer(name);
         }
 
@@ -94,15 +112,15 @@ namespace Chioy.Communication.Networking.Client
             Enabled = false;
         }
 
-        private  void ConnectServer(string name)
+        private void ConnectServer(string name)
         {
-            var task = Subscribe(name);
+            Subscribe(name);
             //task.Start();
-            task.ContinueWith(StartHeartJumpListen);
+            StartHeartJumpListen();
             //StartHeartJumpListen();
         }
 
-        private void StartHeartJumpListen(Task task)
+        private void StartHeartJumpListen()
         {
             var timer = new System.Timers.Timer();
             timer.Enabled = false;
@@ -137,99 +155,119 @@ namespace Chioy.Communication.Networking.Client
             Subscribe();
         }
 
-        private  Task Subscribe(string name = null)
+        private void Subscribe(string name = null)
         {
-            return  Task.Factory.StartNew(() =>
+               Enabled = true;
+
+               var eventSvcRemoteFactory = CreateEventServiceRemoteFactory();
+               try
+               {
+                   _krEventproxy = eventSvcRemoteFactory.CreateChannel();
+                   BuildKRService();
+
+                   var comObj = _krEventproxy as ICommunicationObject;
+
+                   comObj.Faulted += (s, ie) =>
+                   {
+                       //ExceptionEvent?.Invoke(s, "Faulted");
+                   };
+                   comObj.Closed += (s, ie) =>
+                   {
+                       //ExceptionEvent?.Invoke(s, "Closed");
+                   };
+                   comObj.Closing += (s, ie) =>
+                   {
+                       CommunicationEvent?.Invoke(s, new DataEventArgs("remote host is closed"));
+                   };
+
+                   _krEventproxy.Subscribe(CreateDefaultSubscribeArg(name));
+               }
+               catch (Exception ex)
+               {
+                   ExceptionEvent?.Invoke(new KRException("Subscribe", "connection error", ex.Message));
+               }
+         
+        }
+
+        private void BuildKRService()
+        {
+            var serviceName = string.Empty;
+            switch (_type)
             {
-
-                Enabled = true;
-
-                var eventSvcRemoteFactory = CreateEventServiceRemoteFactory();
-                var krSvcRemoteFactory = CreateKRServiceRemoteFactory();
-                try
-                {
-                    _krEventproxy = eventSvcRemoteFactory.CreateChannel();
-                    _krProxy = krSvcRemoteFactory.CreateChannel();
-
-                    var comObj = _krEventproxy as ICommunicationObject;
-
-                    comObj.Faulted += (s, ie) =>
-                    {
-                        //ExceptionEvent?.Invoke(s, "Faulted");
-                    };
-                    comObj.Closed += (s, ie) =>
-                    {
-                        //ExceptionEvent?.Invoke(s, "Closed");
-                    };
-                    comObj.Closing += (s, ie) =>
-                    {
-                        CommunicationEvent?.Invoke(s, new DataEventArgs("remote host is closed"));
-                    };
-
-                    _krEventproxy.Subscribe(CreateDefaultSubscribeArg(name));
-                }
-                catch (Exception ex)
-                {
-                    ExceptionEvent?.Invoke(new KRException("Subscribe", "connection error", ex.Message));
-                }
-            });
-        }
-        private DuplexChannelFactory<IEventService> CreateEventServiceRemoteFactory()
-        {
-            return new DuplexChannelFactory<IEventService>(
-                new InstanceContext(this),
-                new NetTcpBinding() ,
-                new EndpointAddress("net.tcp://127.0.0.1:7777/EventService"));
-        }
-
-        private DuplexChannelFactory<IKRService> CreateKRServiceRemoteFactory()
-        {
-            return new DuplexChannelFactory<IKRService>(
-              new WCFClientCallbackManager(),
-              new NetTcpBinding() { MaxBufferSize = 2147483647, MaxReceivedMessageSize = 2147483647 },
-              new EndpointAddress("net.tcp://127.0.0.1:8888/KRService"));
-        }
-
-        private SubscribeArg CreateDefaultSubscribeArg(string name = null)
-        {
-            return new SubscribeArg() { Code = KRCode.Subscribe, Alarms = null, Model = 0, Msg = "Subscribe", Username = string.IsNullOrEmpty(name) ? CurrentHostName : name };
-        }
-        private void Close()
-        {
-            if (_krEventproxy != null && _krProxy != null)
-            {
-                try
-                {
-                    var comObj = _krEventproxy as ICommunicationObject;
-                    var krcomObj = _krProxy as ICommunicationObject;
-                    krcomObj.Abort();
-                    comObj.Abort();
-                }
-                catch { }
+                case ProductType.BMD:
+                    serviceName = ServiceName.BMDService;
+                    _krProxy = CreateProductService<IBMDService>(serviceName);
+                    break;
+                case ProductType.KRTCD:
+                    serviceName = ServiceName.KRTCDService;
+                    _krProxy = CreateProductService<IKRTCDService>(serviceName);
+                    break;
+                default:
+                    break;
             }
         }
 
-        public void Dispose()
+        private DuplexChannelFactory<IEventService> CreateEventServiceRemoteFactory()
         {
-            Close();
-            _krProxy = null;
-            _krEventproxy = null;
+            var binding = new NetTcpBinding() { MaxBufferPoolSize = 2147483647, MaxReceivedMessageSize = 2147483647 };
+            binding.Security.Mode = SecurityMode.None;
+            return new DuplexChannelFactory<IEventService>(
+                new InstanceContext(this),
+               binding,
+                new EndpointAddress(string.Format("net.tcp://{0}:{1}/{2}", _address, _port, ServiceName.KREventService)));
         }
 
+        private T CreateProductService<T>(string serviceName)  
+        {
+            var binding = new NetTcpBinding() { MaxBufferPoolSize = 2147483647, MaxReceivedMessageSize = 2147483647 };
+            binding.Security.Mode = SecurityMode.None;
+            var factory = new DuplexChannelFactory<T>(
+             new WCFClientCallbackManager(),
+             binding,
+             new EndpointAddress(string.Format("net.tcp://{0}:{1}/{2}", _address, _port, serviceName)));
+            return factory.CreateChannel();
+        }
 
-        #endregion
-    }
-
-    public class WCFClientCallbackManager : IKRDuplexCallback
+    private SubscribeArg CreateDefaultSubscribeArg(string name = null)
     {
-        public void CreateNewUserInClient()
+        return new SubscribeArg() { Code = KRCode.Subscribe, Alarms = null, Model = 0, Msg = "Subscribe", Username = string.IsNullOrEmpty(name) ? CurrentHostName : name };
+    }
+    private void Close()
+    {
+        if (_krEventproxy != null && _krProxy != null)
         {
-            //throw new NotImplementedException(); 
-        }
-
-        public void RemoveUserInClient()
-        {
-            //throw new NotImplementedException();
+            try
+            {
+                var comObj = _krEventproxy as ICommunicationObject;
+                var krcomObj = _krProxy as ICommunicationObject;
+                krcomObj.Abort();
+                comObj.Abort();
+            }
+            catch { }
         }
     }
+
+    public void Dispose()
+    {
+        Close();
+        _krProxy = null;
+        _krEventproxy = null;
+    }
+
+
+    #endregion
+}
+
+public class WCFClientCallbackManager : IKRDuplexCallback
+{
+    public void CreateNewUserInClient()
+    {
+        //throw new NotImplementedException(); 
+    }
+
+    public void RemoveUserInClient()
+    {
+        //throw new NotImplementedException();
+    }
+}
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Chioy.Communication.Networking.Interface
 {
-    public interface IDataProvider
+    public interface IKRTCDService : IService
     {
     }
 }

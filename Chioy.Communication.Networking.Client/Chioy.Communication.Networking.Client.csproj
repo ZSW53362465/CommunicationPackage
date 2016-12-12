@@ -51,7 +51,7 @@
     <Compile Include="LocalQuickStartService.cs" />
     <Compile Include="WCFClientEventCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WCFClientManager.cs" />
+    <Compile Include="TCPClientManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Chioy.Communication.Networking.Common\Chioy.Communication.Networking.Common.csproj">

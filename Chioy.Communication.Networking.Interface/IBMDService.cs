@@ -5,7 +5,7 @@ using System.ServiceModel;
 namespace Chioy.Communication.Networking.Interface
 {
     [ServiceContract(SessionMode = SessionMode.Required, CallbackContract = typeof(IKRDuplexCallback))]
-    public interface IKRService
+    public interface IBMDService: IService
     {
         [OperationContract]
         UserInfo CreateNewUser(string name);

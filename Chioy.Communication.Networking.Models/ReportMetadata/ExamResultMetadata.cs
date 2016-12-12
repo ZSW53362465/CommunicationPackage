@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chioy.Communication.Networking.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +8,7 @@ using System.Xml.Serialization;
 
 namespace Chioy.Communication.Networking.Models.ReportMetadata
 {
-    public enum ProductType
-    {
-        BMD = 0,
-        KRTCD
-    }
+   
 
     public enum CardType
     {

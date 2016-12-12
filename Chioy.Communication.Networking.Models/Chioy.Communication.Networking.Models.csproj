@@ -50,6 +50,12 @@
     <Compile Include="ReportMetadata\BMDCheckResult.cs" />
     <Compile Include="UserInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Chioy.Communication.Networking.Common\Chioy.Communication.Networking.Common.csproj">
+      <Project>{5E0CA531-FC69-4826-9BBD-59F8A37F4B7C}</Project>
+      <Name>Chioy.Communication.Networking.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

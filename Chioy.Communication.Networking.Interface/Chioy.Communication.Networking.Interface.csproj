@@ -44,11 +44,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentBase.cs" />
-    <Compile Include="IDataProvider.cs" />
     <Compile Include="IEventService.cs" />
     <Compile Include="IKRDuplexCallback.cs" />
     <Compile Include="IKRHttpService.cs" />
-    <Compile Include="IKRService.cs" />
+    <Compile Include="IBMDService.cs" />
+    <Compile Include="IKRTCDService.cs" />
+    <Compile Include="IService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

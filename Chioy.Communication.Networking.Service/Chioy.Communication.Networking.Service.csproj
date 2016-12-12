@@ -51,8 +51,13 @@
     <Compile Include="EventService.cs" />
     <Compile Include="HttpService.cs" />
     <Compile Include="KRHttpService.cs" />
-    <Compile Include="KRService.cs" />
+    <Compile Include="ProductService\BMDService.cs" />
+    <Compile Include="ProductService\KRService.cs" />
+    <Compile Include="ProductService\KRTCDService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\IBMDDataProvider.cs" />
+    <Compile Include="Provider\IDataProvider.cs" />
+    <Compile Include="Provider\IKRTCDDataProvider.cs" />
     <Compile Include="ServiceFactory.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="TCPService.cs" />
@@ -71,6 +76,7 @@
       <Name>Chioy.Communication.Networking.Models</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <VSToolsPath Condition="'$(VSToolsPath)' == '' and '$(VisualStudioVersion)' != '' and '$(VisualStudioVersion)' != '11.0'">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

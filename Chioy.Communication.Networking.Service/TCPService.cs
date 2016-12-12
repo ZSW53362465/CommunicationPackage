@@ -1,9 +1,11 @@
 ﻿using Chioy.Communication.Networking.Common;
 using Chioy.Communication.Networking.Interface;
 using Chioy.Communication.Networking.Models;
+using Chioy.Communication.Networking.Service.ProductService;
 using System;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Service
 {
@@ -13,7 +15,7 @@ namespace Chioy.Communication.Networking.Service
         public event EventHandler<DataEventArgs> ClientLost;
         ServiceHost _krHost = null;
         ServiceHost _krEventHost = null;
-        EventService _eventService;
+        IEventService _eventService = null;
 
         //private volatile static TCPService _instance = null;
 
@@ -28,14 +30,14 @@ namespace Chioy.Communication.Networking.Service
             _type = BindingType.TCP;
         }
 
-        public override void ConfigService()
+        public override void ConfigService(ProductType type)
         {
             try
             {
-                _krHost = ServiceFactory.CreateService<IKRService, KRService>(Address, _type, string.Empty);
-                _krHost.Open();
-                _krEventHost = ServiceFactory.CreateService<IEventService, EventService>(EventServiceAddress, _type, string.Empty);
-                _krEventHost.Open();
+                base.ConfigService(type);
+                BuildServiceHost().Open();
+                BuildHeartJumpService().Open();
+                _state = _krHost.State;
                 EventService.NewClientSubscribedEvent += EventService_NewClientSubscribedEvent;
                 EventService.ClientLostEvent += EventService_ClientLostEvent;
 
@@ -48,6 +50,30 @@ namespace Chioy.Communication.Networking.Service
             {
                 HandleExceptionEvent(new KRException("ConfigService", "Connection is timeout", ex.Message));
             }
+        }
+        private ServiceHost BuildHeartJumpService()
+        {
+            var servicePair = ServiceFactory.CreateService<IEventService, EventService>(EventServiceAddress, _type, string.Empty);
+            _eventService = servicePair.Item1 as IEventService;
+            return servicePair.Item2;
+        }
+        private ServiceHost BuildServiceHost()
+        {
+            Tuple<KRService, ServiceHost> servicePair = null;
+            switch (_produceType)
+            {
+                case ProductType.BMD:
+                    servicePair = ServiceFactory.CreateService<IBMDService, BMDService>(Address, _type, string.Empty);
+                    break;
+                case ProductType.KRTCD:
+                    servicePair = ServiceFactory.CreateService<IKRTCDService, KRTCDService>(Address, _type, string.Empty);
+                    break;
+                default:
+                    break;
+            }
+            currentService = servicePair.Item1;
+            _krHost = servicePair.Item2;
+            return servicePair.Item2;
         }
 
         private void EventService_ClientLostEvent(SubscribeArg arg)
@@ -73,7 +99,7 @@ namespace Chioy.Communication.Networking.Service
                     _krEventHost.Close();
                 }
             });
-
+            _state = _krHost.State;
             EventService.NewClientSubscribedEvent -= EventService_NewClientSubscribedEvent;
             EventService.ClientLostEvent -= EventService_ClientLostEvent;
         }

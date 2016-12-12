@@ -13,7 +13,9 @@ namespace ServiceHost
 {
     public partial class Form1 : Form
     {
-        TCPService service;
+        BaseService service;
+        TCPService tcpService;
+        HttpService httpService;
         public Form1()
         {
             InitializeComponent();
@@ -21,12 +23,19 @@ namespace ServiceHost
 
         private void btn_Start_Click(object sender, EventArgs e)
         {
-            var service = ServiceManager.Instance().GetService(BindingType.TCP);
-            var tcpService = service as TCPService;
-            tcpService.ConfigService();
+            if (service != null && service.ServiceState == System.ServiceModel.CommunicationState.Opened)
+            {
+                MessageBox.Show("服务已启动");
+                return;
+            }
+            service = ServiceManager.Instance().GetService(BindingType.TCP);
+            service.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
+            service.RegisterProvider(new MyProvider());
+            tcpService = service as TCPService;
             tcpService.ClientLost += Service_ClientLost;
             tcpService.NewClientSubscribed += Service_NewClientSubscribed;
             service.ExceptionEvent += Service_ExceptionEvent;
+            MessageBox.Show("服务启动成功");
             //var service = new TCPService();
             //service.StartKRSvc();
         }
@@ -42,17 +51,27 @@ namespace ServiceHost
 
         private void Service_ClientLost(object sender, Chioy.Communication.Networking.Models.DataEventArgs e)
         {
-            listBox1.Items.Remove(e.Data.ToString());
+            listBox1.Invoke(new MethodInvoker(delegate () {
+                listBox1.Items.Remove(e.Data);
+            }));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            service.SendDataToClient(new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Msg = this.textBox1.Text });
+            tcpService.SendDataToClient(new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Msg = this.textBox1.Text });
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            service.SendDataToSpecClient(this.listBox1.SelectedValue.ToString(), new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Msg = this.textBox1.Text });
+            tcpService.SendDataToSpecClient(this.listBox1.SelectedValue.ToString(), new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Msg = this.textBox1.Text });
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            httpService = ServiceManager.Instance().GetService(BindingType.HTTP) as HttpService;
+            httpService.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
+            
+            
         }
     }
 }

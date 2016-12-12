@@ -11,8 +11,6 @@ namespace Chioy.Communication.Networking.Service
 
         private static readonly object lockHelper = new object();
 
-   
-
         public static ServiceManager Instance()
         {
             if (_instance == null)
@@ -39,8 +37,6 @@ namespace Chioy.Communication.Networking.Service
                     break;
                 case BindingType.HTTP:
                     rtnService = new HttpService();
-                    break;
-                case BindingType.All:
                     break;
                 default:
                     break;

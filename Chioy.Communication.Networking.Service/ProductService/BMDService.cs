@@ -1,18 +1,24 @@
 ﻿using Chioy.Communication.Networking.Interface;
 using Chioy.Communication.Networking.Models;
+using Chioy.Communication.Networking.Service.Provider;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 
-namespace Chioy.Communication.Networking.Service
+namespace Chioy.Communication.Networking.Service.ProductService
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
-    public class KRService : IKRService
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    public class BMDService : KRService, IBMDService
     {
+        private IBMDDataProvider Provider
+        {
+            get { return _provider as IBMDDataProvider; }
+        }
         //IKRDuplexCallback callback = null;
 
-        public KRService()
+        public BMDService()
         {
             //callback = OperationContext.Current.GetCallbackChannel<IKRDuplexCallback>();
         }
@@ -22,7 +28,7 @@ namespace Chioy.Communication.Networking.Service
         {
             var newUser = new UserInfo() { Name = name, ID = Guid.NewGuid().ToString(), Age = 21, Sex = 1 };
             _userList.Add(newUser);
-            //callback.CreateNewUserInClient();
+            Trace.WriteLine("WCF:CreateNewUser: " + name);
             return newUser;
         }
 

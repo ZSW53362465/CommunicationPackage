@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chioy.Communication.Networking.Service.ProductService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -13,19 +14,19 @@ namespace Chioy.Communication.Networking.Service
     {
         TCP,
         HTTP,
-        All
     }
     public class ServiceFactory
     {
 
-        public static ServiceHost CreateService<IT, T>(string url, string baseUrl) where T : IT
+        public static Tuple<KRService, ServiceHost> CreateService<IT, T>(string url, string baseUrl) where T : IT
         {
             return CreateService<IT, T>(url, BindingType.TCP, baseUrl);
         }
-        public static ServiceHost CreateService<IT, T>(string url, BindingType binding, string baseUrl) where T : IT
+        public static Tuple<KRService, ServiceHost> CreateService<IT, T>(string url, BindingType binding, string baseUrl) where T : IT 
         {
             if (string.IsNullOrEmpty(url)) throw new NotSupportedException("This url is not Null or Empty!");
-            ServiceHost host = new ServiceHost(typeof(T));
+            object service = Activator.CreateInstance(typeof(T));
+            ServiceHost host = new ServiceHost(service);
             EndpointAddress address = new EndpointAddress(url);
             Binding bing = CreateBinding(binding);
             var endPoint = host.AddServiceEndpoint(typeof(IT), bing, url);
@@ -33,7 +34,7 @@ namespace Chioy.Communication.Networking.Service
             {
                 endPoint.Behaviors.Add(new WebHttpBehavior() { HelpEnabled = true });
             }
-            return host;
+            return new Tuple<KRService, ServiceHost>(service as KRService, host);
         }
 
         #region 创建传输协议

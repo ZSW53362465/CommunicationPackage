@@ -13,7 +13,7 @@ namespace Chioy.Communication.Networking.Common
         public ConfigSetting(int wcfPort,int httpPort,string baseAddress)
         {
             WCFPort = wcfPort;
-            HttpPort = HttpPort;
+            HttpPort = httpPort;
             BaseAddress = baseAddress;
         }
     }

@@ -5,30 +5,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chioy.Communication.Networking.Models;
+using Chioy.Communication.Networking.Common;
 
 namespace Chioy.Communication.Networking.Client
 {
-    public class WCFClientManager : ClientManager
+    public class TCPClientManager : ClientManager
     {
-        private IKRService _proxy = null;
-        public WCFClientManager()
+        private IService _proxy = null;
+        private IEventService _heartProxy = null;
+        public TCPClientManager()
         {
 
         }
 
-        public  void DisconnectServer()
+        public void DisconnectServer()
         {
             WCFClientEventCallback.Instance().UnRegistServices();
             WCFClientEventCallback.Instance().CommunicationEvent -= WCFClientManager_CommunicationEvent;
             WCFClientEventCallback.Instance().ExceptionEvent -= WCFClientManager_ExceptionEvent;
         }
 
-        public  void InitializeManager()
+        public void InitializeManager(ProductType type, string baseAddress, string port)
         {
             WCFClientEventCallback.Instance().CommunicationEvent += WCFClientManager_CommunicationEvent;
             WCFClientEventCallback.Instance().ExceptionEvent += WCFClientManager_ExceptionEvent;
-            WCFClientEventCallback.Instance().RegisterServices();
+            WCFClientEventCallback.Instance().RegisterServices(type, baseAddress, port);
             _proxy = WCFClientEventCallback.Instance().KRService;
+            _heartProxy = WCFClientEventCallback.Instance().KRHeartService;
         }
 
         private void WCFClientManager_ExceptionEvent(Common.KRException ex)
@@ -49,14 +52,21 @@ namespace Chioy.Communication.Networking.Client
             _proxy = null;
         }
 
-        protected  UserInfo CreateNewUser(string name)
+        public DateTime Ping()
         {
-            return _proxy.CreateNewUser(name);
+            return _heartProxy.Ping();
         }
 
-        protected  List<UserInfo> GetAllUsers()
+        public UserInfo CreateNewUser(string name)
         {
-            return _proxy.GetAllUsers();
+            var proxy = _proxy as IBMDService;
+            return proxy.CreateNewUser(name);
+        }
+
+        public List<UserInfo> GetAllUsers()
+        {
+            var proxy = _proxy as IBMDService;
+            return proxy.GetAllUsers();
         }
     }
 }

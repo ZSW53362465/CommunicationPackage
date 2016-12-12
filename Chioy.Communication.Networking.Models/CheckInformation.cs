@@ -1,4 +1,5 @@
-﻿using Chioy.Communication.Networking.Models.ReportMetadata;
+﻿using Chioy.Communication.Networking.Common;
+using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;

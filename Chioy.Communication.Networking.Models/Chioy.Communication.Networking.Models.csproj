@@ -31,8 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\Reference\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\Reference\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,6 +51,7 @@
   <ItemGroup>
     <Compile Include="CheckInformation.cs" />
     <Compile Include="DataEventArgs.cs" />
+    <Compile Include="ProductModel\BMD_Measure_Detail_Result.cs" />
     <Compile Include="ReportMetadata\BaseCheckResult.cs" />
     <Compile Include="ReportMetadata\ExamResultMetadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

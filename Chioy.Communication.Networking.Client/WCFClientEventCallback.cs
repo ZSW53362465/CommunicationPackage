@@ -2,15 +2,8 @@
 using Chioy.Communication.Networking.Interface;
 using Chioy.Communication.Networking.Models;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Client
@@ -19,10 +12,6 @@ namespace Chioy.Communication.Networking.Client
     public class WCFClientEventCallback : IEventCallback, IDisposable
     {
         #region Private Memeber
-
-        private const string KR_Config = "KRWcfConfig";
-
-        private const string KR_EventServiceConfig = "EventServiceConfig";
 
         private static int _maxErrCount = 5;
 
@@ -74,7 +63,7 @@ namespace Chioy.Communication.Networking.Client
         public ProductType Type
         {
             get { return _type; }
-         }
+        }
 
         /// <summary>
         /// Server 主动发送过来的消息，由子线程弹出，如果想更新UI，需先回到主线程
@@ -86,7 +75,7 @@ namespace Chioy.Communication.Networking.Client
             OnEventReceivedEvent?.Invoke(arg);
         }
 
-        public void RegisterServices(ProductType type,string baseAddress,string port, string name = null)
+        public void RegisterServices(ProductType type, string baseAddress, string port, string name = null)
         {
             _type = type;
             _address = baseAddress;
@@ -157,36 +146,36 @@ namespace Chioy.Communication.Networking.Client
 
         private void Subscribe(string name = null)
         {
-               Enabled = true;
+            Enabled = true;
 
-               var eventSvcRemoteFactory = CreateEventServiceRemoteFactory();
-               try
-               {
-                   _krEventproxy = eventSvcRemoteFactory.CreateChannel();
-                   BuildKRService();
+            var eventSvcRemoteFactory = CreateEventServiceRemoteFactory();
+            try
+            {
+                _krEventproxy = eventSvcRemoteFactory.CreateChannel();
+                BuildKRService();
 
-                   var comObj = _krEventproxy as ICommunicationObject;
+                var comObj = _krEventproxy as ICommunicationObject;
 
-                   comObj.Faulted += (s, ie) =>
-                   {
+                comObj.Faulted += (s, ie) =>
+                {
                        //ExceptionEvent?.Invoke(s, "Faulted");
                    };
-                   comObj.Closed += (s, ie) =>
-                   {
+                comObj.Closed += (s, ie) =>
+                {
                        //ExceptionEvent?.Invoke(s, "Closed");
                    };
-                   comObj.Closing += (s, ie) =>
-                   {
-                       CommunicationEvent?.Invoke(s, new DataEventArgs("remote host is closed"));
-                   };
+                comObj.Closing += (s, ie) =>
+                {
+                    CommunicationEvent?.Invoke(s, new DataEventArgs("remote host is closed"));
+                };
 
-                   _krEventproxy.Subscribe(CreateDefaultSubscribeArg(name));
-               }
-               catch (Exception ex)
-               {
-                   ExceptionEvent?.Invoke(new KRException("Subscribe", "connection error", ex.Message));
-               }
-         
+                _krEventproxy.Subscribe(CreateDefaultSubscribeArg(name));
+            }
+            catch (Exception ex)
+            {
+                ExceptionEvent?.Invoke(new KRException("Subscribe", "connection error", ex.Message));
+            }
+
         }
 
         private void BuildKRService()
@@ -217,7 +206,7 @@ namespace Chioy.Communication.Networking.Client
                 new EndpointAddress(string.Format("net.tcp://{0}:{1}/{2}", _address, _port, ServiceName.KREventService)));
         }
 
-        private T CreateProductService<T>(string serviceName)  
+        private T CreateProductService<T>(string serviceName)
         {
             var binding = new NetTcpBinding() { MaxBufferPoolSize = 2147483647, MaxReceivedMessageSize = 2147483647 };
             binding.Security.Mode = SecurityMode.None;
@@ -228,46 +217,46 @@ namespace Chioy.Communication.Networking.Client
             return factory.CreateChannel();
         }
 
-    private SubscribeArg CreateDefaultSubscribeArg(string name = null)
-    {
-        return new SubscribeArg() { Code = KRCode.Subscribe, Alarms = null, Model = 0, Msg = "Subscribe", Username = string.IsNullOrEmpty(name) ? CurrentHostName : name };
-    }
-    private void Close()
-    {
-        if (_krEventproxy != null && _krProxy != null)
+        private SubscribeArg CreateDefaultSubscribeArg(string name = null)
         {
-            try
+            return new SubscribeArg() { Code = KRCode.Subscribe, Alarms = null, Model = 0, Msg = "Subscribe", Username = string.IsNullOrEmpty(name) ? CurrentHostName : name };
+        }
+        private void Close()
+        {
+            if (_krEventproxy != null && _krProxy != null)
             {
-                var comObj = _krEventproxy as ICommunicationObject;
-                var krcomObj = _krProxy as ICommunicationObject;
-                krcomObj.Abort();
-                comObj.Abort();
+                try
+                {
+                    var comObj = _krEventproxy as ICommunicationObject;
+                    var krcomObj = _krProxy as ICommunicationObject;
+                    krcomObj.Abort();
+                    comObj.Abort();
+                }
+                catch { }
             }
-            catch { }
+        }
+
+        public void Dispose()
+        {
+            Close();
+            _krProxy = null;
+            _krEventproxy = null;
+        }
+
+
+        #endregion
+    }
+
+    public class WCFClientCallbackManager : IKRDuplexCallback
+    {
+        public void CreateNewUserInClient()
+        {
+            //throw new NotImplementedException(); 
+        }
+
+        public void RemoveUserInClient()
+        {
+            //throw new NotImplementedException();
         }
     }
-
-    public void Dispose()
-    {
-        Close();
-        _krProxy = null;
-        _krEventproxy = null;
-    }
-
-
-    #endregion
-}
-
-public class WCFClientCallbackManager : IKRDuplexCallback
-{
-    public void CreateNewUserInClient()
-    {
-        //throw new NotImplementedException(); 
-    }
-
-    public void RemoveUserInClient()
-    {
-        //throw new NotImplementedException();
-    }
-}
 }

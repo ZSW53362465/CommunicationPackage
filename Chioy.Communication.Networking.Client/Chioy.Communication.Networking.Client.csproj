@@ -31,22 +31,57 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\Reference\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\Reference\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientManager.cs" />
+    <Compile Include="DB\DBHelper\DatabaseHelper.cs" />
+    <Compile Include="DB\DBHelper\IDatabaseHelper.cs" />
+    <Compile Include="DB\DBHelper\MySQLHelper.cs" />
+    <Compile Include="DB\DBHelper\OledbHelper.cs" />
+    <Compile Include="DB\DBHelper\OracleHelper.cs" />
+    <Compile Include="DB\DBHelper\PostgreSQLHelper.cs" />
+    <Compile Include="DB\DBHelper\SqlServerHelper.cs" />
+    <Compile Include="DB\DBModels\CheckTypeMapModel.cs" />
+    <Compile Include="DB\DBModels\ConnectionString.cs" />
+    <Compile Include="DB\DBModels\DatabaseConfigModel.cs" />
+    <Compile Include="DB\DBModels\DataBaseSoft.cs" />
+    <Compile Include="DB\DBModels\DataCallBackModel.cs" />
+    <Compile Include="DB\DBModels\FileFormatModel.cs" />
+    <Compile Include="DB\DBModels\ModelBase.cs" />
+    <Compile Include="DB\DBModels\PatientMapModel.cs" />
+    <Compile Include="DB\DBModels\ReportSaveModel.cs" />
+    <Compile Include="DB\DBModels\TableMapModel.cs" />
+    <Compile Include="DB\KRNetworkingConfig.cs" />
+    <Compile Include="DB\KRNetworkingHelper.cs" />
+    <Compile Include="FTP\FtpClient.cs" />
+    <Compile Include="FTP\DownloadFileCompletedEventLibArgs.cs" />
+    <Compile Include="FTP\DownloadProgressChangedLibArgs.cs" />
+    <Compile Include="FTP\Helper\ConvertDate.cs" />
+    <Compile Include="FTP\Helper\FtpListDirectoryDetails.cs" />
+    <Compile Include="FTP\Helper\Procent.cs" />
+    <Compile Include="FTP\Helper\ThreadParameters.cs" />
+    <Compile Include="FTP\Helper\TransmissionState.cs" />
+    <Compile Include="FTP\UploadFileCompletedEventLibArgs.cs" />
+    <Compile Include="FTP\UploadProgressChangedLibArgs.cs" />
     <Compile Include="HttpClientManager.cs" />
     <Compile Include="LocalQuickStartService.cs" />
     <Compile Include="WCFClientEventCallback.cs" />
@@ -67,6 +102,7 @@
       <Name>Chioy.Communication.Networking.Models</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll ..\..\..\KRWcfLib\  /y</PostBuildEvent>

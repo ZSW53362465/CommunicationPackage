@@ -33,7 +33,7 @@ namespace Chioy.Communication.Networking.Client
             string retString = string.Empty;
             try
             {
-                var jsonStr = CommunicationHelper.SerializeToJsonStr<T>(obj);
+                var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "Post";

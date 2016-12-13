@@ -18,11 +18,7 @@ using System.Xml.Serialization;
 
 namespace Chioy.Communication.Networking.Common
 {
-    public enum ProductType
-    {
-        BMD = 0,
-        KRTCD
-    }
+   
     public class CommunicationHelper
     {
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
@@ -35,7 +31,7 @@ namespace Chioy.Communication.Networking.Common
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         public static extern int GetPrivateProfileInt(string section, string key, int def, string filePath);
 
-        public static string SerializeToJsonStr<T>(T obj, Encoding encoding = null)
+        public static string SerializeObjToJsonStr<T>(T obj, Encoding encoding = null)
         {
             encoding = encoding == null ? Encoding.UTF8 : encoding;
             var jsonStr = string.Empty;
@@ -56,7 +52,7 @@ namespace Chioy.Communication.Networking.Common
             return jsonStr;
         }
 
-        public static T SerializeToObj<T>(string jsonStr, Encoding encoding = null)
+        public static T DeserializeJsonToObj<T>(string jsonStr, Encoding encoding = null)
         {
             encoding = encoding == null ? Encoding.UTF8 : encoding;
             T rtnObj = default(T);

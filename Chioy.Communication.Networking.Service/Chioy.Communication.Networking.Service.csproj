@@ -50,8 +50,8 @@
     <Compile Include="BaseService.cs" />
     <Compile Include="EventService.cs" />
     <Compile Include="HttpService.cs" />
-    <Compile Include="KRHttpService.cs" />
-    <Compile Include="ProductService\BMDService.cs" />
+    <Compile Include="ProductService\HTTP\BMDHttpService.cs" />
+    <Compile Include="ProductService\TCP\BMDService.cs" />
     <Compile Include="ProductService\KRService.cs" />
     <Compile Include="ProductService\KRTCDService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

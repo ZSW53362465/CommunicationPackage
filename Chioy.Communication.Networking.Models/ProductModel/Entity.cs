@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Chioy.Communication.Networking.Models.ProductModel
 {
-    public class BMD_Measure_Detail_Result
+    public class Entity
     {
-
+        public int ID { get; set; }
     }
 }

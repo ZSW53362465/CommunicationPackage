@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace ServiceHost
 {
-    public class MyProvider : IBMDDataProvider
-    {
-        public string TestValue()
-        {
-            return "asdfasdf";
-        }
-    }
+    //public class MyProvider : IBMDDataProvider
+    //{
+    //    public string TestValue()
+    //    {
+    //        return "asdfasdf";
+    //    }
+    //}
 }

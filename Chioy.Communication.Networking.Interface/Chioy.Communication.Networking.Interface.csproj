@@ -46,9 +46,9 @@
     <Compile Include="ArgumentBase.cs" />
     <Compile Include="IEventService.cs" />
     <Compile Include="IKRDuplexCallback.cs" />
-    <Compile Include="IKRHttpService.cs" />
-    <Compile Include="IBMDService.cs" />
-    <Compile Include="IKRTCDService.cs" />
+    <Compile Include="ProductInterface\HTTP\IBMDHttpService.cs" />
+    <Compile Include="ProductInterface\TCP\IBMDService.cs" />
+    <Compile Include="ProductInterface\TCP\IKRTCDService.cs" />
     <Compile Include="IService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

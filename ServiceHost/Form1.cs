@@ -30,7 +30,7 @@ namespace ServiceHost
             }
             service = ServiceManager.Instance().GetService(BindingType.TCP);
             service.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
-            service.RegisterProvider(new MyProvider());
+            //service.RegisterProvider(new MyProvider());
             tcpService = service as TCPService;
             tcpService.ClientLost += Service_ClientLost;
             tcpService.NewClientSubscribed += Service_NewClientSubscribed;

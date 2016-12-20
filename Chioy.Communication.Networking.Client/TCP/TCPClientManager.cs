@@ -1,15 +1,13 @@
-﻿using Chioy.Communication.Networking.Interface;
+﻿using Chioy.Communication.Networking.Common;
+using Chioy.Communication.Networking.Interface;
+using Chioy.Communication.Networking.Models;
+using Chioy.Communication.Networking.Models.DTO;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chioy.Communication.Networking.Models;
-using Chioy.Communication.Networking.Common;
 
 namespace Chioy.Communication.Networking.Client
 {
-    public class TCPClientManager : ClientManager
+    public class TCPClientManager : ClientProxy
     {
         private IService _proxy = null;
         private IEventService _heartProxy = null;
@@ -67,6 +65,12 @@ namespace Chioy.Communication.Networking.Client
         {
             var proxy = _proxy as IBMDService;
             return proxy.GetAllUsers();
+        }
+
+        public List<Patient_DTO> RequestAllPatients()
+        {
+            var proxy = _proxy as IBMDService;
+            return proxy.RequestAllPatients();
         }
     }
 }

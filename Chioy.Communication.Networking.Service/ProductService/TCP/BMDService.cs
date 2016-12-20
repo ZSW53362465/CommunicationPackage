@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
-using Chioy.Communication.Networking.Models.ProductModel;
+using Chioy.Communication.Networking.Models.DTO;
 
 namespace Chioy.Communication.Networking.Service.ProductService
 {
@@ -46,42 +46,42 @@ namespace Chioy.Communication.Networking.Service.ProductService
 
         #endregion
 
-        public Transfer_Patient RequestPatientByPatientID(string patientId)
+        public Patient_DTO RequestPatientByPatientID(string patientId)
         {
             return Provider.RequestPatientByPatientID(patientId);
         }
 
-        public List<Transfer_Patient> RequestAllPatients()
+        public List<Patient_DTO> RequestAllPatients()
         {
             return Provider.RequestAllPatients();
         }
 
-        public List<Transfer_BMD_Measure_Result> Request_BMD_Measure_ResultByPatientID(string patientId)
+        public List<BMD_Measure_Result_DTO> Request_BMD_Measure_ResultByPatientID(string patientId)
         {
             return Provider.Request_BMD_Measure_ResultByPatientID(patientId);
         }
 
-        public Transfer_BMD_Measure_Result Request_BMD_Measure_Result(string checkId)
+        public BMD_Measure_Result_DTO Request_BMD_Measure_Result(string checkId)
         {
             return Provider.Request_BMD_Measure_Result(checkId);
         }
 
-        public List<Transfer_BMD_Measure_Result> Request_BMD_Measure_All_Result()
+        public List<BMD_Measure_Result_DTO> Request_BMD_Measure_All_Result()
         {
             return Provider.Request_BMD_Measure_All_Result();
         }
 
-        public List<Transfer_PatientCheck> Request_BMD_Summary_ResultByPatientID(string patientId)
+        public List<PatientCheck_DTO> Request_BMD_Summary_ResultByPatientID(string patientId)
         {
             return Provider.Request_BMD_Summary_ResultByPatientID(patientId);
         }
 
-        public List<Transfer_PatientCheck> Request_BMD_Summary_All_Result()
+        public List<PatientCheck_DTO> Request_BMD_Summary_All_Result()
         {
             return Provider.Request_BMD_Summary_All_Result();
         }
 
-        public Transfer_PatientCheck Request_BMD_Summary_ResultByCheckId(string checkId)
+        public PatientCheck_DTO Request_BMD_Summary_ResultByCheckId(string checkId)
         {
             return Provider.Request_BMD_Summary_ResultByCheckId(checkId);
         }

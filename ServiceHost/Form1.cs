@@ -70,8 +70,10 @@ namespace ServiceHost
         {
             httpService = ServiceManager.Instance().GetService(BindingType.HTTP) as HttpService;
             httpService.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
-            
-            
+            httpService.RegisterProvider(new MyProvider());
+
+
+
         }
     }
 }

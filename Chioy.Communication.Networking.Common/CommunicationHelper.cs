@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -21,6 +22,7 @@ namespace Chioy.Communication.Networking.Common
    
     public class CommunicationHelper
     {
+        public const string ERROR_FLAG = "KRNetError:";
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         public static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal,
                                                         int size, string filePath);
@@ -46,7 +48,8 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                throw ex;
+                Trace.Write(ERROR_FLAG + "SerializeObjToJsonStr:Json序列化失败" + ex.Message);
+                throw new KRException("SerializeObjToJsonStr", "Json序列化失败", ex.Message);
             }
 
             return jsonStr;
@@ -66,8 +69,8 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                Trace.Write(ERROR_FLAG + "DeserializeJsonToObj:Json反序列化失败" + ex.Message);
+                throw new KRException("DeserializeJsonToObj", "Json反序列化失败", ex.Message);
             }
 
             return rtnObj;
@@ -85,7 +88,8 @@ namespace Chioy.Communication.Networking.Common
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    Trace.Write(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
+                    throw new KRException("GetBase64FromImage", "图片转换失败", ex.Message);
                 }
             }
             return strbaser64;
@@ -107,8 +111,8 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                Trace.Write(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
+                throw new KRException("GetBase64FromImage", "图片转换失败", ex.Message);
             }
 
             return strbaser64;
@@ -124,9 +128,10 @@ namespace Chioy.Communication.Networking.Common
                     return (T)xmldes.Deserialize(sr);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return default(T);
+                Trace.Write(ERROR_FLAG + "DeserializeToObj:XML反序列化失败" + ex.Message);
+                throw new KRException("DeserializeToObj", "XML反序列化失败", ex.Message);
             }
         }
 
@@ -147,9 +152,10 @@ namespace Chioy.Communication.Networking.Common
                     xml.Serialize(xmlWriter, t, namespaces);
                 }
             }
-            catch (InvalidOperationException)
+            catch (Exception ex)
             {
-                throw;
+                Trace.Write(ERROR_FLAG + "SerializerToXml:XML序列化失败" + ex.Message);
+                throw new KRException("SerializerToXml", "XML序列化失败", ex.Message);
             }
             Stream.Position = 0;
             StreamReader sr = new StreamReader(Stream);

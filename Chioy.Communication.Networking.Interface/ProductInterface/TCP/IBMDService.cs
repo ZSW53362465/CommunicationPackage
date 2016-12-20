@@ -1,5 +1,5 @@
 ﻿using Chioy.Communication.Networking.Models;
-using Chioy.Communication.Networking.Models.ProductModel;
+using Chioy.Communication.Networking.Models.DTO;
 using System.Collections.Generic;
 using System.ServiceModel;
 
@@ -20,20 +20,20 @@ namespace Chioy.Communication.Networking.Interface
         #endregion
 
         [OperationContract]
-        Transfer_Patient RequestPatientByPatientID(string patientId);
+        Patient_DTO RequestPatientByPatientID(string patientId);
         [OperationContract]
-        List<Transfer_Patient> RequestAllPatients();
+        List<Patient_DTO> RequestAllPatients();
         [OperationContract]
-        List<Transfer_BMD_Measure_Result> Request_BMD_Measure_ResultByPatientID(string patientId);
+        List<BMD_Measure_Result_DTO> Request_BMD_Measure_ResultByPatientID(string patientId);
         [OperationContract]
-        Transfer_BMD_Measure_Result Request_BMD_Measure_Result(string checkId);
+        BMD_Measure_Result_DTO Request_BMD_Measure_Result(string checkId);
         [OperationContract]
-        List<Transfer_BMD_Measure_Result> Request_BMD_Measure_All_Result();
+        List<BMD_Measure_Result_DTO> Request_BMD_Measure_All_Result();
         [OperationContract]
-        List<Transfer_PatientCheck> Request_BMD_Summary_ResultByPatientID(string patientId);
+        List<PatientCheck_DTO> Request_BMD_Summary_ResultByPatientID(string patientId);
         [OperationContract]
-        List<Transfer_PatientCheck> Request_BMD_Summary_All_Result();
+        List<PatientCheck_DTO> Request_BMD_Summary_All_Result();
         [OperationContract]
-        Transfer_PatientCheck Request_BMD_Summary_ResultByCheckId(string checkId);
+        PatientCheck_DTO Request_BMD_Summary_ResultByCheckId(string checkId);
     }
 }

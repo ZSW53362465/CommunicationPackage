@@ -53,7 +53,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientManager.cs" />
+    <Compile Include="ClientProxy.cs" />
+    <Compile Include="Client\ClientConstants.cs" />
+    <Compile Include="Client\DBClient.cs" />
+    <Compile Include="Client\FtpClient.cs" />
+    <Compile Include="Client\HttpClient.cs" />
+    <Compile Include="Client\WebServiceClient.cs" />
     <Compile Include="DB\DBHelper\DatabaseHelper.cs" />
     <Compile Include="DB\DBHelper\IDatabaseHelper.cs" />
     <Compile Include="DB\DBHelper\MySQLHelper.cs" />
@@ -73,7 +78,7 @@
     <Compile Include="DB\DBModels\TableMapModel.cs" />
     <Compile Include="DB\KRNetworkingConfig.cs" />
     <Compile Include="DB\KRNetworkingHelper.cs" />
-    <Compile Include="FTP\FtpClient.cs" />
+    <Compile Include="FTP\FtpHelper.cs" />
     <Compile Include="FTP\DownloadFileCompletedEventLibArgs.cs" />
     <Compile Include="FTP\DownloadProgressChangedLibArgs.cs" />
     <Compile Include="FTP\Helper\ConvertDate.cs" />
@@ -83,7 +88,9 @@
     <Compile Include="FTP\Helper\TransmissionState.cs" />
     <Compile Include="FTP\UploadFileCompletedEventLibArgs.cs" />
     <Compile Include="FTP\UploadProgressChangedLibArgs.cs" />
-    <Compile Include="HTTP\HttpClientManager.cs" />
+    <Compile Include="HTTP\HttpHelper.cs" />
+    <Compile Include="Client\BaseClient.cs" />
+    <Compile Include="WebService\WebServiceClient.cs" />
     <Compile Include="Local\LocalQuickStartService.cs" />
     <Compile Include="TCP\WCFClientEventCallback.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

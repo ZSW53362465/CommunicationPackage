@@ -51,15 +51,18 @@
   <ItemGroup>
     <Compile Include="CheckInformation.cs" />
     <Compile Include="DataEventArgs.cs" />
-    <Compile Include="ProductModel\Transfer_BMD_Measure_Result.cs" />
-    <Compile Include="ProductModel\CustomerFields.cs" />
-    <Compile Include="ProductModel\Entity.cs" />
-    <Compile Include="ProductModel\Transfer_Patient.cs" />
-    <Compile Include="ProductModel\Transfer_PatientCheck.cs" />
+    <Compile Include="DTO\BMD_Measure_Result_DTO.cs" />
+    <Compile Include="DTO\CustomerFields.cs" />
+    <Compile Include="DTO\Entity.cs" />
+    <Compile Include="DTO\KRResponse.cs" />
+    <Compile Include="DTO\Operator_DTO.cs" />
+    <Compile Include="DTO\Patient_DTO.cs" />
+    <Compile Include="DTO\PatientCheck_DTO.cs" />
     <Compile Include="ReportMetadata\BaseCheckResult.cs" />
     <Compile Include="ReportMetadata\ExamResultMetadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportMetadata\BMDCheckResult.cs" />
+    <Compile Include="ReportMetadata\KRTCDCheckResult.cs" />
     <Compile Include="UserInfo.cs" />
   </ItemGroup>
   <ItemGroup>

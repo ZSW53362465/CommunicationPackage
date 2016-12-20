@@ -84,8 +84,8 @@ namespace Chioy.Communication.Networking.Service
                     switch (_produceType)
                     {
                         case ProductType.BMD:
-                            serviceName = ServiceName.Employees;
-                            //serviceName = ServiceName.BMDHttpService;
+                            //serviceName = ServiceName.Employees;
+                            serviceName = ServiceName.BMDHttpService;
                             break;
                         case ProductType.KRTCD:
                             serviceName = ServiceName.KRTCDHttpService;

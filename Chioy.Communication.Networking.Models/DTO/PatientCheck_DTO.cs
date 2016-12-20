@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Chioy.Communication.Networking.Models.ProductModel
+namespace Chioy.Communication.Networking.Models.DTO
 {
     [Serializable]
-    public partial class Transfer_PatientCheck
+    public partial class PatientCheck_DTO
     {
-        public Transfer_PatientCheck()
+        public PatientCheck_DTO()
         { }
         #region Model
         private int _height;

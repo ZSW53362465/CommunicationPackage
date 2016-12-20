@@ -53,6 +53,8 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
 
         public int Height { get; set; }
 
+        public string Report { get; set; }
+
         public T CheckResult { get; set; }
     }
 }

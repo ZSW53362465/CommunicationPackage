@@ -106,7 +106,7 @@ namespace Chioy.Communication.Networking.Client.DB
             }
 
             string path = config.ReportSaveModel.FtpAdresse;
-            FtpClient client = new FtpClient();
+            FtpHelper client = new FtpHelper();
 
             //var ftpHelper = new FtpHelper(path, config.ReportSaveModel.FtpUser, config.ReportSaveModel.FtpPassword);
             WebException exception;

@@ -31,7 +31,7 @@ namespace Chioy.Communication.Networking.Client.FTP
     /// <summary>
     /// Basic class of DotNetFtpLibrary
     /// </summary>
-    public class FtpClient
+    public class FtpHelper
     {
         private const int BUFFER_SIZE = 32768;
         //private const int BUFFER_SIZE = 1024;
@@ -88,7 +88,7 @@ namespace Chioy.Communication.Networking.Client.FTP
         /// <summary>
         /// Creates an instance of FtpClient
         /// </summary>
-        public FtpClient()
+        public FtpHelper()
         {
             UsePassive = true;
             this.TimeOut = 30000;
@@ -102,7 +102,7 @@ namespace Chioy.Communication.Networking.Client.FTP
         /// <param name="userName">UserName</param>
         /// <param name="password">Password</param>
         /// <param name="port">Port of ftpServer | defaultValue = 21</param>
-        public FtpClient( string host, string userName, string password, int port )
+        public FtpHelper( string host, string userName, string password, int port )
         {
             Host = host;
             UserName = userName;
@@ -121,7 +121,7 @@ namespace Chioy.Communication.Networking.Client.FTP
         /// <param name="password">Password</param>
         /// <param name="port">Port of ftpServer | defaultValue = 21</param>
         /// <param name="usePassive">Transfermode | defaultValue = true | usePassive = false maybe fails (firewall settings..)</param>
-        public FtpClient( string host, string userName, string password, int port, bool usePassive )
+        public FtpHelper( string host, string userName, string password, int port, bool usePassive )
         {
             Host = host;
             UserName = userName;

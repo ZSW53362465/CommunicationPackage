@@ -69,13 +69,13 @@ namespace Chioy.Communication.Networking.Client.Client
                 string targetCheck = _config.PatientMapModel.GetTargetCheckByCheckType(1);
 
                 sql = string.Format(sql, patientId, targetCheck);
-                Trace.Write(string.Format("根据patientId:{0}去数据库取病人信息,Sql 语句为:{2}", patientId, sql));
+                Trace.WriteLine(string.Format("根据patientId:{0}去数据库取病人信息,Sql 语句为:{2}", patientId, sql));
 
                 DataTable table = dbHelper.ExecuteQuery(sql);
 
                 if (table == null || table.Rows.Count == 0)
                 {
-                    Trace.Write("没有查到病人信息");
+                    Trace.WriteLine("没有查到病人信息");
                     return null;
                 }
 

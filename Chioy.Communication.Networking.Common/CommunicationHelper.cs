@@ -48,7 +48,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "SerializeObjToJsonStr:Json序列化失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "SerializeObjToJsonStr:Json序列化失败" + ex.Message);
                 throw new KRException("SerializeObjToJsonStr", "Json序列化失败", ex.Message);
             }
 
@@ -69,7 +69,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "DeserializeJsonToObj:Json反序列化失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "DeserializeJsonToObj:Json反序列化失败" + ex.Message);
                 throw new KRException("DeserializeJsonToObj", "Json反序列化失败", ex.Message);
             }
 
@@ -88,7 +88,7 @@ namespace Chioy.Communication.Networking.Common
                 }
                 catch (Exception ex)
                 {
-                    Trace.Write(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
+                    Trace.WriteLine(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
                     throw new KRException("GetBase64FromImage", "图片转换失败", ex.Message);
                 }
             }
@@ -111,7 +111,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
                 throw new KRException("GetBase64FromImage", "图片转换失败", ex.Message);
             }
 
@@ -130,7 +130,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "DeserializeToObj:XML反序列化失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "DeserializeToObj:XML反序列化失败" + ex.Message);
                 throw new KRException("DeserializeToObj", "XML反序列化失败", ex.Message);
             }
         }
@@ -154,7 +154,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "SerializerToXml:XML序列化失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "SerializerToXml:XML序列化失败" + ex.Message);
                 throw new KRException("SerializerToXml", "XML序列化失败", ex.Message);
             }
             Stream.Position = 0;

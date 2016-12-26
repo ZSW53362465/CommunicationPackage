@@ -48,7 +48,7 @@ namespace Chioy.Communication.Networking.Client
                 param.Add("content", jsonStr);
                 var content = client.UploadValues(url, param);
                 var strContent = Encoding.UTF8.GetString(content);
-                Trace.Write("HttpPostData返回数据:" + strContent);
+                Trace.WriteLine("HttpPostData返回数据:" + strContent);
                 return strContent;
                 //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 //request.Method = "Post";
@@ -68,7 +68,7 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "HttpPostData:Post " + url + "失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "HttpPostData:Post " + url + "失败" + ex.Message);
                 throw new KRException("HttpPostData", "Post 请求失败", ex.Message);
             }
 
@@ -85,7 +85,7 @@ namespace Chioy.Communication.Networking.Client
                 client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                 var content = client.UploadValues(url, param);
                 var strContent = Encoding.UTF8.GetString(content);
-                Trace.Write("HttpGetData返回数据:" + strContent);
+                Trace.WriteLine("HttpGetData返回数据:" + strContent);
                 return strContent;
 
                 //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -100,7 +100,7 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.Write(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
+                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
                 throw new KRException("HttpGetData", "Get 请求失败", ex.Message);
             }
 

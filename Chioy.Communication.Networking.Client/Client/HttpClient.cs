@@ -25,16 +25,16 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             try
             {
-                Trace.Write(string.Format("开始获取病人{0}的信息", patientId));
+                Trace.WriteLine(string.Format("开始获取病人{0}的信息", patientId));
                 Patient_DTO patient = null;
                 if (_helper != null)
                 {
                     NameValueCollection param = new NameValueCollection();
                     param.Add(ClientConstants.Type, ClientConstants.KR_GET_PATIENT);
                     param.Add(ClientConstants.Content, patientId);
-                    Trace.Write(string.Format("获取病人信息地址为{0}", Address.GetPatientUrl));
+                    Trace.WriteLine(string.Format("获取病人信息地址为{0}", Address.GetPatientUrl));
                     var jsonStr = _helper.HttpGetData(Address.GetPatientUrl, param);
-                    Trace.Write(string.Format("获取病人信息为{0}", jsonStr));
+                    Trace.WriteLine(string.Format("获取病人信息为{0}", jsonStr));
                     patient = CommunicationHelper.DeserializeJsonToObj<Patient_DTO>(jsonStr);
                 }
                 return patient;
@@ -50,9 +50,9 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             try
             {
-                Trace.Write(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
+                Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
                 string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result, ClientConstants.KR_POST_RESULT);
-                Trace.Write(string.Format("开始发送检查结果结束，返回结果{0}", resultStr));
+                Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
             }
             catch (Exception ex)
@@ -65,9 +65,9 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             try
             {
-                Trace.Write(string.Format("开始发送操作人员信息，地址为{0}", Address.PostOperatorUrl));
+                Trace.WriteLine(string.Format("开始发送操作人员信息，地址为{0}", Address.PostOperatorUrl));
                 string resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, ClientConstants.KR_POST_OPERATOR);
-                Trace.Write(string.Format("开始发送操作人员信息结束，返回结果{0}", resultStr));
+                Trace.WriteLine(string.Format("开始发送操作人员信息结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
             }
             catch (Exception ex)

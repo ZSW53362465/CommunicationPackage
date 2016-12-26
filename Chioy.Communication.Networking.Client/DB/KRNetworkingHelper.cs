@@ -1,6 +1,7 @@
 ﻿using Chioy.Communication.Networking.Client.DB.DBHelper;
 using Chioy.Communication.Networking.Client.DB.Models;
 using Chioy.Communication.Networking.Client.FTP;
+using Chioy.Communication.Networking.Models.ReportMetadata;
 using Npgsql;
 using NpgsqlTypes;
 using System;
@@ -21,10 +22,11 @@ namespace Chioy.Communication.Networking.Client.DB
         private DataRow _row;
         public string _fullPath;
         private DateTime _nowDateTime;
+        private ExamResultMetadata<BaseCheckResult> _result;
 
-        public KRNetworkingHelper(DataRow dataRow)
+        public KRNetworkingHelper(ExamResultMetadata<BaseCheckResult> result)
         {
-            _row = dataRow;
+            _result = result;
             _nowDateTime = DateTime.Now;
         }
         public bool SaveReport(RenderTargetBitmap p_bitmap)
@@ -227,19 +229,23 @@ namespace Chioy.Communication.Networking.Client.DB
 
         private string GetFiledValue(string p_filed)
         {
-            if (!_row.Table.Columns.Contains(p_filed))
+            var property = _result.GetType().GetProperty(p_filed);
+            if (property != null)
             {
-                return string.Empty;
+                return (string)property.GetValue(_result, null);
             }
-
-            object result = _row[p_filed];
-
-            if (result == null)
+            else
             {
-                result = string.Empty;
+                if (_result.CheckResult != null)
+                {
+                    property = _result.CheckResult.GetType().GetProperty(p_filed);
+                    if (property != null)
+                    {
+                        return (string)property.GetValue(_result.CheckResult, null);
+                    }
+                }
             }
-
-            return result.ToString();
+            return string.Empty;
         }
         public bool SaveCallBackData(RenderTargetBitmap p_bitmap = null)
         {

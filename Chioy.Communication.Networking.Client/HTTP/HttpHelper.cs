@@ -10,6 +10,7 @@ using System.IO;
 using System.Web;
 using System.Diagnostics;
 using System.Collections.Specialized;
+using Chioy.Communication.Networking.Client.HTTP;
 
 namespace Chioy.Communication.Networking.Client
 {
@@ -31,14 +32,15 @@ namespace Chioy.Communication.Networking.Client
             }
         }
 
-        public string HttpPostData<T>(string url, T obj, string type = null)
+        public string HttpPostData<T>(string url, T obj, int timeout = 0, string type = null)
         {
             string retString = string.Empty;
             try
             {
                 var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
 
-                WebClient client = new WebClient();
+                KRWebClient client = new KRWebClient();
+                client.Timeout = timeout;
                 NameValueCollection param = new NameValueCollection();
                 client.Headers.Add("Content-Type", "application/json");
                 if (!string.IsNullOrEmpty(type))
@@ -75,14 +77,15 @@ namespace Chioy.Communication.Networking.Client
             //return HttpUtility.UrlDecode(retString);
         }
 
-        public string HttpGetData(string url, NameValueCollection param)
+        public string HttpGetData(string url, NameValueCollection param, int timeout = 0)
         {
             string retString = string.Empty;
 
             try
             {
-                WebClient client = new WebClient();
+                KRWebClient client = new KRWebClient();
                 client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                client.Timeout = timeout;
                 var content = client.UploadValues(url, param);
                 var strContent = Encoding.UTF8.GetString(content);
                 Trace.WriteLine("HttpGetData返回数据:" + strContent);

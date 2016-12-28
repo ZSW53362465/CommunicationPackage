@@ -3,6 +3,7 @@ using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
 using System.Diagnostics;
+using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
@@ -36,7 +37,7 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw ex;
             }
         }
-        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result)
+        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result, Func<ExamResultMetadata<BaseCheckResult>, RenderTargetBitmap> function = null)
         {
             try
             {

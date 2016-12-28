@@ -10,6 +10,8 @@ using Chioy.Communication.Networking.Client.DB.DBHelper;
 using System.Data;
 using System.Globalization;
 using System.Diagnostics;
+using Chioy.Communication.Networking.Models.ReportMetadata;
+using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
@@ -18,7 +20,9 @@ namespace Chioy.Communication.Networking.Client.Client
         KRNetworkingConfig _config = null;
         string _connStr = null;
         DatabaseConfigModel _dbConfig = null;
+        IDatabaseHelper _dbHelper = null;
         private DataView _popView = new DataView();
+        private string _finalDir = string.Empty;
 
         public DataView PopView
         {
@@ -45,6 +49,14 @@ namespace Chioy.Communication.Networking.Client.Client
                 _popOpen = value;
             }
         }
+        public KRNetworkingConfig Config { get { return _config; } }
+        public DatabaseConfigModel DBConfig { get { return _dbConfig; } }
+
+        public IDatabaseHelper DBHelper { get { return _dbHelper; } }
+
+        public string FinalDir { get { return _finalDir; } }
+
+
         public DBClient()
         {
             _protocol = Protocol.DB;
@@ -55,6 +67,9 @@ namespace Chioy.Communication.Networking.Client.Client
             _config = KRNetworkingConfig.Load();
             _dbConfig = _config.DatabaseConfigModel;
             _connStr = _dbConfig.ConnectionString;
+            DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(_dbConfig.DatabaseSoft,
+                                                                         _dbConfig.IsAdvancedSetting);
+            _dbHelper = DatabaseHelper.Open(databaseEnum, _connStr);
         }
 
         public override Patient_DTO GetPatient(string patientId)
@@ -62,16 +77,13 @@ namespace Chioy.Communication.Networking.Client.Client
             try
             {
                 Patient_DTO patient = null;
-                DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(_dbConfig.DatabaseSoft,
-                                                                          _dbConfig.IsAdvancedSetting);
-                IDatabaseHelper dbHelper = DatabaseHelper.Open(databaseEnum, _connStr);
                 string sql = _config.PatientMapModel.GetPatientInfoSql(_dbConfig.DatabaseSoft);
                 string targetCheck = _config.PatientMapModel.GetTargetCheckByCheckType(1);
 
                 sql = string.Format(sql, patientId, targetCheck);
                 Trace.WriteLine(string.Format("根据patientId:{0}去数据库取病人信息,Sql 语句为:{2}", patientId, sql));
 
-                DataTable table = dbHelper.ExecuteQuery(sql);
+                DataTable table = _dbHelper.ExecuteQuery(sql);
 
                 if (table == null || table.Rows.Count == 0)
                 {
@@ -172,6 +184,60 @@ namespace Chioy.Communication.Networking.Client.Client
             {
                 throw ex;
             }
+        }
+
+        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result)
+        {
+            var response = new KRResponse();
+            var nh = new KRNetworkingHelper(result);
+            bool isSuccSaveReport = false;
+            bool isSuccDataSave = false;
+            try
+            {
+                switch (_config.ReportSaveModel.ReportSaveType)
+                {
+                    case "无":
+                        isSuccSaveReport = isSuccDataSave = nh.SaveCallBackData();
+                        break;
+                    case "FTP":
+                        isSuccSaveReport = nh.SaveReportByFtp(result.Bitmap, ref _finalDir);
+                        isSuccDataSave = nh.SaveCallBackData();
+                        break;
+                    case "文件夹":
+                        isSuccSaveReport = nh.SaveReportByDir(result.Bitmap, ref _finalDir);
+                        isSuccDataSave = nh.SaveCallBackData();
+                        break;
+                    case "表":
+                        isSuccSaveReport = isSuccDataSave = nh.SaveCallBackData(result.Bitmap);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Msg = ex.Message;
+                response.Status = "FAIL";
+                return response;
+            }
+
+            StringBuilder resultSb = new StringBuilder();
+            resultSb.Append(isSuccSaveReport ? string.Empty : "报告单图片保存失败！");
+            resultSb.Append(resultSb.ToString().Length == 0 ? string.Empty : "\n");
+            resultSb.Append(isSuccDataSave ? string.Empty : "数据回写失败");
+            var msg = resultSb.ToString();
+
+            if (string.IsNullOrEmpty(msg))
+            {
+                response.Msg = msg = "联网数据保存成功！";
+                response.Status = "SUCCESS";
+            }
+            else
+            {
+                response.Msg = msg;
+                response.Status = "FAIL";
+            }
+            return response;
         }
     }
 }

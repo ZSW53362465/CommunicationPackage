@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 
 namespace Chioy.Communication.Networking.Models.ReportMetadata
 {
-   
+
 
     public enum CardType
     {
@@ -29,6 +30,7 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
         }
         public ExamResultMetadata()
         { }
+        public string PatientID { get; set; }
         public ProductType Type { get { return this._type; } }
 
         public string ReportID { get; set; }
@@ -39,7 +41,7 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
         public int Sex { get; set; }
         public CardType CardType { get; set; }
 
-        public string ID { get; set; }
+        public string CardID { get; set; }
 
         public int Age { get; set; }
 
@@ -55,6 +57,19 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
 
         public string Report { get; set; }
 
-        public T CheckResult { get; set; }
+        public string RequestDate { get; set; }
+        public string RequestDepartment { get; set; }
+        public string ExamDoctor { get; set; }
+        public string DiagnosticianDoctor { get; set; }
+        public string Diagnosis { get; set; }
+        public string CheckResult { get; set; }
+
+        public string CheckDate { get; set; }
+
+        public string Paramters { get; set; }
+        [XmlIgnore]
+        public RenderTargetBitmap Bitmap { get; set; }
+
+        public T Result { get; set; }
     }
 }

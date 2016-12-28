@@ -8,11 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.DB
@@ -23,13 +25,18 @@ namespace Chioy.Communication.Networking.Client.DB
         public string _fullPath;
         private DateTime _nowDateTime;
         private ExamResultMetadata<BaseCheckResult> _result;
+        bool _uploadSuccess = false;
+        FtpHelper client = null;
+        Exception _uploadException = null;
+
+
 
         public KRNetworkingHelper(ExamResultMetadata<BaseCheckResult> result)
         {
             _result = result;
             _nowDateTime = DateTime.Now;
         }
-        public bool SaveReport(RenderTargetBitmap p_bitmap)
+        public bool SaveReport(RenderTargetBitmap p_bitmap, ref string finalDir)
         {
             KRNetworkingConfig config = KRNetworkingConfig.Config;
             bool isSucc = false;
@@ -38,12 +45,12 @@ namespace Chioy.Communication.Networking.Client.DB
                 isSucc = true;
                 if (config.ReportSaveModel.IsReportChecked)
                 {
-                    isSucc = SaveReportByDir(p_bitmap);
+                    isSucc = SaveReportByDir(p_bitmap, ref finalDir);
                 }
             }
             else if (config.ReportSaveModel.ReportSaveType == "FTP")
             {
-                isSucc = SaveReportByFtp(p_bitmap);
+                isSucc = SaveReportByFtp(p_bitmap, ref finalDir);
             }
             else if (config.ReportSaveModel.ReportSaveType == "无")
             {
@@ -52,8 +59,7 @@ namespace Chioy.Communication.Networking.Client.DB
 
             return isSucc;
         }
-
-        private bool SaveReportByDir(RenderTargetBitmap p_bitmap)
+        public bool SaveReportByDir(RenderTargetBitmap p_bitmap, ref string finalDir)
         {
             KRNetworkingConfig config = KRNetworkingConfig.Config;
 
@@ -67,7 +73,7 @@ namespace Chioy.Communication.Networking.Client.DB
             if (config.ReportSaveModel.IsCreateChildDir)
             {
                 IOrderedEnumerable<FileFormatModel> list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
-                path = CreateDir(path, list);
+                finalDir = path = CreateDir(path, list);
             }
 
             string fileName = AnalyseFileString(config.ReportSaveModel.FileFormat) + "." +
@@ -87,8 +93,9 @@ namespace Chioy.Communication.Networking.Client.DB
             return true;
         }
 
-        private bool SaveReportByFtp(RenderTargetBitmap p_bitmap)
+        public bool SaveReportByFtp(RenderTargetBitmap p_bitmap, ref string finalDir)
         {
+            _uploadSuccess = false;
             KRNetworkingConfig config = KRNetworkingConfig.Config;
 
             if (config.ReportSaveModel.ReportSaveType != "FTP")
@@ -108,16 +115,17 @@ namespace Chioy.Communication.Networking.Client.DB
             }
 
             string path = config.ReportSaveModel.FtpAdresse;
-            FtpHelper client = new FtpHelper();
+            //FtpHelper client = new FtpHelper();
 
-            //var ftpHelper = new FtpHelper(path, config.ReportSaveModel.FtpUser, config.ReportSaveModel.FtpPassword);
+            client = new FtpHelper(path, config.ReportSaveModel.FtpUser, config.ReportSaveModel.FtpPassword, 21);
+            client.UploadFileCompleted += Client_UploadFileCompleted;
             WebException exception;
             if (config.ReportSaveModel.IsCreateChildDir)
             {
                 IOrderedEnumerable<FileFormatModel> list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
                 path = GetDir(path, list);
 
-                path = path.Replace("\\", "/");
+                finalDir = path = path.Replace("\\", "/");
 
                 client.CreateDirectory(path, out exception);
             }
@@ -125,7 +133,39 @@ namespace Chioy.Communication.Networking.Client.DB
             _fullPath = Path.Combine(path, fileName);
 
             client.Upload(new FileInfo(fileName).FullName, path, fileName);
-            return true;
+            if (!_uploadSuccess)
+            {
+                int reUploadCount = 3;
+                while (reUploadCount > 0)
+                {
+                    Trace.WriteLine("上传失败,开始断点续传....");
+                    client.UploadResume(new FileInfo(fileName).Directory.FullName, fileName, path, fileName);
+                    Thread.Sleep(500);
+                    if (_uploadSuccess) break;
+                    reUploadCount--;
+                }
+            }
+            client.UploadFileCompleted -= Client_UploadFileCompleted;
+            client = null;
+            if (_uploadException != null)
+            {
+                throw _uploadException;
+            }
+
+            return _uploadSuccess;
+        }
+        private void Client_UploadFileCompleted(object sender, UploadFileCompletedEventLibArgs e)
+        {
+            if (e.TransmissionState == FTP.Helper.TransmissionState.Success)
+            {
+                _uploadSuccess = true;
+                _uploadException = null;
+            }
+            else
+            {
+                _uploadException = e.WebException;
+                Trace.WriteLine("上传失败");
+            }
         }
 
         private static BitmapEncoder GetPic(RenderTargetBitmap p_bitmap)

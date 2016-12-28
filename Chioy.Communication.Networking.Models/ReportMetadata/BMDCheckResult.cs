@@ -10,10 +10,9 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
     {
         public BMDCheckResult()
         { }
-        public string Diagnose { get; set; }
         public double Fracturerisk { get; set; }
 
-        public string Parts { get; set; }
+        public string Position { get; set; }
 
         public int Percentage { get; set; }
 
@@ -23,5 +22,14 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
         public double T_val { get; set; }
 
         public double Z_val { get; set; }
+
+        public double HP { get; set; }
+
+        public double STI { get; set; }
+        public double EOA { get; set; }
+        public double REF { get; set; }
+        public double PAB { get; set; }
+        public string LimbSide { get; set; }
+
     }
 }

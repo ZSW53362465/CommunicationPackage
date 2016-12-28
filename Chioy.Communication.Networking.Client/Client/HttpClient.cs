@@ -4,12 +4,14 @@ using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
     public class HttpClient : BaseClient
     {
         HttpHelper _helper = null;
+        public int Timeout { get; set; }
         public HttpClient()
         {
             _protocol = Protocol.Http;
@@ -46,12 +48,12 @@ namespace Chioy.Communication.Networking.Client.Client
 
         }
 
-        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result)
+        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result, Func<ExamResultMetadata<BaseCheckResult>, RenderTargetBitmap> function = null)
         {
             try
             {
                 Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
-                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result, ClientConstants.KR_POST_RESULT);
+                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result, Timeout, ClientConstants.KR_POST_RESULT);
                 Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
             }
@@ -66,7 +68,7 @@ namespace Chioy.Communication.Networking.Client.Client
             try
             {
                 Trace.WriteLine(string.Format("开始发送操作人员信息，地址为{0}", Address.PostOperatorUrl));
-                string resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, ClientConstants.KR_POST_OPERATOR);
+                string resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, Timeout, ClientConstants.KR_POST_OPERATOR);
                 Trace.WriteLine(string.Format("开始发送操作人员信息结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
             }

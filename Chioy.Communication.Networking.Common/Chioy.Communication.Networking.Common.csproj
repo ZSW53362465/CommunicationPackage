@@ -59,6 +59,7 @@
     <Compile Include="CommunicationHelper.cs" />
     <Compile Include="ConfigSetting.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="EntityConverter.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="KRException.cs" />
     <Compile Include="OOMapper.cs" />

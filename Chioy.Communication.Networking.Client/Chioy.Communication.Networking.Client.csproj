@@ -90,6 +90,9 @@
     <Compile Include="FTP\UploadProgressChangedLibArgs.cs" />
     <Compile Include="HTTP\HttpHelper.cs" />
     <Compile Include="Client\BaseClient.cs" />
+    <Compile Include="HTTP\KRWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WebService\WebServiceClient.cs" />
     <Compile Include="Local\LocalQuickStartService.cs" />
     <Compile Include="TCP\WCFClientEventCallback.cs" />

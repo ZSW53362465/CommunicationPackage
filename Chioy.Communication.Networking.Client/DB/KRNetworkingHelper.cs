@@ -19,19 +19,19 @@ using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.DB
 {
-    public class KRNetworkingHelper
+    public class KRNetworkingHelper<T> where T : BaseCheckResult
     {
         private DataRow _row;
         public string _fullPath;
         private DateTime _nowDateTime;
-        private ExamResultMetadata<BaseCheckResult> _result;
+        private ExamResultMetadata<T> _result;
         bool _uploadSuccess = false;
         FtpHelper client = null;
         Exception _uploadException = null;
 
 
 
-        public KRNetworkingHelper(ExamResultMetadata<BaseCheckResult> result)
+        public KRNetworkingHelper(ExamResultMetadata<T> result)
         {
             _result = result;
             _nowDateTime = DateTime.Now;
@@ -123,9 +123,9 @@ namespace Chioy.Communication.Networking.Client.DB
             if (config.ReportSaveModel.IsCreateChildDir)
             {
                 IOrderedEnumerable<FileFormatModel> list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
-                path = GetDir(path, list);
+                finalDir = path = GetDir(path, list);
 
-                finalDir = path = path.Replace("\\", "/");
+                finalDir = path = path.Replace("\\", "").Trim();
 
                 client.CreateDirectory(path, out exception);
             }
@@ -215,8 +215,11 @@ namespace Chioy.Communication.Networking.Client.DB
                 }
                 childDir.AppendFormat(@"{0}", AnalyseFileString(ffm.FileFormat));
             }
-
-            return Path.Combine(p_path, childDir.ToString());
+            if (p_path.Last() != '\\')
+            {
+                p_path += "\\";
+            }
+            return p_path + childDir.ToString();
         }
 
         private string AnalyseFileString(string p_fileString)

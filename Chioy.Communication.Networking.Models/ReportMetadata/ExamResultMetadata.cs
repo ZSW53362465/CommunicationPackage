@@ -58,7 +58,9 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
         public string Report { get; set; }
 
         public string RequestDate { get; set; }
+        public string RequestDoctor { get; set; }
         public string RequestDepartment { get; set; }
+        public string ExamDepartement { get; set; }
         public string ExamDoctor { get; set; }
         public string DiagnosticianDoctor { get; set; }
         public string Diagnosis { get; set; }

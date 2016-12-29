@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Chioy.Communication.Networking.Client
 {
-    public class TCPClientManager : ClientProxy
+    public class TCPClientManager
     {
         private IService _proxy = null;
         private IEventService _heartProxy = null;
@@ -34,21 +34,21 @@ namespace Chioy.Communication.Networking.Client
 
         private void WCFClientManager_ExceptionEvent(Common.KRException ex)
         {
-            HandleExceptionEvent(ex);
+            //HandleExceptionEvent(ex);
         }
 
         private void WCFClientManager_CommunicationEvent(object sender, DataEventArgs e)
         {
-            HandleCommunicationEvent(sender, e.Data.ToString());
+            //HandleCommunicationEvent(sender, e.Data.ToString());
         }
 
-        protected override void ReleaseManager()
-        {
-            WCFClientEventCallback.Instance().UnRegistServices();
-            WCFClientEventCallback.Instance().CommunicationEvent -= WCFClientManager_CommunicationEvent;
-            WCFClientEventCallback.Instance().ExceptionEvent -= WCFClientManager_ExceptionEvent;
-            _proxy = null;
-        }
+        //protected override void ReleaseManager()
+        //{
+        //    WCFClientEventCallback.Instance().UnRegistServices();
+        //    WCFClientEventCallback.Instance().CommunicationEvent -= WCFClientManager_CommunicationEvent;
+        //    WCFClientEventCallback.Instance().ExceptionEvent -= WCFClientManager_ExceptionEvent;
+        //    _proxy = null;
+        //}
 
         public DateTime Ping()
         {

@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
-    public class WebServiceClient : BaseClient
+    public class WebServiceClient<T> : BaseClient<T> where T : BaseCheckResult
     {
 
 
@@ -37,7 +37,7 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw ex;
             }
         }
-        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result, Func<ExamResultMetadata<BaseCheckResult>, RenderTargetBitmap> function = null)
+        public override KRResponse PostExamResult(ExamResultMetadata<T> result)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace Chioy.Communication.Networking.Client.Client
 
                 throw ex;
             }
-           
+
         }
         public override KRResponse PostOperator(Operator_DTO op)
         {
@@ -73,7 +73,7 @@ namespace Chioy.Communication.Networking.Client.Client
             {
                 throw ex;
             }
-          
+
         }
     }
 }

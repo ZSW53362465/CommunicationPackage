@@ -6,13 +6,14 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
+using System.Xml;
 
 namespace Chioy.Communication.Networking.Client
 {
-    public class BaseClient : IDisposable
+    public class BaseClient<T> : IDisposable where T : BaseCheckResult
     {
         private string _configPath = string.Format("{0}\\{1}\\NetworkConfig.ini", Path.GetFullPath(".."), "conf");
-
+        private const string KRNetworkingConfig = @"..\Conf\KRNetworkingConfig.xml";
 
         public const string Section_NetConfig = "NET_CONFIG";
         public const string Key_BassAddress = "BassAddress";
@@ -32,7 +33,13 @@ namespace Chioy.Communication.Networking.Client
 
         protected Protocol _protocol;
 
+
         protected AddressInfo Address = null;
+
+        public Protocol Protocol
+        {
+            get { return _protocol; }
+        }
         public virtual void ConfigClient()
         {
             Address = new AddressInfo(_protocol);
@@ -60,22 +67,40 @@ namespace Chioy.Communication.Networking.Client
             CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostOperatorUrl, "", PostOperatorUrlSB, 100, _configPath);
 
             Address.Port = CommunicationHelper.GetPrivateProfileInt(Section_NetConfig, Key_Port, 9999, _configPath);
+            if (File.Exists(KRNetworkingConfig))
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(KRNetworkingConfig);
+                Address.FTPAddress = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpAdresse").InnerText as string;
+                Address.FTPUserName = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpUser").InnerText as string;
+                Address.FTPPassword = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpPassword").InnerText as string;
+                if (string.IsNullOrEmpty(Address.FTPUserName))
+                {
+                    Address.FTPUserName = ftpUserNameSB.ToString();
+                }
+                if (string.IsNullOrEmpty(Address.FTPAddress))
+                {
+                    Address.FTPAddress = ftpAddressSB.ToString();
+                }
+                if (string.IsNullOrEmpty(Address.FTPPassword))
+                {
+                    Address.FTPPassword = ftpUserPwdSB.ToString();
+                }
+                Address.FTPRemoteDir = ftpRemoteDirSB.ToString().Trim();
+                Address.FTPLocalDir = ftpLocalDirSB.ToString().Trim();
+            }
+
             Address.BaseAddress = baseAddressSB.ToString().Trim();
-            Address.FTPAddress = ftpAddressSB.ToString().Trim();
-            Address.FTPUserName = ftpUserNameSB.ToString().Trim();
-            Address.FTPPassword = ftpUserPwdSB.ToString().Trim();
-            Address.FTPRemoteDir = ftpRemoteDirSB.ToString().Trim();
-            Address.FTPLocalDir = ftpLocalDirSB.ToString().Trim();
             Address.Route_Patient = GetPatientUrlSB.ToString().Trim();
             Address.Route_Get_CheckResult = GetCheckResultUrlSB.ToString().Trim();
             Address.Route_Post_CheckResult = PostCheckResultUrlSB.ToString().Trim();
             Address.Route_Operator = PostOperatorUrlSB.ToString().Trim();
 
-            if (IsValidIp())
+            if (!IsValidIp())
             {
                 throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 BassAddress格式不对，格式应为192.168.0.1");
             }
-            if (IsValidPort())
+            if (!IsValidPort())
             {
                 throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 Port格式不对，格式应为大于0小于65535的整数");
             }
@@ -84,7 +109,7 @@ namespace Chioy.Communication.Networking.Client
 
         public virtual Patient_DTO GetPatient(string patientId) { return new Patient_DTO(); }
 
-        public virtual KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result) { return null; }
+        public virtual KRResponse PostExamResult(ExamResultMetadata<T> result) { return null; }
 
         public virtual KRResponse PostOperator(Operator_DTO op) { return null; }
 
@@ -101,6 +126,11 @@ namespace Chioy.Communication.Networking.Client
         }
         private bool IsValidIp()
         {
+            if (Address.BaseAddress.ToLower()=="localhost")
+            {
+                return true;
+            }
+
             return Regex.IsMatch(Address.BaseAddress, @"^(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5])$");
         }
 

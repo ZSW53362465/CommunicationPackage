@@ -1,4 +1,5 @@
-﻿using Chioy.Communication.Networking.Common;
+﻿using Chioy.Communication.Networking.Client.Client;
+using Chioy.Communication.Networking.Common;
 using Chioy.Communication.Networking.Models;
 using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
@@ -21,20 +22,63 @@ namespace Chioy.Communication.Networking.Client
         WCFTCP
     }
 
-    public abstract class ClientProxy : IDisposable
+    public class ClientProxy<T> : IDisposable where T : BaseCheckResult
     {
-        BaseClient _client;
-
-        public void IntManager(Protocol protocol)
+        BaseClient<T> _client;
+        public DBClient<T> DataBaseClientObj
         {
+            get { return _client as DBClient<T>; }
+        }
 
+
+        public ClientProxy(BaseClient<T> client)
+        {
+            _client = client;
+        }
+
+        public void ConfigClient()
+        {
+            if (_client != null)
+            {
+                _client.ConfigClient();
+            }
+            else
+            {
+                throw new ArgumentNullException("BaseClient", "请在ClientProxy初始化的时候传入相对应的非空Client对象");
+            }
+
+        }
+
+        public bool EnableNetWorking
+        {
+            get
+            {
+                if (_client != null)
+                {
+                    if (_client.Protocol == Protocol.DB)
+                    {
+                        var dbClient = _client as DBClient<T>;
+                        if (dbClient != null)
+                        {
+                            if (dbClient.Config != null)
+                            {
+                                if (dbClient.Config.ReportSaveModel.ReportSaveType == "无" && dbClient.Config.DataCallBackModel.CallbackType == "无")
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
         }
 
         public Patient_DTO GetPatient(string patientId)
         {
             return _client.GetPatient(patientId);
         }
-        public KRResponse SendExamResult(ExamResultMetadata<BaseCheckResult> result)
+        public KRResponse SendExamResult(ExamResultMetadata<T> result)
         {
             return _client.PostExamResult(result);
         }
@@ -47,7 +91,7 @@ namespace Chioy.Communication.Networking.Client
         public ClientProxy()
         {
         }
-      
+
         public event EventHandler<DataEventArgs> CommunicationEvent;
 
         public event KRExceptionEventHandler ExceptionEvent;
@@ -62,7 +106,7 @@ namespace Chioy.Communication.Networking.Client
             ExceptionEvent?.Invoke(ex);
         }
 
-        protected abstract void ReleaseManager();
+        protected virtual void ReleaseManager() { }
 
         private void ThrowException(string method, string description, string message)
         {

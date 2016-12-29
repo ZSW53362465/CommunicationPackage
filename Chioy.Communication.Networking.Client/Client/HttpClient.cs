@@ -8,7 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
-    public class HttpClient : BaseClient
+    public class HttpClient<T> : BaseClient<T> where T : BaseCheckResult
     {
         HttpHelper _helper = null;
         public int Timeout { get; set; }
@@ -48,7 +48,7 @@ namespace Chioy.Communication.Networking.Client.Client
 
         }
 
-        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result, Func<ExamResultMetadata<BaseCheckResult>, RenderTargetBitmap> function = null)
+        public override KRResponse PostExamResult(ExamResultMetadata<T> result)
         {
             try
             {

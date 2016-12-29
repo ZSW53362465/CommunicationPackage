@@ -155,7 +155,18 @@ namespace Chioy.Communication.Networking.Client.FTP
 
             try
             {
-                request = WebRequest.Create(new Uri("ftp://" + _host + ":" + Port + "/" + remoteDirectory + "/" + remoteFileName)) as FtpWebRequest;
+                Uri uri = null;
+                if (remoteDirectory.Contains("ftp://"))
+                {
+                    uri = new Uri(remoteDirectory);
+                }
+                else
+                {
+                    uri = new Uri("ftp://" + _host + ":" + Port + "/" + remoteDirectory + "/" + remoteFileName);
+                }
+
+
+                request = WebRequest.Create(uri) as FtpWebRequest;
                 request.Credentials = new NetworkCredential(UserName, Password);
                 request.UsePassive = UsePassive;
                 request.Timeout = TimeOut;
@@ -369,7 +380,18 @@ namespace Chioy.Communication.Networking.Client.FTP
             long totalBytesReceived = 0;
             try
             {
-                FtpWebRequest request = FtpWebRequest.Create( new Uri( "ftp://" + _host + ":" + Port + "/" + remoteDirectory + "/" + remoteFileName ) ) as FtpWebRequest;
+                Uri uri = null;
+                if (remoteDirectory.Contains("ftp://"))
+                {
+                    uri = new Uri(remoteDirectory);
+                }
+                else
+                {
+                    uri = new Uri("ftp://" + _host + ":" + Port + "/" + remoteDirectory + "/" + remoteFileName);
+                }
+
+                var request = (FtpWebRequest)WebRequest.Create(uri);
+                //FtpWebRequest request = FtpWebRequest.Create( new Uri( "ftp://" + _host + ":" + Port + "/" + remoteDirectory + "/" + remoteFileName ) ) as FtpWebRequest;
                 request.Credentials = new NetworkCredential( UserName, Password );
                 request.UsePassive = UsePassive;
                 request.Timeout = TimeOut;
@@ -671,7 +693,17 @@ namespace Chioy.Communication.Networking.Client.FTP
             var success = false;
             try
             {
-                var request = ( FtpWebRequest )WebRequest.Create( new Uri( "ftp://" + _host + ":" + Port + "/" + remoteDirectory ) );
+                Uri uri = null;
+                if (remoteDirectory.Contains("ftp://"))
+                {
+                    uri = new Uri(remoteDirectory);
+                }
+                else
+                {
+                    uri = new Uri("ftp://" + _host + ":" + Port + "/" + remoteDirectory);
+                }
+
+                var request = (FtpWebRequest)WebRequest.Create(uri);
                 request.Credentials = new NetworkCredential( UserName, Password );
                 request.Method = WebRequestMethods.Ftp.MakeDirectory;
                 request.Timeout = TimeOut;
@@ -679,6 +711,7 @@ namespace Chioy.Communication.Networking.Client.FTP
                 request.KeepAlive = KeepAlive;
                 using ( FtpWebResponse response = (FtpWebResponse)request.GetResponse() )
                 {
+                    success = true;
                     response.Close();
                 }//using
             }//try

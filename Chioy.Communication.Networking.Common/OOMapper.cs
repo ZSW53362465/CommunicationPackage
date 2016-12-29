@@ -1,4 +1,5 @@
 ﻿using EmitMapper;
+using EmitMapper.MappingConfiguration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,9 +32,15 @@ namespace Chioy.Communication.Networking.Common
         {
             _mapper = ObjectMapperManager.DefaultInstance;
         }
-        public TTo Map<TForm, TTo>(TForm source) where TForm : class where TTo : class
+        public TTo Map<TForm, TTo>(TForm source, DefaultMapConfig conf = null) where TForm : class where TTo : class
         {
-            return _mapper.GetMapper<TForm, TTo>().Map(source);
+            TTo toObj = null;
+
+            if (conf == null) return _mapper.GetMapper<TForm, TTo>().Map(source);
+
+            toObj = _mapper.GetMapper<TForm, TTo>(conf).Map(source);
+
+            return toObj;
         }
 
     }

@@ -18,16 +18,15 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
 
         public string Physical { get; set; }
 
-        public int Sos { get; set; }
-        public double T_val { get; set; }
+        public int SOS { get; set; }
+        public double TValue { get; set; }
 
-        public double Z_val { get; set; }
+        public double ZValue { get; set; }
 
         public double HP { get; set; }
-
         public double STI { get; set; }
         public double EOA { get; set; }
-        public double REF { get; set; }
+        public double RRF { get; set; }
         public double PAB { get; set; }
         public string LimbSide { get; set; }
 

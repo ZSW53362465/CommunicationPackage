@@ -131,5 +131,15 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
         {
             return new OleDbHelper(p_connectionString);
         }
+
+        public DataTable GetPatientInfoByProcedure(string productid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UploadResultByProcedure(string productid, string check_id, string result)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

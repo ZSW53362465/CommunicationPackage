@@ -61,7 +61,7 @@ namespace Chioy.Communication.Networking.Client.DB
             System.Xml.XmlTextWriter writer = null;
             try
             {
-                var xs = new XmlSerializer(typeof (KRNetworkingConfig));
+                var xs = new XmlSerializer(typeof(KRNetworkingConfig));
 
                 fs = new FileStream(path, FileMode.Create, FileAccess.Write);
                 writer = new System.Xml.XmlTextWriter(fs, System.Text.Encoding.UTF8);
@@ -112,16 +112,17 @@ namespace Chioy.Communication.Networking.Client.DB
             {
                 if (!File.Exists(path))
                 {
-                    config = CreateNew(path);
+                    Config = config = CreateNew(path);
                     BackupConfig();
+
                     return config;
                 }
 
                 fs = new FileStream(path, FileMode.Open, FileAccess.Read);
 
-                var xs = new XmlSerializer(typeof (KRNetworkingConfig));
+                var xs = new XmlSerializer(typeof(KRNetworkingConfig));
                 //fs.Seek(0, SeekOrigin.Begin);
-                config = (KRNetworkingConfig) xs.Deserialize(fs);
+                Config = config = (KRNetworkingConfig)xs.Deserialize(fs);
 
                 fs.Seek(0, SeekOrigin.Begin);
                 XElement root = XElement.Load(fs);
@@ -139,7 +140,7 @@ namespace Chioy.Communication.Networking.Client.DB
                     //_systemConfig = config;
                     //return config;
                 }
-               
+
                 succeed = true;
             }
             catch (IOException ex)

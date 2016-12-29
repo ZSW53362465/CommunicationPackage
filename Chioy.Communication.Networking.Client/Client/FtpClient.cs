@@ -1,4 +1,5 @@
 ﻿using Chioy.Communication.Networking.Client.FTP;
+using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
-    public class FtpClient : BaseClient
+    public class FtpClient<T> : BaseClient<T> where T : BaseCheckResult
     {
         public EventHandler<UploadFileCompletedEventLibArgs> UploadFileCompleted;
         public EventHandler<UploadProgressChangedLibArgs> UploadProgressChanged;

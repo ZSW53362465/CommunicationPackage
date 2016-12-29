@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
-    public class DBClient : BaseClient
+    public class DBClient<T> : BaseClient<T> where T : BaseCheckResult
     {
         KRNetworkingConfig _config = null;
         string _connStr = null;
@@ -186,10 +186,10 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public override KRResponse PostExamResult(ExamResultMetadata<BaseCheckResult> result)
+        public override KRResponse PostExamResult(ExamResultMetadata<T> result)
         {
             var response = new KRResponse();
-            var nh = new KRNetworkingHelper(result);
+            var nh = new KRNetworkingHelper<T>(result);
             bool isSuccSaveReport = false;
             bool isSuccDataSave = false;
             try

@@ -14,5 +14,9 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
         int ExecuteNonQuery(string p_sql, params DbParameter[] p_parameters);
 
         bool TestConnection();
+
+        DataTable GetPatientInfoByProcedure(string productid);
+
+        void UploadResultByProcedure(string productid, string check_id, string result);
     }
 }

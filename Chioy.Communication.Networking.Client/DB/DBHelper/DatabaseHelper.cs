@@ -1,5 +1,6 @@
 ﻿using Chioy.Communication.Networking.Common;
 using System;
+using System.Data;
 
 namespace Chioy.Communication.Networking.Client.DB.DBHelper
 {
@@ -52,6 +53,49 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
             }
 
             return true;
+        }
+        public static DataTable MakeCallBackTable()
+        {
+            // Create a new DataTable titled 'Names.'
+            var callBackTable = new DataTable("PatientInfoTable");
+
+            // Add three column objects to the table.
+            var idColumn = new DataColumn();
+            idColumn.DataType = Type.GetType("System.String");
+            idColumn.ColumnName = "PatientID";
+            callBackTable.Columns.Add(idColumn);
+
+            var nameColumn = new DataColumn();
+            nameColumn.DataType = Type.GetType("System.String");
+            nameColumn.ColumnName = "Name";
+            callBackTable.Columns.Add(nameColumn);
+
+            var genderColumn = new DataColumn();
+            genderColumn.DataType = Type.GetType("System.String");
+            genderColumn.ColumnName = "Gender";
+            callBackTable.Columns.Add(genderColumn);
+
+            var ageColumn = new DataColumn();
+            ageColumn.DataType = Type.GetType("System.Int32");
+            ageColumn.ColumnName = "Age";
+            callBackTable.Columns.Add(ageColumn);
+
+            var heightColumn = new DataColumn();
+            heightColumn.DataType = Type.GetType("System.Int32");
+            heightColumn.ColumnName = "Height";
+            callBackTable.Columns.Add(heightColumn);
+
+            var weightColumn = new DataColumn();
+            weightColumn.DataType = Type.GetType("System.Int32");
+            weightColumn.ColumnName = "Weight";
+            callBackTable.Columns.Add(weightColumn);
+
+            var keys = new DataColumn[1];
+            keys[0] = idColumn;
+            callBackTable.PrimaryKey = keys;
+
+            // Return the new DataTable.
+            return callBackTable;
         }
     }
 

@@ -198,7 +198,7 @@ namespace Chioy.Communication.Networking.Client.FTP.Helper
             f.Owner = _cutSubstringFromStringWithTrim( ref processstr, ' ', 0 );
             f.Group = _cutSubstringFromStringWithTrim( ref processstr, ' ', 0 );
             long.TryParse( _cutSubstringFromStringWithTrim( ref processstr, ' ', 0 ), out f.Size );   //skip one part
-            f.CreateTime = DateTime.Parse( _cutSubstringFromStringWithTrim( ref processstr, ' ', 8 ) );
+            //f.CreateTime = DateTime.Parse( _cutSubstringFromStringWithTrim( ref processstr, ' ', 8 ) );
             f.Name = processstr;   //Rest of the part is name
             return f;
         }

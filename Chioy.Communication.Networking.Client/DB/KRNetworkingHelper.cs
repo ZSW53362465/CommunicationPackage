@@ -119,20 +119,20 @@ namespace Chioy.Communication.Networking.Client.DB
 
             client = new FtpHelper(path, config.ReportSaveModel.FtpUser, config.ReportSaveModel.FtpPassword, 21);
             client.UploadFileCompleted += Client_UploadFileCompleted;
-            WebException exception;
+            var chirldDir = string.Empty;
             if (config.ReportSaveModel.IsCreateChildDir)
             {
                 IOrderedEnumerable<FileFormatModel> list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
-                finalDir = path = GetDir(path, list);
+                chirldDir = GetDir(path, list);
 
-                finalDir = path = path.Replace("\\", "").Trim();
 
-                client.CreateDirectory(path, out exception);
+
+                chirldDir = chirldDir.Replace("\\", "/").Trim();
+
+                //client.CreateDirectory(path, out exception);
             }
 
-            _fullPath = Path.Combine(path, fileName);
-
-            client.Upload(new FileInfo(fileName).FullName, path, fileName);
+            client.Upload(new FileInfo(fileName).FullName, chirldDir, fileName);
             if (!_uploadSuccess)
             {
                 int reUploadCount = 3;
@@ -209,17 +209,21 @@ namespace Chioy.Communication.Networking.Client.DB
             var childDir = new StringBuilder();
             foreach (FileFormatModel ffm in p_list)
             {
-                if (childDir.Length > 0)
+                var str = AnalyseFileString(ffm.FileFormat).Trim();
+                childDir.Append(str);
+                if (!string.IsNullOrEmpty(str))
                 {
-                    childDir.Append(@"\");
+                    childDir.Append("\\");
                 }
-                childDir.AppendFormat(@"{0}", AnalyseFileString(ffm.FileFormat));
+
             }
-            if (p_path.Last() != '\\')
+            var pathStrs = p_path.Split('/');
+            if (!string.IsNullOrEmpty(pathStrs[pathStrs.Length - 1]))
             {
-                p_path += "\\";
+                p_path += "/";
             }
-            return p_path + childDir.ToString();
+            var dir = childDir.ToString();
+            return dir.Remove(dir.Length - 1, 1);
         }
 
         private string AnalyseFileString(string p_fileString)
@@ -272,22 +276,36 @@ namespace Chioy.Communication.Networking.Client.DB
 
         private string GetFiledValue(string p_filed)
         {
-            var property = _result.GetType().GetProperty(p_filed);
-            if (property != null)
+            try
             {
-                return (string)property.GetValue(_result, null);
-            }
-            else
-            {
-                if (_result.CheckResult != null)
+                var property = _result.GetType().GetProperty(p_filed);
+                if (property != null)
                 {
-                    property = _result.CheckResult.GetType().GetProperty(p_filed);
-                    if (property != null)
+                    return property.GetValue(_result, null).ToString();
+                }
+                else
+                {
+                    if (_result.CheckResult != null)
                     {
-                        return (string)property.GetValue(_result.CheckResult, null);
+                        property = _result.CheckResult.GetType().GetProperty(p_filed);
+                        if (property != null)
+                        {
+                            return property.GetValue(_result.CheckResult, null).ToString();
+                        }
                     }
                 }
             }
+            catch (ArgumentNullException ex)
+            {
+                Trace.WriteLine("没有找到属性" + p_filed);
+                throw new ArgumentNullException(p_filed, "没有找到" + p_filed);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(string.Format("字段{0}，写入失败，请核对目标数据库字段类型是否和本地数据类型相匹配", p_filed));
+                throw new Exception(string.Format("字段{0}，写入失败，请核对目标数据库字段类型是否和本地数据类型相匹配", p_filed));
+            }
+
             return string.Empty;
         }
         public bool SaveCallBackData(RenderTargetBitmap p_bitmap = null)
@@ -303,102 +321,114 @@ namespace Chioy.Communication.Networking.Client.DB
 
             foreach (DbParameterAndKey p in sqlandParam.Parameters)
             {
-                object value = null;
-                string upperKey = p.Key.ToUpper();
-                switch (upperKey)
+                try
                 {
-                    case "<IMAGE>":
-                        if (p_bitmap != null)
-                        {
-                            BitmapEncoder encoder = GetPic(p_bitmap);
-                            using (var memoryStream = new MemoryStream())
-                            {
-                                encoder.Save(memoryStream);
-                                byte[] bytes = memoryStream.ToArray();
-                                value = bytes;
-                                p.Parameter.Size = bytes.Length;
-                            }
-                        }
-                        break;
-                    case "<IMAGEPATH>":
-                        if (!string.IsNullOrEmpty(_fullPath))
-                        {
-                            if (config.ReportSaveModel.ReportSaveType == "FTP")
-                            {
-                                string ftpadress = config.ReportSaveModel.FtpAdresse;
-                                string adress = _fullPath.Replace("\\", "/");
-                                int len = ftpadress.Length;
-                                value = adress.Substring(len);
-                                p.Parameter.Size = _fullPath.Length - len;
-                            }
-                            else
-                            {
-                                value = _fullPath.Replace("\\", "/");
-                                p.Parameter.Size = _fullPath.Length;
-                            }
-                        }
-                        break;
-                    default:
-                        //if (_row.Table.Columns.Contains(p.Key))
-                        //{
-                        //var rowValue = _row[p.Key];
-                        //if (p.Key.ToUpper() == "CHECKTYPE")
-                        //{
-                        //    CheckType cy = CheckType.ABIPWV;
-                        //    var isSucc = Enum.TryParse<CheckType>(rowValue.ToString(), true, out cy);
-                        //    if (isSucc)
-                        //    {
-                        //        rowValue = KRNetworkingConfig.Config.PatientMapModel.GetTargetCheckByCheckType(cy);
-                        //    }
-                        //}
-                        //else
-                        //{
-                        string rowValue = GetSquareValue(p.Key);
-                        //}
-                        value = rowValue;
-                        if (p.Key.ToUpper() == "[GENDER]")
-                        {
-                            if (rowValue == "0" || rowValue == "男")
-                            {
-                                value = "男";
-                            }
-                            else
-                            {
-                                value = "女";
-                            }
-                        }
 
-                        //}
-                        //else
-                        //{
 
-                        //}
-                        break;
-                }
-
-                if (value == null || string.IsNullOrEmpty(value.ToString()))
-                {
-                    value = DBNull.Value;
-                }
-
-                if (dbConfig.DatabaseSoft == DatabaseSoft.PostgreSQL)
-                {
-                    var para = p.Parameter as NpgsqlParameter;
-                    if (para != null)
+                    object value = null;
+                    string upperKey = p.Key.ToUpper();
+                    switch (upperKey)
                     {
-                        if (para.NpgsqlDbType == NpgsqlDbType.Date || para.NpgsqlDbType == NpgsqlDbType.Timestamp)
+                        case "<IMAGE>":
+                            if (p_bitmap != null)
+                            {
+                                BitmapEncoder encoder = GetPic(p_bitmap);
+                                using (var memoryStream = new MemoryStream())
+                                {
+                                    encoder.Save(memoryStream);
+                                    byte[] bytes = memoryStream.ToArray();
+                                    value = bytes;
+                                    p.Parameter.Size = bytes.Length;
+                                }
+                            }
+                            break;
+                        case "<IMAGEPATH>":
+                            if (!string.IsNullOrEmpty(_fullPath))
+                            {
+                                if (config.ReportSaveModel.ReportSaveType == "FTP")
+                                {
+                                    string ftpadress = config.ReportSaveModel.FtpAdresse;
+                                    string adress = _fullPath.Replace("\\", "/");
+                                    int len = ftpadress.Length;
+                                    value = adress.Substring(len);
+                                    p.Parameter.Size = _fullPath.Length - len;
+                                }
+                                else
+                                {
+                                    value = _fullPath.Replace("\\", "/");
+                                    p.Parameter.Size = _fullPath.Length;
+                                }
+                            }
+                            break;
+                        default:
+                            //if (_row.Table.Columns.Contains(p.Key))
+                            //{
+                            //var rowValue = _row[p.Key];
+                            //if (p.Key.ToUpper() == "CHECKTYPE")
+                            //{
+                            //    CheckType cy = CheckType.ABIPWV;
+                            //    var isSucc = Enum.TryParse<CheckType>(rowValue.ToString(), true, out cy);
+                            //    if (isSucc)
+                            //    {
+                            //        rowValue = KRNetworkingConfig.Config.PatientMapModel.GetTargetCheckByCheckType(cy);
+                            //    }
+                            //}
+                            //else
+                            //{
+                            string rowValue = GetSquareValue(p.Key);
+                            //}
+                            value = rowValue;
+                            if (p.Key.ToUpper() == "[GENDER]")
+                            {
+                                if (rowValue == "0" || rowValue == "男")
+                                {
+                                    value = "男";
+                                }
+                                else
+                                {
+                                    value = "女";
+                                }
+                            }
+
+                            //}
+                            //else
+                            //{
+
+                            //}
+                            break;
+                    }
+
+                    if (value == null || string.IsNullOrEmpty(value.ToString()))
+                    {
+                        value = DBNull.Value;
+                    }
+
+                    if (dbConfig.DatabaseSoft == DatabaseSoft.PostgreSQL)
+                    {
+                        var para = p.Parameter as NpgsqlParameter;
+                        if (para != null)
                         {
-                            p.Parameter.Value = Convert.ToDateTime(value.ToString());
-                        }
-                        else
-                        {
-                            p.Parameter.Value = value;
+                            if (para.NpgsqlDbType == NpgsqlDbType.Date || para.NpgsqlDbType == NpgsqlDbType.Timestamp)
+                            {
+                                p.Parameter.Value = Convert.ToDateTime(value.ToString());
+                            }
+                            else
+                            {
+                                p.Parameter.Value = value;
+                            }
                         }
                     }
+                    else
+                    {
+
+                        p.Parameter.Value = value;
+
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    p.Parameter.Value = value;
+
+                    throw ex;
                 }
             }
 
@@ -406,11 +436,11 @@ namespace Chioy.Communication.Networking.Client.DB
                 DatabaseHelper.Open(DataBaseSoft.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting),
                                     config.DatabaseConfigModel.ConnectionString);
 
-            var paraeters = new DbParameter[sqlandParam.Parameters.Count];
+            var parameters = new DbParameter[sqlandParam.Parameters.Count];
 
-            for (int i = 0; i < paraeters.Length; i++)
+            for (int i = 0; i < parameters.Length; i++)
             {
-                paraeters[i] = sqlandParam.Parameters[i].Parameter;
+                parameters[i] = sqlandParam.Parameters[i].Parameter;
             }
 
             int result = -1;
@@ -420,12 +450,12 @@ namespace Chioy.Communication.Networking.Client.DB
                 if (config.DataCallBackModel.CallbackType == "表" &&
                     config.DataCallBackModel.TargetTableUpdateType == "更新")
                 {
-                    result = dbHelper.ExecuteNonQuery(sqlandParam.UpdateSql, paraeters);
+                    result = dbHelper.ExecuteNonQuery(sqlandParam.UpdateSql, parameters);
                 }
 
                 if (result <= 0)
                 {
-                    result = dbHelper.ExecuteNonQuery(sqlandParam.InsertSql, paraeters);
+                    result = dbHelper.ExecuteNonQuery(sqlandParam.InsertSql, parameters);
                 }
 
                 if (config.DataCallBackModel.CallbackType == "存储过程")

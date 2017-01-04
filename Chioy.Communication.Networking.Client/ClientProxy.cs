@@ -10,16 +10,16 @@ namespace Chioy.Communication.Networking.Client
 {
     public enum CommunicationType
     {
-        WCF,
+        Wcf,
         Http
     }
     public enum Protocol
     {
         WebService,
-        FTP,
+        Ftp,
         Http,
         DB,
-        WCFTCP
+        Wcftcp
     }
 
     public class ClientProxy<T> : IDisposable where T : BaseCheckResult
@@ -30,10 +30,36 @@ namespace Chioy.Communication.Networking.Client
             get { return _client as DBClient<T>; }
         }
 
+        public BaseClient<T> ClientObj
+        {
+            get { return _client; }
+        }
 
         public ClientProxy(BaseClient<T> client)
         {
             _client = client;
+        }
+
+        public ClientProxy(Protocol protocol)
+        {
+            switch (protocol)
+            {
+                case Protocol.WebService:
+                    _client = new WebServiceClient<T>();
+                    break;
+                case Protocol.Ftp:
+                    break;
+                case Protocol.Http:
+                    _client = new HttpClient<T>();
+                    break;
+                case Protocol.DB:
+                    _client = new DBClient<T>();
+                    break;
+                case Protocol.Wcftcp:
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void ConfigClient()
@@ -53,20 +79,14 @@ namespace Chioy.Communication.Networking.Client
         {
             get
             {
-                if (_client != null)
+                if (_client?.Protocol == Protocol.DB)
                 {
-                    if (_client.Protocol == Protocol.DB)
+                    var dbClient = _client as DBClient<T>;
+                    if (dbClient?.Config != null)
                     {
-                        var dbClient = _client as DBClient<T>;
-                        if (dbClient != null)
+                        if (dbClient.Config.ReportSaveModel.ReportSaveType == "无" && dbClient.Config.DataCallBackModel.CallbackType == "无")
                         {
-                            if (dbClient.Config != null)
-                            {
-                                if (dbClient.Config.ReportSaveModel.ReportSaveType == "无" && dbClient.Config.DataCallBackModel.CallbackType == "无")
-                                {
-                                    return false;
-                                }
-                            }
+                            return false;
                         }
                     }
                 }

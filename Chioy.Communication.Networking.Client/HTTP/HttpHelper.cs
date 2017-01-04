@@ -17,36 +17,22 @@ namespace Chioy.Communication.Networking.Client
     public class HttpHelper
     {
         public const string ERROR_FLAG = "KRNetError:";
-        private Encoding _encoding = Encoding.UTF8;
 
-        public Encoding Encoding
+        public int Timeout { get; set; }
+
+        public bool NeedUrlDecode { get; set; }
+
+
+        public string HttpPostData<T>(string url, T obj, string type)
         {
-            get
-            {
-                return _encoding;
-            }
-
-            set
-            {
-                _encoding = value;
-            }
-        }
-
-        public string HttpPostData<T>(string url, T obj, int timeout = 0, string type = null)
-        {
-            string retString = string.Empty;
             try
             {
                 var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
 
-                KRWebClient client = new KRWebClient();
-                client.Timeout = timeout;
+                var client = new KRWebClient { Timeout = Timeout };
                 NameValueCollection param = new NameValueCollection();
-                client.Headers.Add("Content-Type", "application/json");
-                if (!string.IsNullOrEmpty(type))
-                {
-                    param.Add("type", type);
-                }
+                //client.Headers.Add("Content-Type", "application/json");
+                param.Add("type", type);
                 param.Add("content", jsonStr);
                 var content = client.UploadValues(url, param);
                 var strContent = Encoding.UTF8.GetString(content);
@@ -77,17 +63,51 @@ namespace Chioy.Communication.Networking.Client
             //return HttpUtility.UrlDecode(retString);
         }
 
-        public string HttpGetData(string url, NameValueCollection param, int timeout = 0)
+        public string HttpPostData<T>(string url, T obj)
         {
-            string retString = string.Empty;
-
             try
             {
-                KRWebClient client = new KRWebClient();
-                client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                client.Timeout = timeout;
+                var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
+                var client = new KRWebClient { Timeout = Timeout };
+                var strContent = DecodeResponseStr(client.UploadString(url, jsonStr));
+                Trace.WriteLine("HttpPostData返回数据:" + strContent);
+                return strContent;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
+                throw new KRException("HttpPostData", "Get 请求失败", ex.Message);
+            }
+        }
+
+        public string HttpPostData(string url, NameValueCollection param, Encoding encoder = null)
+        {
+            try
+            {
+                encoder = encoder ?? Encoding.UTF8;
+                var client = new KRWebClient { Timeout = Timeout };
+                //client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                 var content = client.UploadValues(url, param);
-                var strContent = Encoding.UTF8.GetString(content);
+                var strContent = DecodeResponseStr(encoder.GetString(content));
+                Trace.WriteLine("HttpPostData返回数据:" + strContent);
+                return strContent;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
+                throw new KRException("HttpPostData", "Get 请求失败", ex.Message);
+            }
+        }
+
+        public string HttpGetData(string url, Encoding encoder = null)
+        {
+            encoder = encoder ?? Encoding.UTF8;
+            try
+            {
+                var client = new KRWebClient();
+                //client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                client.Timeout = Timeout;
+                var strContent = DecodeResponseStr(client.DownloadString(url));
                 Trace.WriteLine("HttpGetData返回数据:" + strContent);
                 return strContent;
 
@@ -106,8 +126,45 @@ namespace Chioy.Communication.Networking.Client
                 Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
                 throw new KRException("HttpGetData", "Get 请求失败", ex.Message);
             }
+        }
 
-            return retString;
+
+        public TOut HttpGetData<TOut>(string url, Encoding encoder = null)
+        {
+            encoder = encoder ?? Encoding.UTF8;
+            try
+            {
+                var client = new KRWebClient();
+                //client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                client.Timeout = Timeout;
+                var strContent = DecodeResponseStr(client.DownloadString(url));
+                Trace.WriteLine("HttpGetData返回数据:" + strContent);
+                return CommunicationHelper.DeserializeJsonToObj<TOut>(strContent);
+
+                //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                //request.Method = "GET";
+                //request.ContentType = "Content-Type = application/json";
+                //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                //Stream myResponseStream = response.GetResponseStream();
+                //StreamReader myStreamReader = new StreamReader(myResponseStream, _encoding);
+                //retString = myStreamReader.ReadToEnd();
+                //myStreamReader.Close();
+                //myResponseStream.Close();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
+                throw new KRException("HttpGetData", "Get 请求失败", ex.Message);
+            }
+        }
+
+        private string DecodeResponseStr(string str)
+        {
+            if (NeedUrlDecode)
+            {
+                return HttpUtility.UrlDecode(str);
+            }
+            return str;
         }
     }
 }

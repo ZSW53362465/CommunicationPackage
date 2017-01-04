@@ -4,6 +4,7 @@ using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime;
 using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
@@ -11,34 +12,30 @@ namespace Chioy.Communication.Networking.Client.Client
     public class HttpClient<T> : BaseClient<T> where T : BaseCheckResult
     {
         HttpHelper _helper = null;
+
         public int Timeout { get; set; }
+        public bool NeedUrlDecode { get; set; }
         public HttpClient()
         {
             _protocol = Protocol.Http;
             _helper = new HttpHelper();
 
         }
-        public override void ConfigClient()
-        {
-            base.ConfigClient();
-        }
 
         public override Patient_DTO GetPatient(string patientId)
         {
             try
             {
-                Trace.WriteLine(string.Format("开始获取病人{0}的信息", patientId));
+                Trace.WriteLine($"开始获取病人{patientId}的信息");
                 Patient_DTO patient = null;
-                if (_helper != null)
-                {
-                    NameValueCollection param = new NameValueCollection();
-                    param.Add(ClientConstants.Type, ClientConstants.KR_GET_PATIENT);
-                    param.Add(ClientConstants.Content, patientId);
-                    Trace.WriteLine(string.Format("获取病人信息地址为{0}", Address.GetPatientUrl));
-                    var jsonStr = _helper.HttpGetData(Address.GetPatientUrl, param);
-                    Trace.WriteLine(string.Format("获取病人信息为{0}", jsonStr));
-                    patient = CommunicationHelper.DeserializeJsonToObj<Patient_DTO>(jsonStr);
-                }
+                if (_helper == null) return null;
+                Trace.WriteLine($"获取病人信息地址为{Address.GetPatientUrl}");
+                var url = Address.GetPatientUrl +
+                          $"?{ClientConstants.Type}={ClientConstants.KR_GET_PATIENT}&{ClientConstants.Content}={patientId}";
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                var jsonStr = _helper.HttpGetData(url);
+                Trace.WriteLine($"获取病人信息为{jsonStr}");
+                patient = CommunicationHelper.DeserializeJsonToObj<Patient_DTO>(jsonStr);
                 return patient;
             }
             catch (Exception ex)
@@ -53,9 +50,65 @@ namespace Chioy.Communication.Networking.Client.Client
             try
             {
                 Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
-                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result, Timeout, ClientConstants.KR_POST_RESULT);
+                _helper.Timeout = Timeout;
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result, ClientConstants.KR_POST_RESULT);
                 Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public TOut PostData<TIn, TOut>(string url, TIn obj)
+        {
+            try
+            {
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                var result = _helper.HttpPostData(url, obj);
+                return CommunicationHelper.DeserializeJsonToObj<TOut>(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw ex;
+            }
+        }
+
+        public string PostData<TIn>(string url, TIn obj)
+        {
+            try
+            {
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                return _helper.HttpPostData(url, obj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public string PostData(string url, NameValueCollection pCollection)
+        {
+            try
+            {
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                return _helper.HttpPostData(url, pCollection);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public TOut GetData<TOut>(string url)
+        {
+            try
+            {
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                return _helper.HttpGetData<TOut>(url);
             }
             catch (Exception ex)
             {
@@ -68,7 +121,9 @@ namespace Chioy.Communication.Networking.Client.Client
             try
             {
                 Trace.WriteLine(string.Format("开始发送操作人员信息，地址为{0}", Address.PostOperatorUrl));
-                string resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, Timeout, ClientConstants.KR_POST_OPERATOR);
+                _helper.Timeout = Timeout;
+                _helper.NeedUrlDecode = NeedUrlDecode;
+                var resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, ClientConstants.KR_POST_OPERATOR);
                 Trace.WriteLine(string.Format("开始发送操作人员信息结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
             }

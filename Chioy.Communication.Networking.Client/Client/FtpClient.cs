@@ -17,7 +17,7 @@ namespace Chioy.Communication.Networking.Client.Client
         FtpHelper _helper = new FtpHelper();
         public FtpClient()
         {
-            _protocol = Protocol.FTP;
+            _protocol = Protocol.Ftp;
             _helper.UploadFileCompleted += _helper_UploadFileCompleted;
             _helper.UploadProgressChanged += _helper_UploadProgressChanged;
             _helper.DownloadFileCompleted += _helper_DownloadFileCompleted;

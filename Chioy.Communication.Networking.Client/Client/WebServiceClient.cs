@@ -9,17 +9,11 @@ namespace Chioy.Communication.Networking.Client.Client
 {
     public class WebServiceClient<T> : BaseClient<T> where T : BaseCheckResult
     {
-
-
         public WebServiceClient()
         {
             _protocol = Protocol.WebService;
         }
 
-        public override void ConfigClient()
-        {
-            base.ConfigClient();
-        }
         public override Patient_DTO GetPatient(string patientId)
         {
             try
@@ -73,7 +67,19 @@ namespace Chioy.Communication.Networking.Client.Client
             {
                 throw ex;
             }
+        }
 
+        public string CallUnknowWebService(string url, string method, string[] param)
+        {
+            try
+            {
+                var proxy = new WebServiceProxy(Address.PostOperatorUrl, method);
+                return (string)proxy.ExecuteQuery(method, param);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

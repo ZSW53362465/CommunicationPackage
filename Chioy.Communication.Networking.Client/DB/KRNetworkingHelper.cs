@@ -1,34 +1,32 @@
-﻿using Chioy.Communication.Networking.Client.DB.DBHelper;
-using Chioy.Communication.Networking.Client.DB.Models;
-using Chioy.Communication.Networking.Client.FTP;
-using Chioy.Communication.Networking.Models.ReportMetadata;
-using Npgsql;
-using NpgsqlTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Media.Imaging;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
+using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Client.FTP;
+using Chioy.Communication.Networking.Client.FTP.Helper;
+using Chioy.Communication.Networking.Models.ReportMetadata;
+using Npgsql;
+using NpgsqlTypes;
 
 namespace Chioy.Communication.Networking.Client.DB
 {
     public class KRNetworkingHelper<T> where T : BaseCheckResult
     {
-        private DataRow _row;
-        public string _fullPath;
+        private readonly ExamResultMetadata<T> _result;
+        private string _fullPath;
         private DateTime _nowDateTime;
-        private ExamResultMetadata<T> _result;
-        bool _uploadSuccess = false;
-        FtpHelper client = null;
-        Exception _uploadException = null;
-
+        private Exception _uploadException;
+        private bool _uploadSuccess;
+        private FtpHelper _client;
 
 
         public KRNetworkingHelper(ExamResultMetadata<T> result)
@@ -36,21 +34,20 @@ namespace Chioy.Communication.Networking.Client.DB
             _result = result;
             _nowDateTime = DateTime.Now;
         }
-        public bool SaveReport(RenderTargetBitmap p_bitmap, ref string finalDir)
+
+        public bool SaveReport(RenderTargetBitmap pBitmap, ref string finalDir)
         {
-            KRNetworkingConfig config = KRNetworkingConfig.Config;
-            bool isSucc = false;
+            var config = KRNetworkingConfig.Config;
+            var isSucc = false;
             if (config.ReportSaveModel.ReportSaveType == "文件夹")
             {
                 isSucc = true;
                 if (config.ReportSaveModel.IsReportChecked)
-                {
-                    isSucc = SaveReportByDir(p_bitmap, ref finalDir);
-                }
+                    isSucc = SaveReportByDir(pBitmap, ref finalDir);
             }
             else if (config.ReportSaveModel.ReportSaveType == "FTP")
             {
-                isSucc = SaveReportByFtp(p_bitmap, ref finalDir);
+                isSucc = SaveReportByFtp(pBitmap, ref finalDir);
             }
             else if (config.ReportSaveModel.ReportSaveType == "无")
             {
@@ -59,54 +56,52 @@ namespace Chioy.Communication.Networking.Client.DB
 
             return isSucc;
         }
-        public bool SaveReportByDir(RenderTargetBitmap p_bitmap, ref string finalDir)
+
+        public bool SaveReportByDir(RenderTargetBitmap pBitmap, ref string finalDir)
         {
-            KRNetworkingConfig config = KRNetworkingConfig.Config;
+            var config = KRNetworkingConfig.Config;
 
             if (config.ReportSaveModel.ReportSaveType != "文件夹")
-            {
                 return false;
-            }
 
-            string path = config.ReportSaveModel.DirAdresse;
-
+            var path = config.ReportSaveModel.DirAdresse;
+            var chirldDir = string.Empty;
             if (config.ReportSaveModel.IsCreateChildDir)
             {
-                IOrderedEnumerable<FileFormatModel> list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
-                finalDir = path = CreateDir(path, list);
+                var list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
+                chirldDir = CreateDir(path, list);
             }
 
-            string fileName = AnalyseFileString(config.ReportSaveModel.FileFormat) + "." +
-                              config.ReportSaveModel.ImageExt;
+            var fileName = AnalyseFileString(config.ReportSaveModel.FileFormat) + "." +
+                           config.ReportSaveModel.ImageExt;
 
-            string full = Path.Combine(path, fileName);
+            var full = finalDir = Path.Combine(path, Path.Combine(chirldDir, fileName));
 
-            BitmapEncoder encoder = GetPic(p_bitmap);
+            var encoder = GetPic(pBitmap);
 
             using (Stream stm = File.Create(full))
             {
                 encoder.Save(stm);
             }
 
-            _fullPath = path;
+            _fullPath = finalDir;
 
-            return true;
+            return File.Exists(finalDir);
         }
 
-        public bool SaveReportByFtp(RenderTargetBitmap p_bitmap, ref string finalDir)
+        public bool SaveReportByFtp(RenderTargetBitmap pBitmap, ref string finalDir)
         {
+            if (pBitmap == null) return false;
             _uploadSuccess = false;
-            KRNetworkingConfig config = KRNetworkingConfig.Config;
+            var config = KRNetworkingConfig.Config;
 
             if (config.ReportSaveModel.ReportSaveType != "FTP")
-            {
                 return false;
-            }
 
-            string fileName = AnalyseFileString(config.ReportSaveModel.FileFormat) + "." +
-                              config.ReportSaveModel.ImageExt;
+            var fileName = AnalyseFileString(config.ReportSaveModel.FileFormat) + "." +
+                           config.ReportSaveModel.ImageExt;
 
-            BitmapEncoder encoder = GetPic(p_bitmap);
+            var encoder = GetPic(pBitmap);
 
 
             using (Stream stm = File.Create(fileName))
@@ -114,17 +109,16 @@ namespace Chioy.Communication.Networking.Client.DB
                 encoder.Save(stm);
             }
 
-            string path = config.ReportSaveModel.FtpAdresse;
+            var path = config.ReportSaveModel.FtpAdresse;
             //FtpHelper client = new FtpHelper();
 
-            client = new FtpHelper(path, config.ReportSaveModel.FtpUser, config.ReportSaveModel.FtpPassword, 21);
-            client.UploadFileCompleted += Client_UploadFileCompleted;
+            _client = new FtpHelper(path, config.ReportSaveModel.FtpUser, config.ReportSaveModel.FtpPassword, 21);
+            _client.UploadFileCompleted += Client_UploadFileCompleted;
             var chirldDir = string.Empty;
             if (config.ReportSaveModel.IsCreateChildDir)
             {
-                IOrderedEnumerable<FileFormatModel> list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
+                var list = config.ReportSaveModel.ChildrenRule.OrderBy(r => r.Index);
                 chirldDir = GetDir(path, list);
-
 
 
                 chirldDir = chirldDir.Replace("\\", "/").Trim();
@@ -132,31 +126,32 @@ namespace Chioy.Communication.Networking.Client.DB
                 //client.CreateDirectory(path, out exception);
             }
 
-            client.Upload(new FileInfo(fileName).FullName, chirldDir, fileName);
+            _client.Upload(new FileInfo(fileName).FullName, chirldDir, fileName);
             if (!_uploadSuccess)
             {
-                int reUploadCount = 3;
+                var reUploadCount = 3;
                 while (reUploadCount > 0)
                 {
                     Trace.WriteLine("上传失败,开始断点续传....");
-                    client.UploadResume(new FileInfo(fileName).Directory.FullName, fileName, path, fileName);
+                    var directoryInfo = new FileInfo(fileName).Directory;
+                    if (directoryInfo != null)
+                        _client.UploadResume(directoryInfo.FullName, fileName, path, fileName);
                     Thread.Sleep(500);
                     if (_uploadSuccess) break;
                     reUploadCount--;
                 }
             }
-            client.UploadFileCompleted -= Client_UploadFileCompleted;
-            client = null;
+            _client.UploadFileCompleted -= Client_UploadFileCompleted;
+            _client = null;
             if (_uploadException != null)
-            {
                 throw _uploadException;
-            }
 
             return _uploadSuccess;
         }
+
         private void Client_UploadFileCompleted(object sender, UploadFileCompletedEventLibArgs e)
         {
-            if (e.TransmissionState == FTP.Helper.TransmissionState.Success)
+            if (e.TransmissionState == TransmissionState.Success)
             {
                 _uploadSuccess = true;
                 _uploadException = null;
@@ -168,175 +163,160 @@ namespace Chioy.Communication.Networking.Client.DB
             }
         }
 
-        private static BitmapEncoder GetPic(RenderTargetBitmap p_bitmap)
+        private static BitmapEncoder GetPic(BitmapSource pBitmap)
         {
-            KRNetworkingConfig config = KRNetworkingConfig.Config;
+            var config = KRNetworkingConfig.Config;
 
             BitmapEncoder encoder = null;
             //encoder.Frames.Add(BitmapFrame.Create(bmp));
 
-            if (config.ReportSaveModel.ImageExt == "JPG")
+            switch (config.ReportSaveModel.ImageExt)
             {
-                encoder = new JpegBitmapEncoder();
-            }
-            else if (config.ReportSaveModel.ImageExt == "BMP")
-            {
-                encoder = new BmpBitmapEncoder();
-            }
-            else if (config.ReportSaveModel.ImageExt == "PNG")
-            {
-                encoder = new PngBitmapEncoder();
+                case "JPG":
+                    encoder = new JpegBitmapEncoder();
+                    break;
+                case "BMP":
+                    encoder = new BmpBitmapEncoder();
+                    break;
+                case "PNG":
+                    encoder = new PngBitmapEncoder();
+                    break;
+                default:
+                    encoder = new PngBitmapEncoder();
+                    break;
             }
 
-            encoder.Frames.Add(BitmapFrame.Create(p_bitmap));
+            encoder?.Frames.Add(BitmapFrame.Create(pBitmap));
             return encoder;
         }
 
-        private string CreateDir(string p_path, IEnumerable<FileFormatModel> p_list)
+        private string CreateDir(string pPath, IEnumerable<FileFormatModel> pList)
         {
-            string path = GetDir(p_path, p_list);
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
+            var path = GetDir(pPath, pList);
+            var tempPath = Path.Combine(pPath, path);
+            if (!Directory.Exists(tempPath))
+                Directory.CreateDirectory(tempPath);
 
             return path;
         }
 
-        private string GetDir(string p_path, IEnumerable<FileFormatModel> p_list)
+        private string GetDir(string pPath, IEnumerable<FileFormatModel> pList)
         {
             var childDir = new StringBuilder();
-            foreach (FileFormatModel ffm in p_list)
+            foreach (var ffm in pList)
             {
                 var str = AnalyseFileString(ffm.FileFormat).Trim();
                 childDir.Append(str);
                 if (!string.IsNullOrEmpty(str))
-                {
                     childDir.Append("\\");
-                }
-
             }
-            var pathStrs = p_path.Split('/');
+            var pathStrs = pPath.Split('/');
             if (!string.IsNullOrEmpty(pathStrs[pathStrs.Length - 1]))
-            {
-                p_path += "/";
-            }
+                pPath += "/";
             var dir = childDir.ToString();
             return dir.Remove(dir.Length - 1, 1);
         }
 
-        private string AnalyseFileString(string p_fileString)
+        private string AnalyseFileString(string pFileString)
         {
-            string result = p_fileString;
+            var result = pFileString;
             var regex = new Regex(@"\[(.*?)\]");
 
-            MatchCollection mc = regex.Matches(p_fileString);
+            var mc = regex.Matches(pFileString);
 
-            for (int i = 0; i < mc.Count; i++)
+            for (var i = 0; i < mc.Count; i++)
             {
-                Match m = mc[i];
-                string filed = m.Value.Replace("[", "").Replace("]", "");
-                string value = GetFiledValue(filed);
+                var m = mc[i];
+                var filed = m.Value.Replace("[", "").Replace("]", "");
+                var value = GetFiledValue(filed);
                 result = result.Replace(m.Value, value);
             }
 
             var regex1 = new Regex(@"\<(.*?)\>");
-            mc = regex1.Matches(p_fileString);
+            mc = regex1.Matches(pFileString);
 
-            for (int i = 0; i < mc.Count; i++)
+            for (var i = 0; i < mc.Count; i++)
             {
-                Match m = mc[i];
-                string filed = m.Value.Replace("<", "").Replace(">", "");
-                string value = _nowDateTime.ToString(filed);
+                var m = mc[i];
+                var filed = m.Value.Replace("<", "").Replace(">", "");
+                var value = _nowDateTime.ToString(filed);
                 result = result.Replace(m.Value, value);
             }
 
             return result;
         }
 
-        private string GetSquareValue(string p_string)
+        private string GetSquareValue(string pString)
         {
-            string result = p_string;
+            var result = pString;
 
             var regex = new Regex(@"\[(.*?)\]");
 
-            MatchCollection mc = regex.Matches(p_string);
+            var mc = regex.Matches(pString);
 
-            for (int i = 0; i < mc.Count; i++)
+            for (var i = 0; i < mc.Count; i++)
             {
-                Match m = mc[i];
-                string filed = m.Value.Replace("[", "").Replace("]", "");
-                string value = GetFiledValue(filed);
+                var m = mc[i];
+                var filed = m.Value.Replace("[", "").Replace("]", "");
+                var value = GetFiledValue(filed);
                 result = result.Replace(m.Value, value);
             }
 
             return result;
         }
 
-        private string GetFiledValue(string p_filed)
+        private string GetFiledValue(string pFiled)
         {
             try
             {
-                var property = _result.GetType().GetProperty(p_filed);
+                var property = _result.GetType().GetProperty(pFiled);
                 if (property != null)
-                {
                     return property.GetValue(_result, null).ToString();
-                }
-                else
+                if (_result.CheckResult != null)
                 {
-                    if (_result.CheckResult != null)
-                    {
-                        property = _result.CheckResult.GetType().GetProperty(p_filed);
-                        if (property != null)
-                        {
-                            return property.GetValue(_result.CheckResult, null).ToString();
-                        }
-                    }
+                    property = _result.CheckResult.GetType().GetProperty(pFiled);
+                    if (property != null)
+                        return property.GetValue(_result.CheckResult, null).ToString();
                 }
             }
             catch (ArgumentNullException ex)
             {
-                Trace.WriteLine("没有找到属性" + p_filed);
-                throw new ArgumentNullException(p_filed, "没有找到" + p_filed);
+                Trace.WriteLine("没有找到属性" + pFiled);
+                throw new ArgumentNullException(pFiled, "没有找到" + pFiled);
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(string.Format("字段{0}，写入失败，请核对目标数据库字段类型是否和本地数据类型相匹配", p_filed));
-                throw new Exception(string.Format("字段{0}，写入失败，请核对目标数据库字段类型是否和本地数据类型相匹配", p_filed));
+                Trace.WriteLine($"字段{pFiled}，写入失败，请核对目标数据库字段类型是否和本地数据类型相匹配");
+                throw new Exception($"字段{pFiled}，写入失败，请核对目标数据库字段类型是否和本地数据类型相匹配");
             }
 
             return string.Empty;
         }
-        public bool SaveCallBackData(RenderTargetBitmap p_bitmap = null)
+
+        public bool SaveCallBackData(RenderTargetBitmap pBitmap = null)
         {
-            KRNetworkingConfig config = KRNetworkingConfig.Config;
-            DatabaseConfigModel dbConfig = config.DatabaseConfigModel;
+            var config = KRNetworkingConfig.Config;
+            var dbConfig = config.DatabaseConfigModel;
             if (config.DataCallBackModel.CallbackType == "无")
-            {
                 return true;
-            }
 
-            CallBackSqlAndParam sqlandParam = config.DataCallBackModel.GetSqlStringByParam(dbConfig.DatabaseSoft);
+            var sqlandParam = config.DataCallBackModel.GetSqlStringByParam(dbConfig.DatabaseSoft);
 
-            foreach (DbParameterAndKey p in sqlandParam.Parameters)
-            {
+            foreach (var p in sqlandParam.Parameters)
                 try
                 {
-
-
                     object value = null;
-                    string upperKey = p.Key.ToUpper();
+                    var upperKey = p.Key.ToUpper();
                     switch (upperKey)
                     {
                         case "<IMAGE>":
-                            if (p_bitmap != null)
+                            if (pBitmap != null)
                             {
-                                BitmapEncoder encoder = GetPic(p_bitmap);
+                                var encoder = GetPic(pBitmap);
                                 using (var memoryStream = new MemoryStream())
                                 {
                                     encoder.Save(memoryStream);
-                                    byte[] bytes = memoryStream.ToArray();
+                                    var bytes = memoryStream.ToArray();
                                     value = bytes;
                                     p.Parameter.Size = bytes.Length;
                                 }
@@ -344,12 +324,11 @@ namespace Chioy.Communication.Networking.Client.DB
                             break;
                         case "<IMAGEPATH>":
                             if (!string.IsNullOrEmpty(_fullPath))
-                            {
                                 if (config.ReportSaveModel.ReportSaveType == "FTP")
                                 {
-                                    string ftpadress = config.ReportSaveModel.FtpAdresse;
-                                    string adress = _fullPath.Replace("\\", "/");
-                                    int len = ftpadress.Length;
+                                    var ftpadress = config.ReportSaveModel.FtpAdresse;
+                                    var adress = _fullPath.Replace("\\", "/");
+                                    var len = ftpadress.Length;
                                     value = adress.Substring(len);
                                     p.Parameter.Size = _fullPath.Length - len;
                                 }
@@ -358,7 +337,6 @@ namespace Chioy.Communication.Networking.Client.DB
                                     value = _fullPath.Replace("\\", "/");
                                     p.Parameter.Size = _fullPath.Length;
                                 }
-                            }
                             break;
                         default:
                             //if (_row.Table.Columns.Contains(p.Key))
@@ -375,20 +353,14 @@ namespace Chioy.Communication.Networking.Client.DB
                             //}
                             //else
                             //{
-                            string rowValue = GetSquareValue(p.Key);
+                            var rowValue = GetSquareValue(p.Key);
                             //}
                             value = rowValue;
                             if (p.Key.ToUpper() == "[GENDER]")
-                            {
                                 if (rowValue == "0" || rowValue == "男")
-                                {
                                     value = "男";
-                                }
                                 else
-                                {
                                     value = "女";
-                                }
-                            }
 
                             //}
                             //else
@@ -398,70 +370,50 @@ namespace Chioy.Communication.Networking.Client.DB
                             break;
                     }
 
-                    if (value == null || string.IsNullOrEmpty(value.ToString()))
-                    {
+                    if (string.IsNullOrEmpty(value?.ToString()))
                         value = DBNull.Value;
-                    }
 
                     if (dbConfig.DatabaseSoft == DatabaseSoft.PostgreSQL)
                     {
                         var para = p.Parameter as NpgsqlParameter;
-                        if (para != null)
-                        {
-                            if (para.NpgsqlDbType == NpgsqlDbType.Date || para.NpgsqlDbType == NpgsqlDbType.Timestamp)
-                            {
-                                p.Parameter.Value = Convert.ToDateTime(value.ToString());
-                            }
-                            else
-                            {
-                                p.Parameter.Value = value;
-                            }
-                        }
+                        if (para == null) continue;
+                        if (para.NpgsqlDbType == NpgsqlDbType.Date || para.NpgsqlDbType == NpgsqlDbType.Timestamp)
+                            p.Parameter.Value = Convert.ToDateTime(value.ToString());
+                        else
+                            p.Parameter.Value = value;
                     }
                     else
                     {
-
                         p.Parameter.Value = value;
-
                     }
                 }
                 catch (Exception ex)
                 {
-
                     throw ex;
                 }
-            }
 
-            IDatabaseHelper dbHelper =
+            var dbHelper =
                 DatabaseHelper.Open(DataBaseSoft.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting),
-                                    config.DatabaseConfigModel.ConnectionString);
+                    config.DatabaseConfigModel.ConnectionString);
 
             var parameters = new DbParameter[sqlandParam.Parameters.Count];
 
-            for (int i = 0; i < parameters.Length; i++)
-            {
+            for (var i = 0; i < parameters.Length; i++)
                 parameters[i] = sqlandParam.Parameters[i].Parameter;
-            }
 
-            int result = -1;
+            var result = -1;
 
             try
             {
                 if (config.DataCallBackModel.CallbackType == "表" &&
                     config.DataCallBackModel.TargetTableUpdateType == "更新")
-                {
                     result = dbHelper.ExecuteNonQuery(sqlandParam.UpdateSql, parameters);
-                }
 
                 if (result <= 0)
-                {
                     result = dbHelper.ExecuteNonQuery(sqlandParam.InsertSql, parameters);
-                }
 
                 if (config.DataCallBackModel.CallbackType == "存储过程")
-                {
                     result++;
-                }
             }
             catch (Exception ex)
             {

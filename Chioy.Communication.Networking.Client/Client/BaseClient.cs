@@ -43,67 +43,73 @@ namespace Chioy.Communication.Networking.Client
         public virtual void ConfigClient()
         {
             Address = new AddressInfo(_protocol);
-            var baseAddressSB = new StringBuilder(32);
-            var ftpAddressSB = new StringBuilder(100);
-            var ftpUserNameSB = new StringBuilder(32);
-            var ftpUserPwdSB = new StringBuilder(32);
-            var ftpRemoteDirSB = new StringBuilder(100);
-            var ftpLocalDirSB = new StringBuilder(100);
-            var GetPatientUrlSB = new StringBuilder(100);
-            var GetCheckResultUrlSB = new StringBuilder(100);
-            var PostCheckResultUrlSB = new StringBuilder(100);
-            var PostOperatorUrlSB = new StringBuilder(100);
+            var baseAddressSb = new StringBuilder(32);
+            var ftpAddressSb = new StringBuilder(100);
+            var ftpUserNameSb = new StringBuilder(32);
+            var ftpUserPwdSb = new StringBuilder(32);
+            var ftpRemoteDirSb = new StringBuilder(100);
+            var ftpLocalDirSb = new StringBuilder(100);
+            var getPatientUrlSb = new StringBuilder(100);
+            var getCheckResultUrlSb = new StringBuilder(100);
+            var postCheckResultUrlSb = new StringBuilder(100);
+            var postOperatorUrlSb = new StringBuilder(100);
 
-            CommunicationHelper.GetPrivateProfileString(Section_NetConfig, Key_BassAddress, "", baseAddressSB, 32, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_NetConfig, Key_BassAddress, "", baseAddressSB, 32, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpAddress, "", ftpAddressSB, 100, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpUserName, "", ftpUserNameSB, 32, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpPwd, "", ftpUserPwdSB, 32, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpRemoteDir, "", ftpRemoteDirSB, 100, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpLocalDir, "", ftpLocalDirSB, 100, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_GetPatientUrl, "", GetPatientUrlSB, 100, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_GetCheckResultUrl, "", GetCheckResultUrlSB, 100, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostCheckResultUrl, "", PostCheckResultUrlSB, 100, _configPath);
-            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostOperatorUrl, "", PostOperatorUrlSB, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_NetConfig, Key_BassAddress, "", baseAddressSb, 32, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_NetConfig, Key_BassAddress, "", baseAddressSb, 32, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpAddress, "", ftpAddressSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpUserName, "", ftpUserNameSb, 32, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpPwd, "", ftpUserPwdSb, 32, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpRemoteDir, "", ftpRemoteDirSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpLocalDir, "", ftpLocalDirSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_GetPatientUrl, "", getPatientUrlSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_GetCheckResultUrl, "", getCheckResultUrlSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostCheckResultUrl, "", postCheckResultUrlSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostOperatorUrl, "", postOperatorUrlSb, 100, _configPath);
 
-            Address.Port = CommunicationHelper.GetPrivateProfileInt(Section_NetConfig, Key_Port, 9999, _configPath);
+            Address.Port = CommunicationHelper.GetPrivateProfileInt(Section_NetConfig, Key_Port, -1, _configPath);
             if (File.Exists(KRNetworkingConfig))
             {
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.Load(KRNetworkingConfig);
-                Address.FTPAddress = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpAdresse").InnerText as string;
-                Address.FTPUserName = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpUser").InnerText as string;
-                Address.FTPPassword = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpPassword").InnerText as string;
+                var selectSingleNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpAdresse");
+                if (selectSingleNode != null)
+                    Address.FTPAddress = selectSingleNode.InnerText;
+                var singleNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpUser");
+                if (singleNode != null)
+                    Address.FTPUserName = singleNode.InnerText;
+                var xmlNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpPassword");
+                if (xmlNode != null)
+                    Address.FTPPassword = xmlNode.InnerText;
                 if (string.IsNullOrEmpty(Address.FTPUserName))
                 {
-                    Address.FTPUserName = ftpUserNameSB.ToString();
+                    Address.FTPUserName = ftpUserNameSb.ToString();
                 }
                 if (string.IsNullOrEmpty(Address.FTPAddress))
                 {
-                    Address.FTPAddress = ftpAddressSB.ToString();
+                    Address.FTPAddress = ftpAddressSb.ToString();
                 }
                 if (string.IsNullOrEmpty(Address.FTPPassword))
                 {
-                    Address.FTPPassword = ftpUserPwdSB.ToString();
+                    Address.FTPPassword = ftpUserPwdSb.ToString();
                 }
-                Address.FTPRemoteDir = ftpRemoteDirSB.ToString().Trim();
-                Address.FTPLocalDir = ftpLocalDirSB.ToString().Trim();
+                Address.FTPRemoteDir = ftpRemoteDirSb.ToString().Trim();
+                Address.FTPLocalDir = ftpLocalDirSb.ToString().Trim();
             }
 
-            Address.BaseAddress = baseAddressSB.ToString().Trim();
-            Address.Route_Patient = GetPatientUrlSB.ToString().Trim();
-            Address.Route_Get_CheckResult = GetCheckResultUrlSB.ToString().Trim();
-            Address.Route_Post_CheckResult = PostCheckResultUrlSB.ToString().Trim();
-            Address.Route_Operator = PostOperatorUrlSB.ToString().Trim();
+            Address.BaseAddress = baseAddressSb.ToString().Trim();
+            Address.Route_Patient = getPatientUrlSb.ToString().Trim();
+            Address.Route_Get_CheckResult = getCheckResultUrlSb.ToString().Trim();
+            Address.Route_Post_CheckResult = postCheckResultUrlSb.ToString().Trim();
+            Address.Route_Operator = postOperatorUrlSb.ToString().Trim();
 
-            if (!IsValidIp())
-            {
-                throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 BassAddress格式不对，格式应为192.168.0.1");
-            }
-            if (!IsValidPort())
-            {
-                throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 Port格式不对，格式应为大于0小于65535的整数");
-            }
+            //if (!IsValidIp())
+            //{
+            //    throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 BassAddress格式不对，格式应为192.168.0.1,当前错误会导致联网出现问题");
+            //}
+            //if (!IsValidPort())
+            //{
+            //    throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 Port格式不对，格式应为大于0小于65535的整数，当前错误会导致联网出现问题");
+            //}
             Address.ConfigBusinessAddress();
         }
 
@@ -126,21 +132,16 @@ namespace Chioy.Communication.Networking.Client
         }
         private bool IsValidIp()
         {
-            if (Address.BaseAddress.ToLower()=="localhost")
+            if (string.IsNullOrEmpty(Address.BaseAddress))
             {
                 return true;
             }
-
-            return Regex.IsMatch(Address.BaseAddress, @"^(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5])$");
+            return Address.BaseAddress.ToLower() == "localhost" || Regex.IsMatch(Address.BaseAddress, @"^(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5]).(d{1,2}|1dd|2[0-4]d|25[0-5])$");
         }
 
         private bool IsValidPort()
         {
-            if (Address.Port >= 65535 || Address.Port <= 0)
-            {
-                return false;
-            }
-            return true;
+            return Address.Port < 65535 && Address.Port > 0;
         }
     }
     public class AddressInfo : ICloneable
@@ -190,14 +191,14 @@ namespace Chioy.Communication.Networking.Client
                 case Protocol.WebService:
                     address = string.Format("http://{0}:{1}/{2}?wsdl", BaseAddress, Port.ToString(), serviceType);
                     break;
-                case Protocol.FTP:
+                case Protocol.Ftp:
                     break;
                 case Protocol.Http:
                     address = string.Format("http://{0}:{1}/{2}", BaseAddress, Port.ToString(), serviceType);
                     break;
                 case Protocol.DB:
                     break;
-                case Protocol.WCFTCP:
+                case Protocol.Wcftcp:
                     address = string.Format("net.tcp://{0}:{1}/{2}", BaseAddress, Port.ToString(), serviceType);
                     break;
                 default:

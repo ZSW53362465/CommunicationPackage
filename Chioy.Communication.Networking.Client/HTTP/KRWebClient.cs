@@ -34,9 +34,14 @@ namespace Chioy.Communication.Networking.Client.HTTP
         /// <returns></returns>
         protected override WebRequest GetWebRequest(Uri address)
         {
+
             HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-            request.Timeout = 1000 * Timeout;
-            request.ReadWriteTimeout = 1000 * Timeout;
+            if (Timeout > 0)
+            {
+                request.Timeout = 1000 * Timeout;
+                request.ReadWriteTimeout = 1000 * Timeout;
+            }
+
             return request;
         }
     }

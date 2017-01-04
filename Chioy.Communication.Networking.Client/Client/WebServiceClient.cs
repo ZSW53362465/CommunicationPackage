@@ -73,7 +73,7 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             try
             {
-                var proxy = new WebServiceProxy(Address.PostOperatorUrl, method);
+                var proxy = new WebServiceProxy(url, method);
                 return (string)proxy.ExecuteQuery(method, param);
             }
             catch (Exception ex)

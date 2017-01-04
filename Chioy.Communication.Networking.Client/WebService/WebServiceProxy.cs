@@ -77,7 +77,7 @@ namespace Chioy.Communication.Networking.Client
         public WebServiceProxy(string wsdlUrl)
         {
 
-            this._wsdlUrl = wsdlUrl;
+            this._wsdlUrl = !wsdlUrl.Contains("?wsdl") ? string.Format("{0}{1}", wsdlUrl, "?wsdl") : wsdlUrl;
             string wsdlName = WebServiceProxy.getWsclassName(wsdlUrl);
             this._wsdlName = wsdlName;
             this._assName = string.Format(_wsdlNamespace, wsdlName);
@@ -87,7 +87,7 @@ namespace Chioy.Communication.Networking.Client
 
         public WebServiceProxy(string wsdlUrl, string wsdlName)
         {
-            this._wsdlUrl = wsdlUrl;
+            this._wsdlUrl = !wsdlUrl.Contains("?wsdl") ? string.Format("{0}{1}", wsdlUrl, "?wsdl") : wsdlUrl;
             this._wsdlName = wsdlName;
             this._assName = string.Format(_wsdlNamespace, wsdlName);
             this._assPath = Path.GetTempPath() + this._assName + getMd5Sum(this._wsdlUrl) + ".dll";

@@ -23,6 +23,7 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
     public class ExamResultMetadata<T> where T : BaseCheckResult
     {
         private ProductType _type;
+        private RenderTargetBitmap _bitmap;
 
         public ExamResultMetadata(ProductType type)
         {
@@ -70,7 +71,8 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
 
         public string Paramters { get; set; }
         [XmlIgnore]
-        public RenderTargetBitmap Bitmap { get; set; }
+        public RenderTargetBitmap Bitmap { get { return _bitmap; } private set { _bitmap = value; } }
+
 
         public T Result { get; set; }
     }

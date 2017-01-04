@@ -38,6 +38,7 @@ namespace Chioy.Communication.Networking.Common
             encoding = encoding == null ? Encoding.UTF8 : encoding;
             var jsonStr = string.Empty;
             DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(T));
+            
             try
             {
                 using (MemoryStream stream = new MemoryStream())

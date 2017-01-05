@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chioy.Communication.Networking.Client.Client;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -30,8 +31,8 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
             }
             catch (Exception ex)
             {
+                ClientHelper.TraceException("SqlServerHelper.Reset", "Reset出现异常！", ex.Message);
                 //KLog.Logger.Error("Reset出现异常！", ex);
-                throw ex;
             }
         }
 
@@ -85,9 +86,9 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
             }
             catch (Exception ex)
             {
-                //KLog.Logger.Error("测试连接出现异常！", ex);
-                throw ex;
+                ClientHelper.TraceException("SqlServerHelper.TestConnection", "测试连接出现异常！", ex.Message);
             }
+            return false;
         }
 
 
@@ -114,8 +115,7 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
             }
             catch (Exception ex)
             {
-                //KLog.Logger.Error("执行查询出现异常！", ex);
-                throw ex;
+                ClientHelper.TraceException("SqlServerHelper.ExecuteNonQuery", "查询出现异常！", ex.Message);
             }
             finally
             {
@@ -179,9 +179,9 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
             }
             catch (Exception exception)
             {
-                Trace.WriteLine("GetPatientInfoByProcedure:调用存储过程失败" + exception.Message);
-                throw new Exception("获取病人信息失败！", exception);
+                ClientHelper.TraceException("GetPatientInfoByProcedure", "获取病人信息失败！", exception.Message);
             }
+            return null;
         }
 
         public void UploadResultByProcedure(string productid, string check_id, string result)
@@ -209,8 +209,7 @@ namespace Chioy.Communication.Networking.Client.DB.DBHelper
             }
             catch (Exception exception)
             {
-                Trace.WriteLine("UploadResultByProcedure:调用存储过程失败" + exception.Message);
-                throw new Exception("调用存储过程失败，返回值不为0！", exception);
+                ClientHelper.TraceException("UploadResultByProcedure", "更新病人信息失败！", exception.Message);
             }
         }
     }

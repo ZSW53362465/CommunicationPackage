@@ -39,7 +39,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("获取病人信息失败");
             }
 
         }
@@ -57,7 +57,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("上传检查结果失败");
             }
         }
 
@@ -71,8 +71,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                throw ex;
+                throw new Exception("上传数据失败");
             }
         }
 
@@ -85,7 +84,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("上传数据失败");
             }
         }
 
@@ -98,7 +97,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("上传数据失败");
             }
         }
 
@@ -111,7 +110,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("获取数据失败");
             }
         }
 

@@ -2,6 +2,7 @@
 using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -44,6 +45,7 @@ namespace Chioy.Communication.Networking.Client
         {
             _protocol = protocol;
             _productType = type;
+            Trace.WriteLine("开始读取联网配置信息");
             Address = new AddressInfo(_protocol);
             var baseAddressSb = new StringBuilder(32);
             var ftpAddressSb = new StringBuilder(100);
@@ -69,8 +71,10 @@ namespace Chioy.Communication.Networking.Client
             CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostOperatorUrl, "", postOperatorUrlSb, 100, _configPath);
 
             Address.Port = CommunicationHelper.GetPrivateProfileInt(Section_NetConfig, Key_Port, -1, _configPath);
+            Trace.WriteLine("联网配置信息读取结束");
             if (File.Exists(KRNetworkingConfig))
             {
+                Trace.WriteLine("存在默认联网配置文件，读取FTP配置信息");
                 var doc = new XmlDocument();
                 doc.Load(KRNetworkingConfig);
                 var selectSingleNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpAdresse");
@@ -96,6 +100,7 @@ namespace Chioy.Communication.Networking.Client
                 }
                 Address.FTPRemoteDir = ftpRemoteDirSb.ToString().Trim();
                 Address.FTPLocalDir = ftpLocalDirSb.ToString().Trim();
+                Trace.WriteLine(string.Format("FTP配置信息:ftp address:{0}, ftp username{1}, ftp password{2}", Address.FTPAddress, Address.FTPUserName, Address.FTPPassword));
             }
 
             Address.BaseAddress = baseAddressSb.ToString().Trim();
@@ -108,11 +113,12 @@ namespace Chioy.Communication.Networking.Client
             //{
             //    throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 BassAddress格式不对，格式应为192.168.0.1,当前错误会导致联网出现问题");
             //}
-            //if (!IsValidPort())
-            //{
-            //    throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 Port格式不对，格式应为大于0小于65535的整数，当前错误会导致联网出现问题");
-            //}
+            if (!IsValidPort())
+            {
+                throw new KRException("BaseClient.ConfigClient", "配置文件出错", _configPath + "文件中的 Port格式不对，格式应为大于0小于65535的整数，当前错误会导致联网出现问题");
+            }
             Address.ConfigBusinessAddress();
+            Trace.WriteLine(string.Format("配置信息:GetPatientUrl:{0}, PostExamResult:{1}", Address.GetPatientUrl, Address.GetCheckResultUrl));
         }
 
         public virtual Patient_DTO GetPatient(string patientId) { return new Patient_DTO(); }

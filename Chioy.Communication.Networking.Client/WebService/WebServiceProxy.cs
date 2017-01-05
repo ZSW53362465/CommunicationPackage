@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chioy.Communication.Networking.Client.Client;
+using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -150,9 +151,9 @@ namespace Chioy.Communication.Networking.Client
                 this.copyTempAssembly(result.PathToAssembly);
                 this.initTypeName();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new Exception(e.Message);
+                ClientHelper.TraceException("WebServiceClient.CreateServiceAssembly", "生成本地代理dll失败", ex.Message);
             }
         }
         #endregion
@@ -199,7 +200,7 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message, new Exception(ex.StackTrace));
+                ClientHelper.TraceException("WebServiceClient.ExecuteQuery", "调用" + methodName + "失败", ex.Message);
             }
             return rtnObj;
         }
@@ -235,7 +236,7 @@ namespace Chioy.Communication.Networking.Client
                 catch (TypeLoadException tle)
                 {
                     //记录Web服务方法参数个数错误日志代码位置 
-                    throw new TypeLoadException("Web服务访问方法【" + methodName + "】参数个数不正确，请检查！", new TypeLoadException(tle.StackTrace));
+                    ClientHelper.TraceException("WebServiceClient.ExecuteNoQuery", "调用" + methodName + "失败", ex.Message);
                 }
             }
             catch (Exception ex)

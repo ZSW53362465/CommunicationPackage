@@ -10,6 +10,7 @@ namespace Chioy.Communication.Networking.Common
         public int WCFPort { get; private set; }
         public int HttpPort { get; private set; }
         public string BaseAddress { get; private set; }
+        public ConfigSetting() { }
         public ConfigSetting(int wcfPort,int httpPort,string baseAddress)
         {
             WCFPort = wcfPort;

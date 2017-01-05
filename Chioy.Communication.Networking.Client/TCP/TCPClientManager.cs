@@ -6,6 +6,7 @@ using Chioy.Communication.Networking.Interface.ProductInterface.TCP;
 using Chioy.Communication.Networking.Models;
 using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
+using Chioy.Communication.Networking.Client.Client;
 
 namespace Chioy.Communication.Networking.Client.TCP
 {
@@ -81,33 +82,48 @@ namespace Chioy.Communication.Networking.Client.TCP
 
         public Patient_DTO GetPatient(string patientId)
         {
-            switch (this._type)
+            try
             {
-                case ProductType.BMD:
-                    var bmdTcpService = _proxy as IBMDTcpService;
-                    if (bmdTcpService != null) return bmdTcpService.GetPatient(patientId);
-                    break;
-                case ProductType.KRTCD:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                switch (this._type)
+                {
+                    case ProductType.BMD:
+                        var bmdTcpService = _proxy as IBMDTcpService;
+                        if (bmdTcpService != null) return bmdTcpService.GetPatient(patientId);
+                        break;
+                    case ProductType.KRTCD:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
+            catch (Exception ex)
+            {
+                ClientHelper.TraceException("TCPClientManager.GetPatient", "获取病人信息失败", ex.Message);
+            }
+
             return null;
         }
 
         public KRResponse PostExamResult(ExamResultMetadata<T> result)
         {
-            switch (this._type)
+            try
             {
-                case ProductType.BMD:
-                    var bmdTcpService = _proxy as IBMDTcpService;
-                    var jsonStr = CommunicationHelper.SerializeObjToJsonStr<ExamResultMetadata<T>>(result);
-                    if (bmdTcpService != null) return bmdTcpService.PostExamResult(jsonStr);
-                    break;
-                case ProductType.KRTCD:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                switch (this._type)
+                {
+                    case ProductType.BMD:
+                        var bmdTcpService = _proxy as IBMDTcpService;
+                        var jsonStr = CommunicationHelper.SerializeObjToJsonStr<ExamResultMetadata<T>>(result);
+                        if (bmdTcpService != null) return bmdTcpService.PostExamResult(jsonStr);
+                        break;
+                    case ProductType.KRTCD:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (Exception ex)
+            {
+                ClientHelper.TraceException("TCPClientManager.PostExamResult", "上传检查结果", ex.Message);
             }
             return new KRResponse() { Status = "FAIL", Msg = "" };
         }

@@ -11,6 +11,7 @@ using System.Web;
 using System.Diagnostics;
 using System.Collections.Specialized;
 using Chioy.Communication.Networking.Client.HTTP;
+using Chioy.Communication.Networking.Client.Client;
 
 namespace Chioy.Communication.Networking.Client
 {
@@ -56,8 +57,8 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "HttpPostData:Post " + url + "失败" + ex.Message);
-                throw new KRException("HttpPostData", "Post 请求失败", ex.Message);
+                ClientHelper.TraceException("HttpPostData:Post", "Post数据失败", ex.Message);
+                return string.Empty;
             }
 
             //return HttpUtility.UrlDecode(retString);
@@ -116,8 +117,8 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
-                throw new KRException("HttpPostData", "Get 请求失败", ex.Message);
+                ClientHelper.TraceException("HttpPostData:Post", "Post数据失败", ex.Message);
+                return string.Empty;
             }
         }
 
@@ -135,8 +136,8 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
-                throw new KRException("HttpPostData", "Get 请求失败", ex.Message);
+                ClientHelper.TraceException("HttpPostData:Post", "Post数据失败", ex.Message);
+                return string.Empty;
             }
         }
 
@@ -166,8 +167,8 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
-                throw new KRException("HttpGetData", "Get 请求失败", ex.Message);
+                ClientHelper.TraceException("HttpPostData:Get", "Get数据失败", ex.Message);
+                return string.Empty;
             }
         }
 
@@ -196,8 +197,8 @@ namespace Chioy.Communication.Networking.Client
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "HttpGetData:Get " + url + "失败" + ex.Message);
-                throw new KRException("HttpGetData", "Get 请求失败", ex.Message);
+                ClientHelper.TraceException("HttpPostData:Get", "Get数据失败", ex.Message);
+                return default(TOut);
             }
         }
 

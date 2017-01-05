@@ -1,5 +1,8 @@
+using Chioy.Communication.Networking.Client.Client;
 using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Common;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -145,10 +148,12 @@ namespace Chioy.Communication.Networking.Client.DB
             }
             catch (IOException ex)
             {
+                ClientHelper.TraceException("KRNetworkingConfig.Load", "KRNetworkingConfig文件读写异常!", ex.Message);
                 //KLog.Logger.Error("KRNetworkingConfig文件读写异常！", ex);
             }
             catch (Exception ex)
             {
+                ClientHelper.TraceException("KRNetworkingConfig.Load", "设置反序列化异常！", ex.Message);
                 //KLog.Logger.Error("设置反序列化异常！", ex);
                 //throw new Exception("设置反序列化异常！");
             }
@@ -213,6 +218,7 @@ namespace Chioy.Communication.Networking.Client.DB
             }
             catch (Exception ex)
             {
+                ClientHelper.TraceException("BackupConfig", "KRNetworkingConfig文件备份出现异常！", ex.Message);
                 //KLog.Logger.Error("KRNetworkingConfig文件备份出现异常！", ex);
             }
         }
@@ -238,7 +244,7 @@ namespace Chioy.Communication.Networking.Client.DB
             }
             catch (Exception ex)
             {
-                //KLog.Logger.Error("KRNetworkingConfig文件还原出现异常！", ex);
+                ClientHelper.TraceException("RestoreBakConfig", "KRNetworkingConfig文件还原出现异常！", ex.Message);
             }
         }
 

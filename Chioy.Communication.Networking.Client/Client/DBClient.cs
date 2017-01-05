@@ -63,13 +63,29 @@ namespace Chioy.Communication.Networking.Client.Client
         }
         public override void ConfigClient(ProductType type, Protocol protocol)
         {
-            base.ConfigClient(type, protocol);
-            _config = KRNetworkingConfig.Load();
-            _dbConfig = _config.DatabaseConfigModel;
-            _connStr = _dbConfig.ConnectionString;
-            DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(_dbConfig.DatabaseSoft,
-                                                                         _dbConfig.IsAdvancedSetting);
-            _dbHelper = DatabaseHelper.Open(databaseEnum, _connStr);
+            try
+            {
+                base.ConfigClient(type, protocol);
+                _config = KRNetworkingConfig.Load();
+                if (_config == null)
+                {
+                    ClientHelper.TraceException("DBClient.ConfigClient", "未能成功加载数据库联网方式联网配置文件", "_config为Null");
+                }
+                _dbConfig = _config.DatabaseConfigModel;
+                if (_dbConfig == null)
+                {
+                    ClientHelper.TraceException("DBClient.ConfigClient", "未能成功加载数据库联网方式联网配置文件", "DatabaseConfigModel为Null");
+                }
+                _connStr = _dbConfig.ConnectionString;
+                DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(_dbConfig.DatabaseSoft,
+                                                                             _dbConfig.IsAdvancedSetting);
+                _dbHelper = DatabaseHelper.Open(databaseEnum, _connStr);
+            }
+            catch (KRException ex)
+            {
+                throw new Exception("加载联网配置失败");
+            }
+
         }
 
         public override Patient_DTO GetPatient(string patientId)
@@ -106,7 +122,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("获取病人信息失败");
             }
 
         }
@@ -182,8 +198,9 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                ClientHelper.TraceException("DBClient.BuildDTO", "数据映射失败", "p_dataRow数据出错");
             }
+            return null;
         }
 
         public override KRResponse PostExamResult(ExamResultMetadata<T> result)
@@ -216,9 +233,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                response.Msg = ex.Message;
-                response.Status = "FAIL";
-                return response;
+                throw new Exception("上传检查结果失败");
             }
 
             StringBuilder resultSb = new StringBuilder();

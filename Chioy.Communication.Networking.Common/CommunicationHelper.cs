@@ -19,7 +19,7 @@ using System.Xml.Serialization;
 
 namespace Chioy.Communication.Networking.Common
 {
-   
+
     public class CommunicationHelper
     {
         public const string ERROR_FLAG = "KRNetError:";
@@ -38,7 +38,7 @@ namespace Chioy.Communication.Networking.Common
             encoding = encoding == null ? Encoding.UTF8 : encoding;
             var jsonStr = string.Empty;
             DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(T));
-            
+
             try
             {
                 using (MemoryStream stream = new MemoryStream())
@@ -49,8 +49,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "SerializeObjToJsonStr:Json序列化失败" + ex.Message);
-                throw new KRException("SerializeObjToJsonStr", "Json序列化失败", ex.Message);
+                TraceException("CommunicationHelper.SerializeObjToJsonStr", "序列化失败", ex.Message);
             }
 
             return jsonStr;
@@ -70,8 +69,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "DeserializeJsonToObj:Json反序列化失败" + ex.Message);
-                throw new KRException("DeserializeJsonToObj", "Json反序列化失败", ex.Message);
+                TraceException("CommunicationHelper.DeserializeJsonToObj", "反序列化失败", ex.Message);
             }
 
             return rtnObj;
@@ -89,8 +87,7 @@ namespace Chioy.Communication.Networking.Common
                 }
                 catch (Exception ex)
                 {
-                    Trace.WriteLine(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
-                    throw new KRException("GetBase64FromImage", "图片转换失败", ex.Message);
+                    TraceException("CommunicationHelper.GetBase64FromImage", "图片转换失败", ex.Message);
                 }
             }
             return strbaser64;
@@ -98,7 +95,7 @@ namespace Chioy.Communication.Networking.Common
 
         public static string GetBase64FromImage(Bitmap bmp)
         {
-            string strbaser64;
+            string strbaser64 = string.Empty;
             try
             {
                 MemoryStream ms = new MemoryStream();
@@ -112,8 +109,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "GetBase64FromImage:图片转换失败" + ex.Message);
-                throw new KRException("GetBase64FromImage", "图片转换失败", ex.Message);
+                TraceException("CommunicationHelper.GetBase64FromImage", "图片转换失败", ex.Message);
             }
 
             return strbaser64;
@@ -131,9 +127,9 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "DeserializeToObj:XML反序列化失败" + ex.Message);
-                throw new KRException("DeserializeToObj", "XML反序列化失败", ex.Message);
+                TraceException("CommunicationHelper.DeserializeToObj", "XML反序列化失败", ex.Message);
             }
+            return default(T);
         }
 
         public static string SerializerToXml<T>(T t)
@@ -155,8 +151,7 @@ namespace Chioy.Communication.Networking.Common
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ERROR_FLAG + "SerializerToXml:XML序列化失败" + ex.Message);
-                throw new KRException("SerializerToXml", "XML序列化失败", ex.Message);
+                TraceException("CommunicationHelper.SerializerToXml", "XML序列化失败", ex.Message);
             }
             Stream.Position = 0;
             StreamReader sr = new StreamReader(Stream);
@@ -168,7 +163,7 @@ namespace Chioy.Communication.Networking.Common
             return str;
         }
 
-        public static RenderTargetBitmap GetElementBitmap(FrameworkElement p_element,double height,double width, double dpiX = 96d,
+        public static RenderTargetBitmap GetElementBitmap(FrameworkElement p_element, double height, double width, double dpiX = 96d,
             double dpiY = 96d)
         {
             Thickness margin = p_element.Margin;
@@ -187,16 +182,30 @@ namespace Chioy.Communication.Networking.Common
         public static ConfigSetting GetConfigSetting()
         {
 
-            Configuration config = ConfigurationManager.OpenExeConfiguration( ConfigurationUserLevel.None);
+            try
+            {
+                Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            var baseAddress = config.AppSettings.Settings["BaseAddress"].Value;
-            var wPort = config.AppSettings.Settings["WCFPort"].Value;
-            var hPort = config.AppSettings.Settings["HttpPort"].Value;
-            int wcfPort = 0;
-            int httpPort = 0;
-            int.TryParse(wPort, out wcfPort);
-            int.TryParse(hPort, out httpPort);
-            return new ConfigSetting(wcfPort, httpPort, baseAddress);
+                var baseAddress = config.AppSettings.Settings["BaseAddress"].Value;
+                var wPort = config.AppSettings.Settings["WCFPort"].Value;
+                var hPort = config.AppSettings.Settings["HttpPort"].Value;
+                int wcfPort = 0;
+                int httpPort = 0;
+                int.TryParse(wPort, out wcfPort);
+                int.TryParse(hPort, out httpPort);
+                return new ConfigSetting(wcfPort, httpPort, baseAddress);
+            }
+            catch (Exception ex)
+            {
+                TraceException("CommunicationHelper.GetConfigSetting", "读取WCF 配置信息失败", ex.Message);
+            }
+            return new Common.ConfigSetting();
+        }
+        private static void TraceException(string method, string description, string message)
+        {
+            Trace.WriteLine("KRNetError:" + message);
+
+            throw new KRException(method, description, message);
         }
     }
     public class UIHelper
@@ -238,7 +247,7 @@ namespace Chioy.Communication.Networking.Common
             }
             return null;
         }
-     
+
     }
 
 }

@@ -28,7 +28,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("获取病人信息失败");
             }
         }
         public override KRResponse PostExamResult(ExamResultMetadata<T> result)
@@ -46,8 +46,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                throw new Exception("上传检查结果失败");
             }
 
         }
@@ -78,7 +77,7 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("调用WebService" + method + "失败");
             }
         }
     }

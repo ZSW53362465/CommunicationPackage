@@ -26,41 +26,82 @@ namespace Chioy.Communication.Networking.Client.Client
         }
         public override void ConfigClient(ProductType type, Protocol protocol)
         {
-            base.ConfigClient(type, protocol);
-            _helper.Host = Address.FTPAddress;
-            _helper.UserName = Address.FTPUserName;
-            _helper.Password = Address.FTPPassword;
+            try
+            {
+                base.ConfigClient(type, protocol);
+                _helper.Host = Address.FTPAddress;
+                _helper.UserName = Address.FTPUserName;
+                _helper.Password = Address.FTPPassword;
+            }
+            catch (KRException ex)
+            {
+                throw new Exception("加载联网配置失败");
+            }
         }
 
         public void UploadFile(string filename, string remoteFileName)
         {
-            if (_helper != null)
+            try
             {
-                _helper.Upload(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                if (_helper != null)
+                {
+                    _helper.Upload(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                }
             }
+            catch (Exception ex)
+            {
+
+                throw new Exception("上传文件出错");
+            }
+
         }
 
         public void UploadAsync(string filename, string remoteFileName, string localDir = null)
         {
-            if (_helper != null)
+            try
             {
-                _helper.UploadAsync(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                if (_helper != null)
+                {
+                    _helper.UploadAsync(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                }
             }
+            catch (Exception)
+            {
+
+                throw new Exception("上传文件出错");
+            }
+
         }
 
         public void DownLoadFile(string filename, string remoteFileName)
         {
-            if (_helper != null)
+            try
             {
-                _helper.Download(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                if (_helper != null)
+                {
+                    _helper.Download(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("下载文件出错");
             }
         }
 
         public void DownloadAsync(string filename, string remoteFileName)
         {
-            if (_helper != null)
+            try
             {
-                _helper.DownloadAsync(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                if (_helper != null)
+                {
+                    _helper.DownloadAsync(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("下载文件出错");
             }
         }
 

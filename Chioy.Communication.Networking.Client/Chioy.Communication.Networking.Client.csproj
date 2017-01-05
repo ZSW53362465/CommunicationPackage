@@ -57,6 +57,7 @@
     <Compile Include="Client\ClientConstants.cs" />
     <Compile Include="Client\DBClient.cs" />
     <Compile Include="Client\FtpClient.cs" />
+    <Compile Include="Client\ClientHelper.cs" />
     <Compile Include="Client\HttpClient.cs" />
     <Compile Include="Client\TcpClient.cs" />
     <Compile Include="Client\WebServiceClient.cs" />

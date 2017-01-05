@@ -16,6 +16,7 @@ using Chioy.Communication.Networking.Client.FTP.Helper;
 using Chioy.Communication.Networking.Models.ReportMetadata;
 using Npgsql;
 using NpgsqlTypes;
+using Chioy.Communication.Networking.Client.Client;
 
 namespace Chioy.Communication.Networking.Client.DB
 {
@@ -389,7 +390,7 @@ namespace Chioy.Communication.Networking.Client.DB
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    ClientHelper.TraceException("KRNetworkingHelper.SaveCallBackData", "数据映射失败", ex.Message);
                 }
 
             var dbHelper =
@@ -417,7 +418,7 @@ namespace Chioy.Communication.Networking.Client.DB
             }
             catch (Exception ex)
             {
-                throw ex;
+                ClientHelper.TraceException("KRNetworkingHelper.SaveCallBackData", "数据回写失败", ex.Message);
             }
 
             return result > 0;

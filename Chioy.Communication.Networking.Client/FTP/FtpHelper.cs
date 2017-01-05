@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Chioy.Communication.Networking.Client.FTP.Helper;
+using Chioy.Communication.Networking.Client.Client;
 
 namespace Chioy.Communication.Networking.Client.FTP
 {
@@ -143,7 +144,15 @@ namespace Chioy.Communication.Networking.Client.FTP
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Upload(string localDirectory, string localFilename, string remoteDirectory, string remoteFileName)
         {
-            Upload(Path.Combine(localDirectory, localFilename), remoteDirectory, remoteFileName);
+            try
+            {
+                Upload(Path.Combine(localDirectory, localFilename), remoteDirectory, remoteFileName);
+
+            }
+            catch (Exception ex)
+            {
+                ClientHelper.TraceException("Upload", "同步上传失败", ex.Message);
+            }
         }// method
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -237,13 +246,20 @@ namespace Chioy.Communication.Networking.Client.FTP
         /// <param name="remoteFileName">filename on ftpServer</param>
         public void UploadAsync(string localDirectory, string localFilename, string remoteDirectory, string remoteFileName)
         {
-            ThreadParameters parameters = new ThreadParameters(localDirectory, localFilename, remoteDirectory, remoteFileName);
-            ParameterizedThreadStart pThreadStart = new ParameterizedThreadStart(this.DoUploadAsync);
-            _thread = new Thread(pThreadStart);
-            _thread.Name = "UploadThread";
-            _thread.IsBackground = true;
-            _thread.Priority = ThreadPriority.Normal;
-            _thread.Start(parameters);
+            try
+            {
+                ThreadParameters parameters = new ThreadParameters(localDirectory, localFilename, remoteDirectory, remoteFileName);
+                ParameterizedThreadStart pThreadStart = new ParameterizedThreadStart(this.DoUploadAsync);
+                _thread = new Thread(pThreadStart);
+                _thread.Name = "UploadThread";
+                _thread.IsBackground = true;
+                _thread.Priority = ThreadPriority.Normal;
+                _thread.Start(parameters);
+            }
+            catch (Exception ex)
+            {
+                ClientHelper.TraceException("UploadAsync", "异步上传失败", ex.Message);
+            }
         }// method
 
         /// <summary>
@@ -795,7 +811,10 @@ namespace Chioy.Communication.Networking.Client.FTP
                 ThreadParameters p = threadParameters as ThreadParameters;
                 this.UploadResume(p.LocalDirectory, p.LocalFilename, p.RemoteDirectory, p.RemoteFilename);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                ClientHelper.TraceException("DoUploadResumeAsync", "断点续传失败", ex.Message);
+            }
         }//method
 
         private void DoUploadAsync(object threadParameters)

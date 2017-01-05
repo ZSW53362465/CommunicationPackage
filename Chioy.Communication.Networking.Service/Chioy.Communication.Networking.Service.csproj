@@ -49,18 +49,17 @@
   <ItemGroup>
     <Compile Include="BaseService.cs" />
     <Compile Include="EventService.cs" />
-    <Compile Include="HttpService.cs" />
+    <Compile Include="HttpServiceMgr.cs" />
     <Compile Include="ProductService\HTTP\BMDHttpService.cs" />
-    <Compile Include="ProductService\TCP\BMDService.cs" />
-    <Compile Include="ProductService\KRService.cs" />
-    <Compile Include="ProductService\KRTCDService.cs" />
+    <Compile Include="KRService.cs" />
+    <Compile Include="ProductService\TCP\BMDTcpService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\IBMDDataProvider.cs" />
     <Compile Include="Provider\IDataProvider.cs" />
     <Compile Include="Provider\IKRTCDDataProvider.cs" />
     <Compile Include="ServiceFactory.cs" />
-    <Compile Include="ServiceManager.cs" />
-    <Compile Include="TCPService.cs" />
+    <Compile Include="ServiceManagerFactory.cs" />
+    <Compile Include="TcpServiceMgr.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Chioy.Communication.Networking.Common\Chioy.Communication.Networking.Common.csproj">

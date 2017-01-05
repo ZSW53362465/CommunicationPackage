@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Chioy.Communication.Networking.Common;
 
 namespace Chioy.Communication.Networking.Client.Client
 {
@@ -23,9 +24,9 @@ namespace Chioy.Communication.Networking.Client.Client
             _helper.DownloadFileCompleted += _helper_DownloadFileCompleted;
             _helper.DownloadProgressChanged += _helper_DownloadProgressChanged;
         }
-        public override void ConfigClient()
+        public override void ConfigClient(ProductType type, Protocol protocol)
         {
-            base.ConfigClient();
+            base.ConfigClient(type, protocol);
             _helper.Host = Address.FTPAddress;
             _helper.UserName = Address.FTPUserName;
             _helper.Password = Address.FTPPassword;

@@ -1,5 +1,4 @@
 ﻿using Chioy.Communication.Networking.Interface;
-using Chioy.Communication.Networking.Service.ProductService;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

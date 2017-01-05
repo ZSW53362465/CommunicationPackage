@@ -1,15 +1,18 @@
 ﻿using Chioy.Communication.Networking.Common;
 using Chioy.Communication.Networking.Interface;
 using Chioy.Communication.Networking.Models;
-using Chioy.Communication.Networking.Service.ProductService;
 using System;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using Chioy.Communication.Networking.Interface.ProductInterface.TCP;
+using Chioy.Communication.Networking.Service.ProductService;
+using Chioy.Communication.Networking.Service.ProductService.HTTP;
+using Chioy.Communication.Networking.Service.ProductService.TCP;
 using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Service
 {
-    public class TCPService : BaseService
+    public class TcpServiceMgr : BaseService
     {
         public event EventHandler<DataEventArgs> NewClientSubscribed;
         public event EventHandler<DataEventArgs> ClientLost;
@@ -25,7 +28,7 @@ namespace Chioy.Communication.Networking.Service
         {
             get { return string.Format("net.tcp://{0}:{1}/{2}", configSetting.BaseAddress, configSetting.WCFPort, ServiceName.KREventService); }
         }
-        public TCPService() : base()
+        public TcpServiceMgr() : base()
         {
             _type = BindingType.TCP;
         }
@@ -63,10 +66,10 @@ namespace Chioy.Communication.Networking.Service
             switch (_produceType)
             {
                 case ProductType.BMD:
-                    servicePair = ServiceFactory.CreateService<IBMDService, BMDService>(Address, _type, string.Empty);
+                    servicePair = ServiceFactory.CreateService<IBMDTcpService, BMDTcpService>(Address, _type, string.Empty);
                     break;
                 case ProductType.KRTCD:
-                    servicePair = ServiceFactory.CreateService<IKRTCDService, KRTCDService>(Address, _type, string.Empty);
+                    //servicePair = ServiceFactory.CreateService<IKRTCDService, KRTCDService>(Address, _type, string.Empty);
                     break;
                 default:
                     break;

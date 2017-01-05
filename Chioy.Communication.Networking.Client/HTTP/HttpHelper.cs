@@ -67,11 +67,52 @@ namespace Chioy.Communication.Networking.Client
         {
             try
             {
+                //var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
+                //var client = new KRWebClient { Timeout = Timeout };
+                //var strContent = DecodeResponseStr(client.UploadString(url, jsonStr));
+                //Trace.WriteLine("HttpPostData返回数据:" + strContent);
+                //return strContent;
                 var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
-                var client = new KRWebClient { Timeout = Timeout };
-                var strContent = DecodeResponseStr(client.UploadString(url, jsonStr));
-                Trace.WriteLine("HttpPostData返回数据:" + strContent);
-                return strContent;
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Method = "Post";
+                request.ContentType = "application/json";
+                request.ContentLength = Encoding.UTF8.GetByteCount(jsonStr);
+                Stream myRequestStream = request.GetRequestStream();
+                StreamWriter myStreamWriter = new StreamWriter(myRequestStream);
+                myStreamWriter.Write(jsonStr);
+                myStreamWriter.Close();
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream myResponseStream = response.GetResponseStream();
+                StreamReader myStreamReader = new StreamReader(myResponseStream);
+                var retString = myStreamReader.ReadToEnd();
+                myStreamReader.Close();
+                myResponseStream.Close();
+                return retString;
+
+                //var jsonStr = CommunicationHelper.SerializeObjToJsonStr<T>(obj);
+                //var jsonStr = "asdfasf";
+                //Encoding myEncode = Encoding.GetEncoding("UTF-8");
+                //byte[] postBytes = Encoding.UTF8.GetBytes(jsonStr);
+
+                //HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(url);
+                //req.Method = "POST";
+                //req.ContentType = "application/x-www-form-urlencoded";
+                //req.ContentLength = postBytes.Length;
+
+                //using (Stream reqStream = req.GetRequestStream())
+                //{
+                //    reqStream.Write(postBytes, 0, postBytes.Length);
+                //}
+                //using (WebResponse res = req.GetResponse())
+                //{
+                //    using (StreamReader sr = new StreamReader(res.GetResponseStream(), myEncode))
+                //    {
+                //        string strResult = sr.ReadToEnd();
+                //        return strResult;
+                //    }
+                //}
+
             }
             catch (Exception ex)
             {
@@ -107,19 +148,21 @@ namespace Chioy.Communication.Networking.Client
                 var client = new KRWebClient();
                 //client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                 client.Timeout = Timeout;
+                client.Encoding = encoder;
                 var strContent = DecodeResponseStr(client.DownloadString(url));
                 Trace.WriteLine("HttpGetData返回数据:" + strContent);
                 return strContent;
-
+                //string retString = string.Empty;
                 //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 //request.Method = "GET";
                 //request.ContentType = "Content-Type = application/json";
                 //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 //Stream myResponseStream = response.GetResponseStream();
-                //StreamReader myStreamReader = new StreamReader(myResponseStream, _encoding);
+                //StreamReader myStreamReader = new StreamReader(myResponseStream, encoder);
                 //retString = myStreamReader.ReadToEnd();
                 //myStreamReader.Close();
                 //myResponseStream.Close();
+                //return DecodeResponseStr(retString);
             }
             catch (Exception ex)
             {

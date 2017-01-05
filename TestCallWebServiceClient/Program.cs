@@ -16,8 +16,8 @@ namespace TestCallWebServiceClient
     {
         static void Main(string[] args)
         {
-            ClientProxy<BMDCheckResult> proxy = new ClientProxy<BMDCheckResult>(Protocol.WebService);
-            proxy.ConfigClient();
+            ClientProxy<BMDCheckResult> proxy = new ClientProxy<BMDCheckResult>();
+            proxy.ConfigClient(ProductType.BMD, Protocol.WebService);
 
             //Use CallUnknowWebService
             var webSvcClient = proxy.ClientObj as WebServiceClient<BMDCheckResult>;

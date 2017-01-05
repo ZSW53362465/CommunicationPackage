@@ -40,8 +40,9 @@ namespace Chioy.Communication.Networking.Client
             _client = client;
         }
 
-        public ClientProxy(Protocol protocol)
+        public void ConfigClient(ProductType type, Protocol protocol)
         {
+
             switch (protocol)
             {
                 case Protocol.WebService:
@@ -56,17 +57,14 @@ namespace Chioy.Communication.Networking.Client
                     _client = new DBClient<T>();
                     break;
                 case Protocol.Wcftcp:
+                    _client = new TcpClient<T>();
                     break;
                 default:
                     break;
             }
-        }
-
-        public void ConfigClient()
-        {
             if (_client != null)
             {
-                _client.ConfigClient();
+                _client.ConfigClient(type, protocol);
             }
             else
             {

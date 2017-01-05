@@ -1,13 +1,13 @@
-﻿using Chioy.Communication.Networking.Interface;
-using Chioy.Communication.Networking.Models;
-using Chioy.Communication.Networking.Models.DTO;
-using Chioy.Communication.Networking.Service.ProductService;
-using Chioy.Communication.Networking.Service.Provider;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
+using Chioy.Communication.Networking.Interface;
+using Chioy.Communication.Networking.Models;
+using Chioy.Communication.Networking.Models.DTO;
+using Chioy.Communication.Networking.Models.ReportMetadata;
+using Chioy.Communication.Networking.Service.Provider;
 
-namespace Chioy.Communication.Networking.Service
+namespace Chioy.Communication.Networking.Service.ProductService.HTTP
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class BMDHttpService : KRService, IBMDHttpService
@@ -40,45 +40,17 @@ namespace Chioy.Communication.Networking.Service
             List<Employee> list = new List<Employee>();
             return list;
         }
+
         #endregion
-        public Patient_DTO RequestPatientByPatientID(string patientId)
+        
+        public Patient_DTO GetPatient(string patientId)
         {
-            return Provider.RequestPatientByPatientID(patientId);
+            return Provider.GetPatient(patientId);
         }
 
-        public IEnumerable<Patient_DTO> RequestAllPatients()
+        public KRResponse PostExamResult(ExamResultMetadata<BMDCheckResult> result)
         {
-            return Provider.RequestAllPatients();
-        }
-
-        public IEnumerable<BMD_Measure_Result_DTO> Request_BMD_Measure_ResultByPatientID(string patientId)
-        {
-            return Provider.Request_BMD_Measure_ResultByPatientID(patientId);
-        }
-
-        public BMD_Measure_Result_DTO Request_BMD_Measure_Result(string checkId)
-        {
-            return Provider.Request_BMD_Measure_Result(checkId);
-        }
-
-        public IEnumerable<BMD_Measure_Result_DTO> Request_BMD_Measure_All_Result()
-        {
-            return Provider.Request_BMD_Measure_All_Result();
-        }
-
-        public IEnumerable<PatientCheck_DTO> Request_BMD_Summary_ResultByPatientID(string patientId)
-        {
-            return Provider.Request_BMD_Summary_ResultByPatientID(patientId);
-        }
-
-        public IEnumerable<PatientCheck_DTO> Request_BMD_Summary_All_Result()
-        {
-            return Provider.Request_BMD_Summary_All_Result();
-        }
-
-        public PatientCheck_DTO Request_BMD_Summary_ResultByCheckId(string checkId)
-        {
-            return Provider.Request_BMD_Summary_ResultByCheckId(checkId);
+            return Provider.PostExamResult(result);
         }
 
     }

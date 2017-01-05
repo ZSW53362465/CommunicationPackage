@@ -22,17 +22,16 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
     [XmlType("ReportMetadata")]
     public class ExamResultMetadata<T> where T : BaseCheckResult
     {
-        private ProductType _type;
         private RenderTargetBitmap _bitmap;
 
         public ExamResultMetadata(ProductType type)
         {
-            this._type = type;
+            this.Type = type;
         }
         public ExamResultMetadata()
         { }
         public string PatientID { get; set; }
-        public ProductType Type { get { return this._type; } }
+        public ProductType Type { get; }
 
         public string ReportID { get; set; }
 
@@ -72,6 +71,11 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
         public string Paramters { get; set; }
         [XmlIgnore]
         public RenderTargetBitmap Bitmap { get { return _bitmap; } private set { _bitmap = value; } }
+
+        public void SetBitmap(RenderTargetBitmap bitmap)
+        {
+            _bitmap = bitmap;
+        }
 
 
         public T Result { get; set; }

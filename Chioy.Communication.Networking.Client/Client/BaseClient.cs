@@ -33,15 +33,17 @@ namespace Chioy.Communication.Networking.Client
 
         protected Protocol _protocol;
 
-
+        protected ProductType _productType;
         protected AddressInfo Address = null;
 
         public Protocol Protocol
         {
             get { return _protocol; }
         }
-        public virtual void ConfigClient()
+        public virtual void ConfigClient(ProductType type,Protocol protocol)
         {
+            _protocol = protocol;
+            _productType = type;
             Address = new AddressInfo(_protocol);
             var baseAddressSb = new StringBuilder(32);
             var ftpAddressSb = new StringBuilder(100);

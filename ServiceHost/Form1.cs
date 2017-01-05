@@ -14,8 +14,8 @@ namespace ServiceHost
     public partial class Form1 : Form
     {
         BaseService service;
-        TCPService tcpService;
-        HttpService httpService;
+        TcpServiceMgr tcpService;
+        HttpServiceMgr httpService;
         public Form1()
         {
             InitializeComponent();
@@ -28,10 +28,10 @@ namespace ServiceHost
                 MessageBox.Show("服务已启动");
                 return;
             }
-            service = ServiceManager.Instance().GetService(BindingType.TCP);
+            service = ServiceManagerFactory.Instance().GetService(BindingType.TCP);
             service.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
-            //service.RegisterProvider(new MyProvider());
-            tcpService = service as TCPService;
+            service.RegisterProvider(new MyProvider());
+            tcpService = service as TcpServiceMgr;
             tcpService.ClientLost += Service_ClientLost;
             tcpService.NewClientSubscribed += Service_NewClientSubscribed;
             service.ExceptionEvent += Service_ExceptionEvent;
@@ -58,17 +58,17 @@ namespace ServiceHost
 
         private void button1_Click(object sender, EventArgs e)
         {
-            tcpService.SendDataToClient(new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Msg = this.textBox1.Text });
+            tcpService.SendDataToClient(new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Code= Chioy.Communication.Networking.Interface.KRCode.DataFromSvr, Msg = this.textBox1.Text });
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            tcpService.SendDataToSpecClient(this.listBox1.SelectedValue.ToString(), new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Msg = this.textBox1.Text });
+            tcpService.SendDataToSpecClient(this.listBox1.SelectedItem.ToString(), new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Code= Chioy.Communication.Networking.Interface.KRCode.DataFromSvr, Msg = this.textBox1.Text });
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            httpService = ServiceManager.Instance().GetService(BindingType.HTTP) as HttpService;
+            httpService = ServiceManagerFactory.Instance().GetService(BindingType.HTTP) as HttpServiceMgr;
             httpService.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
             httpService.RegisterProvider(new MyProvider());
 

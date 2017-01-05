@@ -9,13 +9,14 @@ namespace Chioy.Communication.Networking.Common
     {
         public struct ServiceName
         {
-            public const string BMDService = "BMDService";
-            public const string KRTCDService = "KRTCDService";
-            public const string KRHttpService = "KRHttpService";
+            public const string BMDHttpService = "bmdhttpservice";
+            public const string BMDTcpService = "BMDTcpService";
+            public const string TCDHttpService = "tcdhttpservice";
+            public const string TCDTcpService = "KRTCDService";
+
+            //public const string KRHttpService = "KRHttpService";
             public const string KREventService = "EventService";
             public const string Employees = "employees";
-            public const string BMDHttpService = "bmdservice";
-            public const string KRTCDHttpService = "tcdservice";
         }
     }
 }

@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Chioy.Communication.Networking.Service
 {
-    public class ServiceManager
+    public class ServiceManagerFactory
     {
-        private volatile static ServiceManager _instance = null;
+        private volatile static ServiceManagerFactory _instance = null;
 
         private static readonly object lockHelper = new object();
 
-        public static ServiceManager Instance()
+        public static ServiceManagerFactory Instance()
         {
             if (_instance == null)
             {
@@ -19,7 +19,7 @@ namespace Chioy.Communication.Networking.Service
                 {
                     if (_instance == null)
                     {
-                        _instance = new ServiceManager();
+                        _instance = new ServiceManagerFactory();
                     }
                 }
             }
@@ -33,10 +33,10 @@ namespace Chioy.Communication.Networking.Service
             switch (type)
             {
                 case BindingType.TCP:
-                    rtnService = new TCPService();
+                    rtnService = new TcpServiceMgr();
                     break;
                 case BindingType.HTTP:
-                    rtnService = new HttpService();
+                    rtnService = new HttpServiceMgr();
                     break;
                 default:
                     break;

@@ -47,9 +47,8 @@
     <Compile Include="IEventService.cs" />
     <Compile Include="IKRDuplexCallback.cs" />
     <Compile Include="ProductInterface\HTTP\IBMDHttpService.cs" />
-    <Compile Include="ProductInterface\TCP\IBMDService.cs" />
-    <Compile Include="ProductInterface\TCP\IKRTCDService.cs" />
-    <Compile Include="IService.cs" />
+    <Compile Include="ProductInterface\TCP\IBMDTcpService.cs" />
+    <Compile Include="ProductInterface\TCP\IService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +57,7 @@
       <Name>Chioy.Communication.Networking.Models</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

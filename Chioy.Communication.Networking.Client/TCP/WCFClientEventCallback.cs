@@ -4,6 +4,7 @@ using Chioy.Communication.Networking.Models;
 using System;
 using System.Net;
 using System.ServiceModel;
+using Chioy.Communication.Networking.Interface.ProductInterface.TCP;
 using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Client
@@ -111,9 +112,11 @@ namespace Chioy.Communication.Networking.Client
 
         private void StartHeartJumpListen()
         {
-            var timer = new System.Timers.Timer();
-            timer.Enabled = false;
-            timer.Interval = _heartbeatInterval;
+            var timer = new System.Timers.Timer
+            {
+                Enabled = false,
+                Interval = _heartbeatInterval
+            };
             timer.Elapsed += (s, ie) =>
             {
                 try
@@ -154,7 +157,7 @@ namespace Chioy.Communication.Networking.Client
                 _krEventproxy = eventSvcRemoteFactory.CreateChannel();
                 BuildKRService();
 
-                var comObj = _krEventproxy as ICommunicationObject;
+                 var comObj = _krEventproxy as ICommunicationObject;
 
                 comObj.Faulted += (s, ie) =>
                 {
@@ -177,25 +180,23 @@ namespace Chioy.Communication.Networking.Client
             }
 
         }
-
         private void BuildKRService()
         {
             var serviceName = string.Empty;
             switch (_type)
             {
                 case ProductType.BMD:
-                    serviceName = ServiceName.BMDService;
-                    _krProxy = CreateProductService<IBMDService>(serviceName);
+                    serviceName = ServiceName.BMDTcpService;
+                    _krProxy = CreateProductService<IBMDTcpService>(serviceName);
                     break;
                 case ProductType.KRTCD:
-                    serviceName = ServiceName.KRTCDService;
-                    _krProxy = CreateProductService<IKRTCDService>(serviceName);
+                    serviceName = ServiceName.TCDTcpService;
+                    //_krProxy = CreateProductService<IKRTCDService>(serviceName);
                     break;
                 default:
                     break;
             }
         }
-
         private DuplexChannelFactory<IEventService> CreateEventServiceRemoteFactory()
         {
             var binding = new NetTcpBinding() { MaxBufferPoolSize = 2147483647, MaxReceivedMessageSize = 2147483647 };

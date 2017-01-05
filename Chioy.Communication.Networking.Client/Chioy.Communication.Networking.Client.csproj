@@ -58,6 +58,7 @@
     <Compile Include="Client\DBClient.cs" />
     <Compile Include="Client\FtpClient.cs" />
     <Compile Include="Client\HttpClient.cs" />
+    <Compile Include="Client\TcpClient.cs" />
     <Compile Include="Client\WebServiceClient.cs" />
     <Compile Include="DB\DBHelper\DatabaseHelper.cs" />
     <Compile Include="DB\DBHelper\IDatabaseHelper.cs" />

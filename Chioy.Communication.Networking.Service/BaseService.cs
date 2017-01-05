@@ -69,10 +69,10 @@ namespace Chioy.Communication.Networking.Service
                     switch (_produceType)
                     {
                         case ProductType.BMD:
-                            serviceName = ServiceName.BMDService;
+                            serviceName = ServiceName.BMDTcpService;
                             break;
                         case ProductType.KRTCD:
-                            serviceName = ServiceName.KRTCDService;
+                            serviceName = ServiceName.TCDTcpService;
                             break;
                         default:
                             break;
@@ -88,7 +88,7 @@ namespace Chioy.Communication.Networking.Service
                             serviceName = ServiceName.BMDHttpService;
                             break;
                         case ProductType.KRTCD:
-                            serviceName = ServiceName.KRTCDHttpService;
+                            //serviceName = ServiceName.KRTCDHttpService;
                             break;
                         default:
                             break;
@@ -96,7 +96,7 @@ namespace Chioy.Communication.Networking.Service
                     port = configSetting.HttpPort.ToString();
                     break;
                 default:
-                    _address = string.Format("net.tcp://{0}:{1}/{2}", configSetting.BaseAddress, configSetting.WCFPort, ServiceName.BMDService);
+                    _address = string.Format("net.tcp://{0}:{1}/{2}", configSetting.BaseAddress, configSetting.WCFPort, serviceName);
                     break;
             }
             _address = string.Format("{0}://{1}:{2}/{3}", addressHeader, baseAddress, port, serviceName);

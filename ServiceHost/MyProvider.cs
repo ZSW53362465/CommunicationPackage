@@ -2,49 +2,41 @@
 using Chioy.Communication.Networking.Service.Provider;
 using System;
 using System.Collections.Generic;
+using Chioy.Communication.Networking.Common;
+using Chioy.Communication.Networking.Models.ReportMetadata;
 
 namespace ServiceHost
 {
     public class MyProvider : IBMDDataProvider
     {
-        public List<Patient_DTO> RequestAllPatients()
+        public KRResponse PostExamResult(ExamResultMetadata<BMDCheckResult> result)
         {
-            return new List<Patient_DTO>();
+            if (result != null)
+            {
+                return new KRResponse() { Status = "SUCCESS", Msg = "" };
+            }
+            return null;
         }
 
-        public Patient_DTO RequestPatientByPatientID(string patientId)
+        public Patient_DTO GetPatient(string patientId)
         {
-            throw new NotImplementedException();
-        }
+            var patient = new Patient_DTO()
+            {
+                PatientID = patientId,
+                Name = "张士威",
+                Age = 27,
+                Address = "河北廊坊",
+                Birthday = DateTime.Now.AddYears(-30).ToShortDateString(),
+                City = "廊坊",
+                IdentityType = 0,
+                CredentialName = "身份证",
+                FirstName = "Zhang",
+                Work = "IT",
+                Gender = 1,
+                Nation = "汉"
+            };
 
-        public List<BMD_Measure_Result_DTO> Request_BMD_Measure_All_Result()
-        {
-            throw new NotImplementedException();
-        }
-
-        public BMD_Measure_Result_DTO Request_BMD_Measure_Result(string checkId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<BMD_Measure_Result_DTO> Request_BMD_Measure_ResultByPatientID(string patientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<PatientCheck_DTO> Request_BMD_Summary_All_Result()
-        {
-            throw new NotImplementedException();
-        }
-
-        public PatientCheck_DTO Request_BMD_Summary_ResultByCheckId(string checkId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<PatientCheck_DTO> Request_BMD_Summary_ResultByPatientID(string patientId)
-        {
-            throw new NotImplementedException();
+            return patient;
         }
     }
 }

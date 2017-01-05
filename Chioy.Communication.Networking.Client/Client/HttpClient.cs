@@ -21,7 +21,7 @@ namespace Chioy.Communication.Networking.Client.Client
             _helper = new HttpHelper();
 
         }
-
+      
         public override Patient_DTO GetPatient(string patientId)
         {
             try
@@ -30,8 +30,7 @@ namespace Chioy.Communication.Networking.Client.Client
                 Patient_DTO patient = null;
                 if (_helper == null) return null;
                 Trace.WriteLine($"获取病人信息地址为{Address.GetPatientUrl}");
-                var url = Address.GetPatientUrl +
-                          $"?{ClientConstants.Type}={ClientConstants.KR_GET_PATIENT}&{ClientConstants.Content}={patientId}";
+                var url = Address.GetPatientUrl + "/" + patientId;
                 _helper.NeedUrlDecode = NeedUrlDecode;
                 var jsonStr = _helper.HttpGetData(url);
                 Trace.WriteLine($"获取病人信息为{jsonStr}");
@@ -52,7 +51,7 @@ namespace Chioy.Communication.Networking.Client.Client
                 Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
                 _helper.Timeout = Timeout;
                 _helper.NeedUrlDecode = NeedUrlDecode;
-                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result, ClientConstants.KR_POST_RESULT);
+                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result);
                 Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", resultStr));
                 return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
             }

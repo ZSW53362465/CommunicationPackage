@@ -6,7 +6,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 
-namespace Chioy.Communication.Networking.Service.ProductService
+namespace Chioy.Communication.Networking.Service
 {
     public class KRService
     {

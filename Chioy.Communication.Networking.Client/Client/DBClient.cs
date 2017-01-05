@@ -61,9 +61,9 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             _protocol = Protocol.DB;
         }
-        public override void ConfigClient()
+        public override void ConfigClient(ProductType type, Protocol protocol)
         {
-            base.ConfigClient();
+            base.ConfigClient(type, protocol);
             _config = KRNetworkingConfig.Load();
             _dbConfig = _config.DatabaseConfigModel;
             _connStr = _dbConfig.ConnectionString;

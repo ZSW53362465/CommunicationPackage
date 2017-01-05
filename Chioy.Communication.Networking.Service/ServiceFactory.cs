@@ -1,5 +1,4 @@
-﻿using Chioy.Communication.Networking.Service.ProductService;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -49,23 +48,27 @@ namespace Chioy.Communication.Networking.Service
             switch (binding)
             {
                 case BindingType.TCP:
-                    NetTcpBinding tcpBinding = new NetTcpBinding();
-                    tcpBinding.MaxReceivedMessageSize = 2147483647;
-                    tcpBinding.MaxBufferPoolSize = 2147483647;
-                    tcpBinding.Security.Mode = SecurityMode.None;
+                    NetTcpBinding tcpBinding = new NetTcpBinding
+                    {
+                        MaxReceivedMessageSize = 2147483647,
+                        MaxBufferPoolSize = 2147483647,
+                        Security = {Mode = SecurityMode.None}
+                    };
                     bindinginstance = tcpBinding;
                     break;
                 case BindingType.HTTP:
-                    WebHttpBinding httpBinding = new WebHttpBinding();
-                    httpBinding.MaxBufferSize = 2147483647;
-                    httpBinding.MaxReceivedMessageSize = 2147483647;
-                    httpBinding.ReaderQuotas = new XmlDictionaryReaderQuotas()
+                    WebHttpBinding httpBinding = new WebHttpBinding
                     {
-                        MaxArrayLength = 2147483647,
-                        MaxBytesPerRead = 2147483647,
-                        MaxDepth = 2147483647,
-                        MaxNameTableCharCount = 2147483647,
-                        MaxStringContentLength = 2147483647
+                        MaxBufferSize = 2147483647,
+                        MaxReceivedMessageSize = 2147483647,
+                        ReaderQuotas = new XmlDictionaryReaderQuotas()
+                        {
+                            MaxArrayLength = 2147483647,
+                            MaxBytesPerRead = 2147483647,
+                            MaxDepth = 2147483647,
+                            MaxNameTableCharCount = 2147483647,
+                            MaxStringContentLength = 2147483647
+                        }
                     };
                     bindinginstance = httpBinding;
                     break;

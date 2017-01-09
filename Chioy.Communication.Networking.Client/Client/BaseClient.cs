@@ -1,15 +1,14 @@
-﻿using Chioy.Communication.Networking.Common;
-using Chioy.Communication.Networking.Models.DTO;
-using Chioy.Communication.Networking.Models.ReportMetadata;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Media.Imaging;
 using System.Xml;
+using Chioy.Communication.Networking.Common;
+using Chioy.Communication.Networking.Models.DTO;
+using Chioy.Communication.Networking.Models.ReportMetadata;
 
-namespace Chioy.Communication.Networking.Client
+namespace Chioy.Communication.Networking.Client.Client
 {
     public class BaseClient<T> : IDisposable where T : BaseCheckResult
     {
@@ -160,9 +159,7 @@ namespace Chioy.Communication.Networking.Client
             _protocol = protocol;
         }
         public string BaseAddress { get; set; }
-
         public int Port { get; set; }
-
         public string FTPAddress { get; set; }
         public string FTPUserName { get; set; }
         public string FTPPassword { get; set; }

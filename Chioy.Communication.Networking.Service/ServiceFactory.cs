@@ -6,6 +6,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.Text;
 using System.Xml;
+using Chioy.Communication.Networking.Service.Provider;
 
 namespace Chioy.Communication.Networking.Service
 {
@@ -17,11 +18,11 @@ namespace Chioy.Communication.Networking.Service
     public class ServiceFactory
     {
 
-        public static Tuple<KRService, ServiceHost> CreateService<IT, T>(string url, string baseUrl) where T : IT
+        public static Tuple<DataProviderAdpter, ServiceHost> CreateService<IT, T>(string url, string baseUrl) where T : IT
         {
             return CreateService<IT, T>(url, BindingType.TCP, baseUrl);
         }
-        public static Tuple<KRService, ServiceHost> CreateService<IT, T>(string url, BindingType binding, string baseUrl) where T : IT 
+        public static Tuple<DataProviderAdpter, ServiceHost> CreateService<IT, T>(string url, BindingType binding, string baseUrl) where T : IT 
         {
             if (string.IsNullOrEmpty(url)) throw new NotSupportedException("This url is not Null or Empty!");
             object service = Activator.CreateInstance(typeof(T));
@@ -33,7 +34,7 @@ namespace Chioy.Communication.Networking.Service
             {
                 endPoint.Behaviors.Add(new WebHttpBehavior() { HelpEnabled = true });
             }
-            return new Tuple<KRService, ServiceHost>(service as KRService, host);
+            return new Tuple<DataProviderAdpter, ServiceHost>(service as DataProviderAdpter, host);
         }
 
         #region 创建传输协议

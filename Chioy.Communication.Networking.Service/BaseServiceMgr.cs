@@ -11,7 +11,7 @@ using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Service
 {
-    public class BaseService : IDisposable
+    public class BaseServiceMgr : IDisposable
     {
 
         protected BindingType _type;
@@ -26,7 +26,7 @@ namespace Chioy.Communication.Networking.Service
 
         public CommunicationState ServiceState { get { return _state; } }
 
-        protected KRService currentService;
+        protected DataProviderAdpter providerAdpter;
 
         private string _address = string.Empty;
 
@@ -39,7 +39,7 @@ namespace Chioy.Communication.Networking.Service
         }
 
 
-        public BaseService()
+        public BaseServiceMgr()
         {
             configSetting = CommunicationHelper.GetConfigSetting();
         }
@@ -52,7 +52,7 @@ namespace Chioy.Communication.Networking.Service
 
         public void RegisterProvider(IDataProvider provider)
         {
-            currentService.RegisterProvider(provider);
+            providerAdpter.RegisterProvider(provider);
         }
 
         private void BuildAddress()

@@ -1,12 +1,12 @@
-﻿using Chioy.Communication.Networking.Models;
-using Chioy.Communication.Networking.Models.DTO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ServiceModel;
 using System.ServiceModel.Web;
+using Chioy.Communication.Networking.Models;
+using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
 
-namespace Chioy.Communication.Networking.Interface
+namespace Chioy.Communication.Networking.Interface.ProductInterface.HTTP
 {
     [ServiceContract(SessionMode = SessionMode.Allowed)]
     public interface IBMDHttpService

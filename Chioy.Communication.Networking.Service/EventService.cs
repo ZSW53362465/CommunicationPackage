@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
+using Chioy.Communication.Networking.Service.Provider;
 
 namespace Chioy.Communication.Networking.Service
 {
@@ -14,7 +15,7 @@ namespace Chioy.Communication.Networking.Service
     public delegate void ClientLostEventHandler(SubscribeArg arg);
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class EventService : KRService, IEventService
+    public class EventService : IEventService
     {
 
         public static readonly ConcurrentDictionary<string, SubscribeContext> _Subscribers = new ConcurrentDictionary<string, SubscribeContext>();

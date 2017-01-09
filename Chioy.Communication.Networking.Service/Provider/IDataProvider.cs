@@ -10,7 +10,5 @@ namespace Chioy.Communication.Networking.Service.Provider
     public interface IDataProvider
     {
         Patient_DTO GetPatient(string patientId);
-        KRResponse PostExamResult(ExamResultMetadata<BMDCheckResult> result);
-
     }
 }

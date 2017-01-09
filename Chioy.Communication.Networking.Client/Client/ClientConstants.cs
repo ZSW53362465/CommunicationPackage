@@ -11,8 +11,8 @@ namespace Chioy.Communication.Networking.Client.Client
         public const string DoAction = "doAction";
         public const string Type = "type";
         public const string Content = "content";
-        public const string KR_GET_PATIENT = "KR_Get_Patient";
-        public const string KR_POST_RESULT = "KR_Post_Result";
+        public const string KR_GET_PATIENT = "KR_GET_PATIENT";
+        public const string KR_POST_RESULT = "KR_POST_RESULT";
         public const string KR_POST_OPERATOR = "KR_Post_Operator";
     }
 }

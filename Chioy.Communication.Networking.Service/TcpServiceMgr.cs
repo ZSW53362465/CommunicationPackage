@@ -8,11 +8,12 @@ using Chioy.Communication.Networking.Interface.ProductInterface.TCP;
 using Chioy.Communication.Networking.Service.ProductService;
 using Chioy.Communication.Networking.Service.ProductService.HTTP;
 using Chioy.Communication.Networking.Service.ProductService.TCP;
+using Chioy.Communication.Networking.Service.Provider;
 using static Chioy.Communication.Networking.Common.Constants;
 
 namespace Chioy.Communication.Networking.Service
 {
-    public class TcpServiceMgr : BaseService
+    public class TcpServiceMgr : BaseServiceMgr
     {
         public event EventHandler<DataEventArgs> NewClientSubscribed;
         public event EventHandler<DataEventArgs> ClientLost;
@@ -24,7 +25,7 @@ namespace Chioy.Communication.Networking.Service
 
         private static readonly object lockHelper = new object();
 
-        private string EventServiceAddress
+        private string eventServiceAddress
         {
             get { return string.Format("net.tcp://{0}:{1}/{2}", configSetting.BaseAddress, configSetting.WCFPort, ServiceName.KREventService); }
         }
@@ -56,13 +57,13 @@ namespace Chioy.Communication.Networking.Service
         }
         private ServiceHost BuildHeartJumpService()
         {
-            var servicePair = ServiceFactory.CreateService<IEventService, EventService>(EventServiceAddress, _type, string.Empty);
+            var servicePair = ServiceFactory.CreateService<IEventService, EventService>(eventServiceAddress, _type, string.Empty);
             _eventService = servicePair.Item1 as IEventService;
             return servicePair.Item2;
         }
         private ServiceHost BuildServiceHost()
         {
-            Tuple<KRService, ServiceHost> servicePair = null;
+            Tuple<DataProviderAdpter, ServiceHost> servicePair = null;
             switch (_produceType)
             {
                 case ProductType.BMD:
@@ -74,7 +75,7 @@ namespace Chioy.Communication.Networking.Service
                 default:
                     break;
             }
-            currentService = servicePair.Item1;
+            providerAdpter = servicePair.Item1;
             _krHost = servicePair.Item2;
             return servicePair.Item2;
         }

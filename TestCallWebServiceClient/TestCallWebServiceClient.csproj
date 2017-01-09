@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="document\通信模块文档.rar" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Chioy.Communication.Networking.Client\Chioy.Communication.Networking.Client.csproj">

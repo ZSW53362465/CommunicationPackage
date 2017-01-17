@@ -804,6 +804,29 @@ namespace Chioy.Communication.Networking.Client.FTP
             catch { }
         }//method
 
+        public bool Delete(string p_filename)
+        {
+            var fileInf = new FileInfo(p_filename);
+            string uri = Path.Combine(Host, fileInf.Name);
+
+            try
+            {
+                var listRequest = (FtpWebRequest)WebRequest.Create(new Uri(uri));
+
+                listRequest.Method = WebRequestMethods.Ftp.DeleteFile;
+
+                listRequest.Credentials = new NetworkCredential(UserName, Password);
+
+                var listResponse = (FtpWebResponse)listRequest.GetResponse();
+
+                return (listResponse.StatusDescription.StartsWith("250"));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         private void DoUploadResumeAsync(object threadParameters)
         {
             try

@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MySql.Data">
       <HintPath>..\Reference\MySql.Data.dll</HintPath>
     </Reference>
@@ -45,12 +46,17 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WPFToolkit.Extended">
+      <HintPath>..\Reference\WPFToolkit.Extended.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientProxy.cs" />
@@ -74,10 +80,12 @@
     <Compile Include="DB\DBModels\DataBaseSoft.cs" />
     <Compile Include="DB\DBModels\DataCallBackModel.cs" />
     <Compile Include="DB\DBModels\FileFormatModel.cs" />
+    <Compile Include="DB\DBModels\HttpConfigModel.cs" />
     <Compile Include="DB\DBModels\ModelBase.cs" />
     <Compile Include="DB\DBModels\PatientMapModel.cs" />
     <Compile Include="DB\DBModels\ReportSaveModel.cs" />
     <Compile Include="DB\DBModels\TableMapModel.cs" />
+    <Compile Include="DB\DBModels\WcfConfigModel.cs" />
     <Compile Include="DB\KRNetworkingConfig.cs" />
     <Compile Include="DB\KRNetworkingHelper.cs" />
     <Compile Include="FTP\FtpHelper.cs" />
@@ -90,6 +98,7 @@
     <Compile Include="FTP\Helper\TransmissionState.cs" />
     <Compile Include="FTP\UploadFileCompletedEventLibArgs.cs" />
     <Compile Include="FTP\UploadProgressChangedLibArgs.cs" />
+    <Compile Include="HTTP\HttpEngine.cs" />
     <Compile Include="HTTP\HttpHelper.cs" />
     <Compile Include="Client\BaseClient.cs" />
     <Compile Include="HTTP\KRWebClient.cs">

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Chioy.Communication.Networking.Client.HTTP;
 using Chioy.Communication.Networking.Common;
 using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
@@ -40,7 +41,7 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             get { return _protocol; }
         }
-        public virtual void ConfigClient(ProductType type,Protocol protocol)
+        public virtual void ConfigClient(ProductType type, Protocol protocol)
         {
             _protocol = protocol;
             _productType = type;
@@ -120,8 +121,12 @@ namespace Chioy.Communication.Networking.Client.Client
             Trace.WriteLine(string.Format("配置信息:GetPatientUrl:{0}, PostExamResult:{1}", Address.GetPatientUrl, Address.GetCheckResultUrl));
         }
 
-        public virtual Patient_DTO GetPatient(string patientId) { return new Patient_DTO(); }
+        public virtual Patient_DTO GetPatient(string patientId, HttpItem pitem = null) { return new Patient_DTO(); }
 
+        public virtual Patient_DTO GetPatient(string patientId)
+        { return new Patient_DTO(); }
+
+        public virtual KRResponse PostExamResult(ExamResultMetadata<T> result, HttpItem pitem = null) { return null; }
         public virtual KRResponse PostExamResult(ExamResultMetadata<T> result) { return null; }
 
         public virtual KRResponse PostOperator(Operator_DTO op) { return null; }

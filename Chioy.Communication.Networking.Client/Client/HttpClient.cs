@@ -1,4 +1,5 @@
-﻿using Chioy.Communication.Networking.Common;
+﻿using Chioy.Communication.Networking.Client.HTTP;
+using Chioy.Communication.Networking.Common;
 using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
@@ -21,39 +22,42 @@ namespace Chioy.Communication.Networking.Client.Client
             _helper = new HttpHelper();
 
         }
-      
-        public override Patient_DTO GetPatient(string patientId)
+
+        public override Patient_DTO GetPatient(string patientId, HttpItem pitem = null)
         {
             try
             {
-                Trace.WriteLine($"开始获取病人{patientId}的信息");
+                CommunicationHelper.RecordTrace("GetPatient", $"开始获取病人{patientId}的信息");
                 Patient_DTO patient = null;
                 if (_helper == null) return null;
-                Trace.WriteLine($"获取病人信息地址为{Address.GetPatientUrl}");
-                var url = Address.GetPatientUrl + "/" + patientId;
+                CommunicationHelper.RecordTrace("GetPatient", $"获取病人信息地址为{Address.GetPatientUrl}");
+                string url = string.Empty;
+                if (Address.GetPatientUrl.EndsWith("=") || Address.GetPatientUrl.EndsWith("/"))
+                {
+                    url = Address.GetPatientUrl + patientId;
+                }
+                else
+                {
+                    url = Address.GetPatientUrl + "/" + patientId;
+                }
                 _helper.NeedUrlDecode = NeedUrlDecode;
-                var jsonStr = _helper.HttpGetData(url);
-                Trace.WriteLine($"获取病人信息为{jsonStr}");
-                patient = CommunicationHelper.DeserializeJsonToObj<Patient_DTO>(jsonStr);
+                patient = _helper.HttpGetData<Patient_DTO>(url, pitem);
                 return patient;
             }
             catch (Exception ex)
             {
                 throw new Exception("获取病人信息失败");
             }
-
         }
 
-        public override KRResponse PostExamResult(ExamResultMetadata<T> result)
+        public override KRResponse PostExamResult(ExamResultMetadata<T> result, HttpItem pitem = null)
         {
             try
             {
                 Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
-                _helper.Timeout = Timeout;
-                _helper.NeedUrlDecode = NeedUrlDecode;
-                string resultStr = _helper.HttpPostData(Address.PostCheckResultUrl, result);
-                Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", resultStr));
-                return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
+                var response = _helper.HttpPostData<ExamResultMetadata<T>, KRResponse>(Address.PostCheckResultUrl, result);
+                Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", response.Status));
+                return response;
             }
             catch (Exception ex)
             {
@@ -61,13 +65,12 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public TOut PostData<TIn, TOut>(string url, TIn obj)
+        public TOut PostData<TIn, TOut>(string url, TIn obj, HttpItem pitem = null)
         {
             try
             {
                 _helper.NeedUrlDecode = NeedUrlDecode;
-                var result = _helper.HttpPostData(url, obj);
-                return CommunicationHelper.DeserializeJsonToObj<TOut>(result);
+                return _helper.HttpPostData<TIn, TOut>(url, obj, pitem);
             }
             catch (Exception ex)
             {
@@ -75,12 +78,11 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public string PostData<TIn>(string url, TIn obj)
+        public string PostData<TIn>(string url, TIn obj, HttpItem pitem = null)
         {
             try
             {
-                _helper.NeedUrlDecode = NeedUrlDecode;
-                return _helper.HttpPostData(url, obj);
+                return _helper.HttpPostData(url, obj, pitem);
             }
             catch (Exception ex)
             {
@@ -88,12 +90,47 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public string PostData(string url, NameValueCollection pCollection)
+        public TOut GetData<TOut>(string url, HttpItem pitem = null)
         {
             try
             {
-                _helper.NeedUrlDecode = NeedUrlDecode;
-                return _helper.HttpPostData(url, pCollection);
+                return _helper.HttpGetData<TOut>(url, pitem);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("获取数据失败", ex);
+            }
+        }
+
+        public string GetData(string url, HttpItem pitem = null)
+        {
+            try
+            {
+                return _helper.HttpGetData(url, pitem);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("获取数据失败", ex);
+            }
+        }
+
+        public HttpResult GetData(HttpItem pitem)
+        {
+            try
+            {
+                return _helper.HttpGetData(pitem);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("获取数据失败", ex);
+            }
+        }
+
+        public HttpResult PostData(HttpItem pitem, string postData)
+        {
+            try
+            {
+                return _helper.HttpPostData(pitem, postData);
             }
             catch (Exception ex)
             {
@@ -101,35 +138,22 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public TOut GetData<TOut>(string url)
-        {
-            try
-            {
-                _helper.NeedUrlDecode = NeedUrlDecode;
-                return _helper.HttpGetData<TOut>(url);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("获取数据失败");
-            }
-        }
+        //public override KRResponse PostOperator(Operator_DTO op)
+        //{
+        //    try
+        //    {
+        //        Trace.WriteLine(string.Format("开始发送操作人员信息，地址为{0}", Address.PostOperatorUrl));
+        //        _helper.Timeout = Timeout;
+        //        _helper.NeedUrlDecode = NeedUrlDecode;
+        //        var resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, ClientConstants.KR_POST_OPERATOR);
+        //        Trace.WriteLine(string.Format("开始发送操作人员信息结束，返回结果{0}", resultStr));
+        //        return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
 
-        public override KRResponse PostOperator(Operator_DTO op)
-        {
-            try
-            {
-                Trace.WriteLine(string.Format("开始发送操作人员信息，地址为{0}", Address.PostOperatorUrl));
-                _helper.Timeout = Timeout;
-                _helper.NeedUrlDecode = NeedUrlDecode;
-                var resultStr = _helper.HttpPostData(Address.PostOperatorUrl, op, ClientConstants.KR_POST_OPERATOR);
-                Trace.WriteLine(string.Format("开始发送操作人员信息结束，返回结果{0}", resultStr));
-                return CommunicationHelper.DeserializeJsonToObj<KRResponse>(resultStr);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-        }
+        //}
     }
 }

@@ -13,7 +13,7 @@ namespace ServiceHost
         {
             if (result != null)
             {
-                return new KRResponse() { Status = "SUCCESS", Msg = "" };
+                return new KRResponse() { Status = "SUCCESS", Msg = "撒旦发射点发" };
             }
             return null;
         }

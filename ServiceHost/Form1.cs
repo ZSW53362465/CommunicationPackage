@@ -15,7 +15,7 @@ namespace ServiceHost
 {
     public partial class Form1 : Form
     {
-        BaseService service;
+        BaseServiceMgr service;
         TcpServiceMgr tcpService;
         HttpServiceMgr httpService;
         public Form1()

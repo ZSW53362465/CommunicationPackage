@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using Chioy.Communication.Networking.Client.DB.DBModels;
 
 
 namespace Chioy.Communication.Networking.Client.DB
@@ -47,6 +48,10 @@ namespace Chioy.Communication.Networking.Client.DB
         public ReportSaveModel ReportSaveModel { get; set; }
 
         public DataCallBackModel DataCallBackModel { get; set; }
+
+        public HttpConfigModel HttpConfigModel { get; set; }
+
+        public WcfConfigModel WcfConfigModel { get; set; }
 
         #endregion
 
@@ -282,6 +287,8 @@ namespace Chioy.Communication.Networking.Client.DB
                 PatientMapModel = new PatientMapModel(ConnectionString.Value);
                 ReportSaveModel = new ReportSaveModel();
                 DataCallBackModel = new DataCallBackModel();
+                HttpConfigModel = new HttpConfigModel();
+                WcfConfigModel = new WcfConfigModel();
             }
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ServiceModel;
 using Chioy.Communication.Networking.Interface;
+using Chioy.Communication.Networking.Interface.ProductInterface.HTTP;
 using Chioy.Communication.Networking.Models;
 using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
@@ -10,7 +11,7 @@ using Chioy.Communication.Networking.Service.Provider;
 namespace Chioy.Communication.Networking.Service.ProductService.HTTP
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class BMDHttpService : KRService, IBMDHttpService
+    public class BMDHttpService : DataProviderAdpter, IBMDHttpService
     {
         private IBMDDataProvider Provider
         {

@@ -13,9 +13,12 @@ using Chioy.Communication.Networking.Service.Provider;
 namespace Chioy.Communication.Networking.Service.ProductService.TCP
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class BMDTcpService : KRService, IBMDTcpService
+    public class BMDTcpService : DataProviderAdpter, IBMDTcpService
     {
-        private IBMDDataProvider Provider => _provider as IBMDDataProvider;
+        private IBMDDataProvider Provider
+        {
+            get { return _provider as IBMDDataProvider; }
+        }
         //IKRDuplexCallback callback = null;
 
         public BMDTcpService()
@@ -43,18 +46,16 @@ namespace Chioy.Communication.Networking.Service.ProductService.TCP
             _userList.Remove(_userList.FirstOrDefault(u => u.ID == id));
         }
 
+        #endregion
         public Patient_DTO GetPatient(string patientId)
         {
             return Provider.GetPatient(patientId);
         }
-
 
         public KRResponse PostExamResult(string resultJson)
         {
             var result = CommunicationHelper.DeserializeJsonToObj<ExamResultMetadata<BMDCheckResult>>(resultJson);
             return Provider.PostExamResult(result);
         }
-
-        #endregion
     }
 }

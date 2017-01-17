@@ -59,11 +59,13 @@
     <Compile Include="DTO\Operator_DTO.cs" />
     <Compile Include="DTO\Patient_DTO.cs" />
     <Compile Include="DTO\PatientCheck_DTO.cs" />
+    <Compile Include="ReportMetadata\APIPWVCheckResult.cs" />
     <Compile Include="ReportMetadata\BaseCheckResult.cs" />
     <Compile Include="ReportMetadata\ExamResultMetadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportMetadata\BMDCheckResult.cs" />
-    <Compile Include="ReportMetadata\KRTCDCheckResult.cs" />
+    <Compile Include="ReportMetadata\KRSGCheckResult.cs" />
+    <Compile Include="ReportMetadata\TCDDopplerCheckResult.cs" />
     <Compile Include="UserInfo.cs" />
   </ItemGroup>
   <ItemGroup>

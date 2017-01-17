@@ -112,7 +112,7 @@ namespace Chioy.Communication.Networking.Client.TCP
                 {
                     case ProductType.BMD:
                         var bmdTcpService = _proxy as IBMDTcpService;
-                        var jsonStr = CommunicationHelper.SerializeObjToJsonStr<ExamResultMetadata<T>>(result);
+                        var jsonStr = CommunicationHelper.SerializeObjToJsonStr(result);
                         if (bmdTcpService != null) return bmdTcpService.PostExamResult(jsonStr);
                         break;
                     case ProductType.KRTCD:

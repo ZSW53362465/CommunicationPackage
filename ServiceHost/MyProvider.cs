@@ -13,7 +13,7 @@ namespace ServiceHost
         {
             if (result != null)
             {
-                return new KRResponse() { Status = "SUCCESS", Msg = "" };
+                return new KRResponse() { Status = "SUCCESS", Msg = "撒旦发射点发" };
             }
             return null;
         }
@@ -23,7 +23,7 @@ namespace ServiceHost
             var patient = new Patient_DTO()
             {
                 PatientID = patientId,
-                Name = "张士威",
+                Name = "路飞",
                 Age = 27,
                 Address = "河北廊坊",
                 Birthday = DateTime.Now.AddYears(-30).ToShortDateString(),
@@ -33,7 +33,8 @@ namespace ServiceHost
                 FirstName = "Zhang",
                 Work = "IT",
                 Gender = 1,
-                Nation = "汉"
+                Nation = "汉",
+                CustomerFields = new List<CustomerFields>() { new CustomerFields() { PatientID = patientId, DataType = "string", FieldName = "别名", FieldValue = "海贼王" } }
             };
 
             return patient;

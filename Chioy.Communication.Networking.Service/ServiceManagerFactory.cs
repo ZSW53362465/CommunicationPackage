@@ -28,9 +28,9 @@ namespace Chioy.Communication.Networking.Service
         }
 
 
-        public BaseService GetService(BindingType type)
+        public BaseServiceMgr GetService(BindingType type)
         {
-            BaseService rtnService = null;
+            BaseServiceMgr rtnService = null;
             switch (type)
             {
                 case BindingType.TCP:

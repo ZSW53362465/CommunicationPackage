@@ -33,11 +33,13 @@ namespace Chioy.Communication.Networking.Common
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         public static extern int GetPrivateProfileInt(string section, string key, int def, string filePath);
 
-        public static string SerializeObjToJsonStr<T>(T obj, Encoding encoding = null)
+        public static string SerializeObjToJsonStr(object obj, Encoding encoding = null)
         {
+            if (obj is string || obj.GetType().IsValueType) return obj.ToString();
+
             encoding = encoding == null ? Encoding.UTF8 : encoding;
             var jsonStr = string.Empty;
-            DataContractJsonSerializer json = new DataContractJsonSerializer(typeof(T));
+            DataContractJsonSerializer json = new DataContractJsonSerializer(obj.GetType());
 
             try
             {
@@ -201,11 +203,16 @@ namespace Chioy.Communication.Networking.Common
             }
             return new Common.ConfigSetting();
         }
-        private static void TraceException(string method, string description, string message)
+        public static void TraceException(string method, string description, string message)
         {
             Trace.WriteLine("KRNetError:" + message);
 
             throw new KRException(method, description, message);
+        }
+
+        public static void RecordTrace(string method, string information)
+        {
+            Trace.WriteLine(string.Format("{0}:{1}", method, information));
         }
     }
     public class UIHelper

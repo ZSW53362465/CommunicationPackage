@@ -13,14 +13,7 @@ namespace Chioy.Communication.Networking.Client
         Wcf,
         Http
     }
-    public enum Protocol
-    {
-        WebService,
-        Ftp,
-        Http,
-        DB,
-        Wcftcp
-    }
+   
 
     public class ClientProxy<T> : IDisposable where T : BaseCheckResult
     {

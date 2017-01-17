@@ -33,9 +33,9 @@ namespace Chioy.Communication.Networking.Client
         public const string Key_FtpLocalDir = "LocalDir";
 
         protected Protocol _protocol;
-
         protected ProductType _productType;
         protected AddressInfo Address = null;
+        protected BindingType _bindingType;
 
         public Protocol Protocol
         {

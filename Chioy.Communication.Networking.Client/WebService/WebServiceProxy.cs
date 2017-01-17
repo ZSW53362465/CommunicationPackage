@@ -233,7 +233,7 @@ namespace Chioy.Communication.Networking.Client
                     else
                         mi.Invoke(Instance, param);
                 }
-                catch (TypeLoadException tle)
+                catch (TypeLoadException ex)
                 {
                     //记录Web服务方法参数个数错误日志代码位置 
                     ClientHelper.TraceException("WebServiceClient.ExecuteNoQuery", "调用" + methodName + "失败", ex.Message);

@@ -1,4 +1,6 @@
-﻿using Chioy.Communication.Networking.Service;
+﻿using Chioy.Communication.Networking.Common;
+using Chioy.Communication.Networking.Interface;
+using Chioy.Communication.Networking.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,9 +30,16 @@ namespace ServiceHost
                 MessageBox.Show("服务已启动");
                 return;
             }
+            //启动骨密度 TCP服务
+            //BaseService service;
+            //TcpServiceMgr tcpService;
+            //根据TCP联网方式创建并返回Service
             service = ServiceManagerFactory.Instance().GetService(BindingType.TCP);
+            //配置当前使用通信模块的产品
             service.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
+            //注册Provider，提供用来提供病人和接收检查结果
             service.RegisterProvider(new MyProvider());
+            //客户端断线和新客户端上线是TCPService特有的功能，所以用as来转化Service的类型
             tcpService = service as TcpServiceMgr;
             tcpService.ClientLost += Service_ClientLost;
             tcpService.NewClientSubscribed += Service_NewClientSubscribed;
@@ -58,7 +67,7 @@ namespace ServiceHost
 
         private void button1_Click(object sender, EventArgs e)
         {
-            tcpService.SendDataToClient(new Chioy.Communication.Networking.Interface.ArgumentBase<string>() { Code= Chioy.Communication.Networking.Interface.KRCode.DataFromSvr, Msg = this.textBox1.Text });
+            tcpService.SendDataToClient(new ArgumentBase<string>() { Code= Chioy.Communication.Networking.Interface.KRCode.DataFromSvr, Msg = this.textBox1.Text });
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -68,11 +77,14 @@ namespace ServiceHost
 
         private void button3_Click(object sender, EventArgs e)
         {
-            httpService = ServiceManagerFactory.Instance().GetService(BindingType.HTTP) as HttpServiceMgr;
-            httpService.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
-            httpService.RegisterProvider(new MyProvider());
-
-
+            //启动骨密度 TCP服务
+            //BaseService service;
+            //根据HTTP联网方式创建并返回Service
+            service = ServiceManagerFactory.Instance().GetService(BindingType.HTTP);
+            //配置当前使用通信模块的产品
+            service.ConfigService( Chioy.Communication.Networking.Common.ProductType.BMD);
+            //注册Provider，提供用来提供病人和接收检查结果
+            service.RegisterProvider(new MyProvider());
 
         }
     }

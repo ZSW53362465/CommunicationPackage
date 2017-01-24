@@ -19,4 +19,17 @@ namespace Chioy.Communication.Networking.Common
         OleDb,
         PostgreSQL
     }
+    public enum BindingType
+    {
+        TCP,
+        HTTP,
+    }
+    public enum Protocol
+    {
+        WebService,
+        Ftp,
+        Http,
+        DB,
+        Wcftcp
+    }
 }

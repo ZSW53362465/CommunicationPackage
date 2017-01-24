@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chioy.Communication.Networking.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
@@ -10,11 +11,7 @@ using Chioy.Communication.Networking.Service.Provider;
 
 namespace Chioy.Communication.Networking.Service
 {
-    public enum BindingType
-    {
-        TCP,
-        HTTP,
-    }
+  
     public class ServiceFactory
     {
 

@@ -127,7 +127,9 @@
       <Name>Chioy.Communication.Networking.Models</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Conf\NetConnection.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy $(TargetDir)$(TargetName).dll ..\..\..\KRWcfLib\  /y</PostBuildEvent>

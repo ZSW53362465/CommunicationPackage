@@ -61,11 +61,11 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             _protocol = Protocol.DB;
         }
-        public override void ConfigClient(ProductType type, Protocol protocol)
+        public override void ConfigClient(Protocol protocol)
         {
             try
             {
-                base.ConfigClient(type, protocol);
+                base.ConfigClient(protocol);
                 _config = KRNetworkingConfig.Load();
                 if (_config == null)
                 {

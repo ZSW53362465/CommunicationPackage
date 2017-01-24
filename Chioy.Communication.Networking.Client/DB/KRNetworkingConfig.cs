@@ -71,7 +71,7 @@ namespace Chioy.Communication.Networking.Client.DB
             {
                 var xs = new XmlSerializer(typeof(KRNetworkingConfig));
 
-                fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+                fs = new FileStream(path, FileMode.OpenOrCreate);
                 writer = new System.Xml.XmlTextWriter(fs, System.Text.Encoding.UTF8);
                 xs.Serialize(writer, this);
             }

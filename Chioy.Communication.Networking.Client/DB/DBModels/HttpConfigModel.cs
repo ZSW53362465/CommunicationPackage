@@ -16,6 +16,7 @@ namespace Chioy.Communication.Networking.Client.DB.DBModels
         private string _webServiceName;
         private bool _isUseToken;
         private bool _isUsePort;
+        private string _resultParamterName;
 
         public string BaseAddress
         {
@@ -148,6 +149,19 @@ namespace Chioy.Communication.Networking.Client.DB.DBModels
                 {
                     _isUsePort = value;
                     RaisePropertyChanged("IsUsePort");
+                }
+            }
+        }
+
+        public string ResultParamter
+        {
+            get { return _resultParamterName; }
+            set
+            {
+                if (_resultParamterName != value)
+                {
+                    _resultParamterName = value;
+                    RaisePropertyChanged("ResultParamter");
                 }
             }
         }

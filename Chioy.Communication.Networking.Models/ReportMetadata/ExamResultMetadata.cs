@@ -29,6 +29,7 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
         {
             this.Type = type;
         }
+        public string ParamterName { get; set; }
         public ExamResultMetadata()
         { }
         [DefaultValue("")]

@@ -49,7 +49,8 @@ namespace Chioy.Communication.Networking.Client
                     {
                         Method = "Post",
                         Postdata = postStr,
-                        ContentType = contentType,
+                        ContentType = "application/x-www-form-urlencoded",
+                        Encoding=Encoding.UTF8,
                         URL = url
                     };
                 }
@@ -57,7 +58,7 @@ namespace Chioy.Communication.Networking.Client
                 {
                     pitem.Method = "Post";
                     pitem.Postdata = postStr;
-                    pitem.ContentType = contentType;
+                    //pitem.ContentType = contentType;
                     pitem.URL = url;
                 }
 
@@ -102,7 +103,7 @@ namespace Chioy.Communication.Networking.Client
         {
 
             var resultStr = HttpPostData(url, objIn, pitem);
-          
+
             return CommunicationHelper.DeserializeJsonToObj<TOut>(resultStr);
         }
 
@@ -173,7 +174,7 @@ namespace Chioy.Communication.Networking.Client
         /// <param name="item">Post请求配置信息</param>
         /// <param name="postData">Post请求发送的数据</param>
         /// <returns></returns>
-        public HttpResult HttpPostData(HttpItem item,string postData)
+        public HttpResult HttpPostData(HttpItem item, string postData)
         {
             try
             {
@@ -184,9 +185,23 @@ namespace Chioy.Communication.Networking.Client
             catch (Exception ex)
             {
                 ClientHelper.TraceException("HttpPostData:Post", "上传数据失败", ex.Message);
-                return new HttpResult() {StatusCode = HttpStatusCode.BadRequest};
+                return new HttpResult() { StatusCode = HttpStatusCode.BadRequest };
             }
         }
+
+        public HttpResult HttpPostData(HttpItem item)
+        {
+            try
+            {
+                return _engine.GetHtml(item);
+            }
+            catch (Exception ex)
+            {
+                ClientHelper.TraceException("HttpPostData:Post", "上传数据失败", ex.Message);
+                return new HttpResult() { StatusCode = HttpStatusCode.BadRequest };
+            }
+        }
+
         /// <summary>
         /// Get方式请求数据
         /// </summary>

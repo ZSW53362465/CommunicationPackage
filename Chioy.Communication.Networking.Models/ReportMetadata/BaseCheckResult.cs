@@ -8,6 +8,7 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
 {
     public class BaseCheckResult
     {
+
         public BaseCheckResult()
         {
 

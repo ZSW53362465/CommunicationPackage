@@ -140,5 +140,8 @@ namespace Chioy.Communication.Networking.Models.ReportMetadata
             get;
             set;
         }
+        public string TBIL { get; set; }
+        public string TBIR { get; set; }
+
     }
 }

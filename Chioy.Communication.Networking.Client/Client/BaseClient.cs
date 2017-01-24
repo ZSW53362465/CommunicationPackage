@@ -21,8 +21,10 @@ namespace Chioy.Communication.Networking.Client.Client
         public const string Key_Port = "Port";
         public const string Section_BusinessConfig = "BUSINESS";
         public const string Key_GetPatientUrl = "GetPatientUrl";
+
         public const string Key_GetCheckResultUrl = "GetCheckResult";
         public const string Key_PostCheckResultUrl = "PostCheckResultUrl";
+        public const string Key_PostResultParamName = "PostParameter";
         public const string Key_PostOperatorUrl = "PostOperatorUrl";
 
         public const string Section_FtpConfig = "FTP_CONFIG";
@@ -41,10 +43,10 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             get { return _protocol; }
         }
-        public virtual void ConfigClient(ProductType type, Protocol protocol)
+        public virtual void ConfigClient(Protocol protocol)
         {
             _protocol = protocol;
-            _productType = type;
+            _productType = GetTypeByT();
             Trace.WriteLine("开始读取联网配置信息");
             Address = new AddressInfo(_protocol);
             var baseAddressSb = new StringBuilder(32);
@@ -57,7 +59,7 @@ namespace Chioy.Communication.Networking.Client.Client
             var getCheckResultUrlSb = new StringBuilder(100);
             var postCheckResultUrlSb = new StringBuilder(100);
             var postOperatorUrlSb = new StringBuilder(100);
-
+            var postResultParameterNameSb = new StringBuilder(50);
             CommunicationHelper.GetPrivateProfileString(Section_NetConfig, Key_BassAddress, "", baseAddressSb, 32, _configPath);
             CommunicationHelper.GetPrivateProfileString(Section_NetConfig, Key_BassAddress, "", baseAddressSb, 32, _configPath);
             CommunicationHelper.GetPrivateProfileString(Section_FtpConfig, Key_FtpAddress, "", ftpAddressSb, 100, _configPath);
@@ -69,6 +71,9 @@ namespace Chioy.Communication.Networking.Client.Client
             CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_GetCheckResultUrl, "", getCheckResultUrlSb, 100, _configPath);
             CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostCheckResultUrl, "", postCheckResultUrlSb, 100, _configPath);
             CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostOperatorUrl, "", postOperatorUrlSb, 100, _configPath);
+            CommunicationHelper.GetPrivateProfileString(Section_BusinessConfig, Key_PostResultParamName, "",
+             postResultParameterNameSb, 50, _configPath);
+
 
             Address.Port = CommunicationHelper.GetPrivateProfileInt(Section_NetConfig, Key_Port, -1, _configPath);
             Trace.WriteLine("联网配置信息读取结束");
@@ -77,15 +82,17 @@ namespace Chioy.Communication.Networking.Client.Client
                 Trace.WriteLine("存在默认联网配置文件，读取FTP配置信息");
                 var doc = new XmlDocument();
                 doc.Load(KRNetworkingConfig);
-                var selectSingleNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpAdresse");
-                if (selectSingleNode != null)
-                    Address.FTPAddress = selectSingleNode.InnerText;
-                var singleNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpUser");
-                if (singleNode != null)
-                    Address.FTPUserName = singleNode.InnerText;
-                var xmlNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpPassword");
-                if (xmlNode != null)
-                    Address.FTPPassword = xmlNode.InnerText;
+                var ftpAddressNode = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpAdresse");
+                if (ftpAddressNode != null)
+                    Address.FTPAddress = ftpAddressNode.InnerText;
+                var ftpUser = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpUser");
+                if (ftpUser != null)
+                    Address.FTPUserName = ftpUser.InnerText;
+                var ftpPwd = doc.SelectSingleNode("KRNetworkingConfig/ReportSaveModel/FtpPassword");
+                if (ftpPwd != null)
+                    Address.FTPPassword = ftpPwd.InnerText;
+
+
                 if (string.IsNullOrEmpty(Address.FTPUserName))
                 {
                     Address.FTPUserName = ftpUserNameSb.ToString();
@@ -108,6 +115,7 @@ namespace Chioy.Communication.Networking.Client.Client
             Address.Route_Get_CheckResult = getCheckResultUrlSb.ToString().Trim();
             Address.Route_Post_CheckResult = postCheckResultUrlSb.ToString().Trim();
             Address.Route_Operator = postOperatorUrlSb.ToString().Trim();
+            Address.PostResultParamter = postResultParameterNameSb.ToString();
 
             //if (!IsValidIp())
             //{
@@ -155,6 +163,20 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             return Address.Port < 65535 && Address.Port > 0;
         }
+
+        private ProductType GetTypeByT()
+        {
+            ProductType type = ProductType.BMD;
+            if (typeof(T) == typeof(BMDCheckResult))
+            {
+                type = ProductType.BMD;
+            }
+            else if (typeof(T) == typeof(APIPWVCheckResult))
+            {
+                type = ProductType.VBP9;
+            }
+            return type;
+        }
     }
     public class AddressInfo : ICloneable
     {
@@ -180,6 +202,7 @@ namespace Chioy.Communication.Networking.Client.Client
         public string GetCheckResultUrl { get; set; }
 
         public string PostCheckResultUrl { get; set; }
+        public string PostResultParamter { get; set; }
 
         public string PostOperatorUrl { get; set; }
 
@@ -240,7 +263,8 @@ namespace Chioy.Communication.Networking.Client.Client
                 GetPatientUrl = GetPatientUrl,
                 PostOperatorUrl = PostOperatorUrl,
                 Route_Get_CheckResult = Route_Get_CheckResult,
-                Route_Post_CheckResult = Route_Post_CheckResult
+                Route_Post_CheckResult = Route_Post_CheckResult,
+                PostResultParamter= PostResultParamter
             };
         }
     }

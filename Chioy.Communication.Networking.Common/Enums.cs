@@ -8,7 +8,8 @@ namespace Chioy.Communication.Networking.Common
     public enum ProductType
     {
         BMD = 0,
-        KRTCD
+        KRTCD,
+        VBP9
     }
     public enum DatabaseEnum
     {

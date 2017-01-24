@@ -40,7 +40,7 @@ namespace Chioy.Communication.Networking.Client
             _client = client;
         }
 
-        public void ConfigClient(ProductType type, Protocol protocol)
+        public void ConfigClient(Protocol protocol)
         {
 
             switch (protocol)
@@ -64,7 +64,7 @@ namespace Chioy.Communication.Networking.Client
             }
             if (_client != null)
             {
-                _client.ConfigClient(type, protocol);
+                _client.ConfigClient(protocol);
             }
             else
             {
@@ -98,7 +98,7 @@ namespace Chioy.Communication.Networking.Client
         }
         public KRResponse SendExamResult(ExamResultMetadata<T> result)
         {
-            return _client.PostExamResult(result);
+            return _client.PostExamResult(result, null);
         }
 
         public KRResponse SendOperator(Operator_DTO op)

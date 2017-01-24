@@ -6,6 +6,7 @@ using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Runtime;
+using System.Text;
 using System.Windows.Media.Imaging;
 
 namespace Chioy.Communication.Networking.Client.Client
@@ -50,12 +51,43 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public override KRResponse PostExamResult(ExamResultMetadata<T> result, HttpItem pitem = null)
+        public override KRResponse PostExamResult(ExamResultMetadata<T> checkResult, HttpItem pitem = null)
         {
             try
             {
                 Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
-                var response = _helper.HttpPostData<ExamResultMetadata<T>, KRResponse>(Address.PostCheckResultUrl, result);
+                if (!string.IsNullOrEmpty(Address.PostResultParamter))
+                    checkResult.ParamterName = Address.PostResultParamter;
+                if (pitem == null)
+                {
+                    pitem = new HttpItem
+                    {
+                        URL = Address.PostCheckResultUrl,
+                        Method = "Post",
+                        Postdata = !string.IsNullOrEmpty(Address.PostResultParamter)
+                            ? string.Format("{0}={1}", Address.PostResultParamter,
+                                CommunicationHelper.SerializeObjToJsonStr(checkResult))
+                            : CommunicationHelper.SerializeObjToJsonStr(checkResult),
+                        ContentType = "application/x-www-form-urlencoded",
+                        PostEncoding = Encoding.UTF8
+
+                    };
+                }
+                
+                var result = PostData(pitem);
+
+                KRResponse response = new KRResponse();
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    response.Msg = "联网数据上传成功";
+                    response.Status = "SUCCESS";
+                }
+                else
+                {
+                    response.Msg = "联网数据上传失败";
+                    response.Status = "FAIL";
+                }
+
                 Trace.WriteLine(string.Format("开始发送检查结果结束，返回结果{0}", response.Status));
                 return response;
             }
@@ -69,7 +101,6 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             try
             {
-                _helper.NeedUrlDecode = NeedUrlDecode;
                 return _helper.HttpPostData<TIn, TOut>(url, obj, pitem);
             }
             catch (Exception ex)
@@ -125,12 +156,22 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw new Exception("获取数据失败", ex);
             }
         }
-
         public HttpResult PostData(HttpItem pitem, string postData)
         {
             try
             {
                 return _helper.HttpPostData(pitem, postData);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("上传数据失败");
+            }
+        }
+        public HttpResult PostData(HttpItem pitem)
+        {
+            try
+            {
+                return _helper.HttpPostData(pitem);
             }
             catch (Exception ex)
             {

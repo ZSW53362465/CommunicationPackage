@@ -24,11 +24,11 @@ namespace Chioy.Communication.Networking.Client.Client
             _helper.DownloadFileCompleted += _helper_DownloadFileCompleted;
             _helper.DownloadProgressChanged += _helper_DownloadProgressChanged;
         }
-        public override void ConfigClient(ProductType type, Protocol protocol)
+        public override void ConfigClient(Protocol protocol)
         {
             try
             {
-                base.ConfigClient(type, protocol);
+                base.ConfigClient(protocol);
                 _helper.Host = Address.FTPAddress;
                 _helper.UserName = Address.FTPUserName;
                 _helper.Password = Address.FTPPassword;

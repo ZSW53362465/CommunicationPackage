@@ -13,13 +13,13 @@ namespace Chioy.Communication.Networking.Client.Client
 
         public event OnEventReceivedEventHandler MsgReceiveEvent;
 
-        public override void ConfigClient(Protocol protocol)
+        protected override void ConfigClient()
         {
             try
             {
-                base.ConfigClient(protocol);
+                base.ConfigClient();
                 mgr = new TCPClientManager<T>();
-                mgr.InitializeManager(_productType, Address.BaseAddress, Address.Port.ToString());
+                mgr.InitializeManager(_productType, Config.WcfConfigModel.BaseAddress, Config.WcfConfigModel.Port);
                 mgr.MsgReceiveEvent += Mgr_MsgReceiveEvent;
             }
             catch (Exception ex)

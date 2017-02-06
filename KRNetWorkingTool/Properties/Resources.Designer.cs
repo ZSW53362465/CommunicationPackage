@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Properties
+namespace KRNetWorkingTool.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Properties
             {
                 if ((resourceMan == null))
                 {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Chioy.Communication.Networking.KRNetWorkingTool.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KRNetWorkingTool.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Converter
+namespace KRNetWorkingTool.Converter
 {
     public class StringToEnumConverter : IValueConverter
     {

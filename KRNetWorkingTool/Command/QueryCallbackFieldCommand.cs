@@ -3,12 +3,14 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using KRBMDCommon;
-using KRBMDCommon.NetWorking.DBHelper;
-using KRBMDCommon.NetWorking.Model;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
+using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Common;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
+using KRNetWorkingTool.ViewModel;
+using DatabaseSoft = Chioy.Communication.Networking.Client.DB.Models.DatabaseSoft;
+
+namespace KRNetWorkingTool.Command
 {
     public class QueryCallbackFieldCommand : CommandBase
     {
@@ -22,7 +24,7 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
             DatabaseConfigModel dbConfig = NetworkingViewModel.DatabaseConfigModel;
             DataCallBackModel dcModel = NetworkingViewModel.DataCallBackModel;
 
-            DatabaseEnum databaseEnum = KRBMDUtility.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting);
+            DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting);
 
             IDatabaseHelper db = DatabaseHelper.Open(databaseEnum, dbConfig.ConnectionString);
             ;

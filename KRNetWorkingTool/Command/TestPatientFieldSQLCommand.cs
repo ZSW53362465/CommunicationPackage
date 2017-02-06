@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Windows;
-using KRBMDCommon;
-using KRBMDCommon.NetWorking.DBHelper;
-using KRBMDCommon.NetWorking.Model;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
+using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Common;
+using KRNetWorkingTool.ViewModel;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
+namespace KRNetWorkingTool.Command
 {
     public class TestPatientFieldSQLCommand : CommandBase
     {
@@ -25,7 +25,7 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
             {
                 DatabaseConfigModel dataConfig = NetworkingViewModel.DatabaseConfigModel;
                 string sql = pmm.GetTestPatientInfoSql(dataConfig.DatabaseSoft);
-                DatabaseEnum databaseEnum = KRBMDUtility.TransDatabaseSoft(dataConfig.DatabaseSoft,
+                DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(dataConfig.DatabaseSoft,
                                                                      dataConfig.IsAdvancedSetting);
                 IDatabaseHelper dbHelper = DatabaseHelper.Open(databaseEnum, dataConfig.ConnectionString);
                 DataTable table = dbHelper.ExecuteQuery(sql);

@@ -5,16 +5,10 @@ using Chioy.Communication.Networking.Models.DTO;
 using Chioy.Communication.Networking.Models.ReportMetadata;
 using System;
 using System.Diagnostics;
+using Chioy.Communication.Networking.Client.HTTP;
 
 namespace Chioy.Communication.Networking.Client
 {
-    public enum CommunicationType
-    {
-        Wcf,
-        Http
-    }
-   
-
     public class ClientProxy<T> : IDisposable where T : BaseCheckResult
     {
         BaseClient<T> _client;
@@ -28,42 +22,37 @@ namespace Chioy.Communication.Networking.Client
             get { return _client; }
         }
 
-        public ClientProxy(BaseClient<T> client)
+        public ClientProxy()
         {
-            _client = client;
+            BaseClient<T>.SetupConfig();
+            ConfigClient();
         }
 
-        public void ConfigClient(Protocol protocol)
+        private void ConfigClient()
         {
-
-            switch (protocol)
+            switch (BaseClient<T>.Config.NetType)
             {
-                case Protocol.WebService:
+                case "WebService":
                     _client = new WebServiceClient<T>();
                     break;
-                case Protocol.Ftp:
-                    break;
-                case Protocol.Http:
+                case "Http":
+                case "WCF-Http":
                     _client = new HttpClient<T>();
                     break;
-                case Protocol.DB:
+                case "DB":
                     _client = new DBClient<T>();
                     break;
-                case Protocol.Wcftcp:
+                case "WCF-Tcp":
                     _client = new TcpClient<T>();
                     break;
                 default:
                     break;
             }
-            if (_client != null)
-            {
-                _client.ConfigClient(protocol);
-            }
-            else
+            if (_client == null)
             {
                 throw new ArgumentNullException("BaseClient", "请在ClientProxy初始化的时候传入相对应的非空Client对象");
-            }
 
+            }
         }
 
         public bool EnableNetWorking
@@ -73,9 +62,9 @@ namespace Chioy.Communication.Networking.Client
                 if (_client?.Protocol == Protocol.DB)
                 {
                     var dbClient = _client as DBClient<T>;
-                    if (dbClient?.Config != null)
+                    if (dbClient?.NetworkConfig != null)
                     {
-                        if (dbClient.Config.ReportSaveModel.ReportSaveType == "无" && dbClient.Config.DataCallBackModel.CallbackType == "无")
+                        if (dbClient.NetworkConfig.ReportSaveModel.ReportSaveType == "无" && dbClient.NetworkConfig.DataCallBackModel.CallbackType == "无")
                         {
                             return false;
                         }
@@ -87,11 +76,27 @@ namespace Chioy.Communication.Networking.Client
 
         public Patient_DTO GetPatient(string patientId)
         {
-            return _client.GetPatient(patientId);
+            try
+            {
+                return _client.GetPatient(patientId);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         public KRResponse SendExamResult(ExamResultMetadata<T> result)
         {
-            return _client.PostExamResult(result, null);
+            try
+            {
+                return _client.PostExamResult(result);
+            }
+            catch (Exception ex)
+            {
+                
+                throw ex;
+            }
         }
 
         public KRResponse SendOperator(Operator_DTO op)
@@ -99,9 +104,6 @@ namespace Chioy.Communication.Networking.Client
             return _client.PostOperator(op);
         }
 
-        public ClientProxy()
-        {
-        }
 
         public event EventHandler<DataEventArgs> CommunicationEvent;
 
@@ -117,8 +119,6 @@ namespace Chioy.Communication.Networking.Client
             ExceptionEvent?.Invoke(ex);
         }
 
-        protected virtual void ReleaseManager() { }
-
         private void ThrowException(string method, string description, string message)
         {
             Trace.TraceError(string.Format("[{0}]:{1}   {2}"), method, description, message);
@@ -127,7 +127,7 @@ namespace Chioy.Communication.Networking.Client
 
         public void Dispose()
         {
-            ReleaseManager();
+            _client.Dispose();
         }
     }
 }

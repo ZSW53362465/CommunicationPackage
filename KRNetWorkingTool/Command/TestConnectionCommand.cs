@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Windows;
-using KRBMDCommon;
-using KRBMDCommon.NetWorking.DBHelper;
-using KRBMDCommon.NetWorking.Model;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
+using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Common;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
+using KRNetWorkingTool.ViewModel;
+
+namespace KRNetWorkingTool.Command
 {
     public class TestConnectionCommand : CommandBase
     {
@@ -26,7 +27,7 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
             bool isSuccess = false;
             try
             {
-                DatabaseEnum databaseEnum = KRBMDUtility.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting);
+                DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting);
                 isSuccess = DatabaseHelper.TestConnection(databaseEnum, dbConfig.ConnectionString);
             }
             catch (Exception ex)

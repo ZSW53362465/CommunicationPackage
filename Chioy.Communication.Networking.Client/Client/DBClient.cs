@@ -17,7 +17,6 @@ namespace Chioy.Communication.Networking.Client.Client
 {
     public class DBClient<T> : BaseClient<T> where T : BaseCheckResult
     {
-        KRNetworkingConfig _config = null;
         string _connStr = null;
         DatabaseConfigModel _dbConfig = null;
         IDatabaseHelper _dbHelper = null;
@@ -49,7 +48,7 @@ namespace Chioy.Communication.Networking.Client.Client
                 _popOpen = value;
             }
         }
-        public KRNetworkingConfig Config { get { return _config; } }
+        public KRNetworkingConfig NetworkConfig { get { return Config; } }
         public DatabaseConfigModel DBConfig { get { return _dbConfig; } }
 
         public IDatabaseHelper DBHelper { get { return _dbHelper; } }
@@ -61,17 +60,16 @@ namespace Chioy.Communication.Networking.Client.Client
         {
             _protocol = Protocol.DB;
         }
-        public override void ConfigClient(Protocol protocol)
+        protected override void ConfigClient()
         {
             try
             {
-                base.ConfigClient(protocol);
-                _config = KRNetworkingConfig.Load();
-                if (_config == null)
+                base.ConfigClient();
+                if (Config == null)
                 {
                     ClientHelper.TraceException("DBClient.ConfigClient", "未能成功加载数据库联网方式联网配置文件", "_config为Null");
                 }
-                _dbConfig = _config.DatabaseConfigModel;
+                _dbConfig = Config.DatabaseConfigModel;
                 if (_dbConfig == null)
                 {
                     ClientHelper.TraceException("DBClient.ConfigClient", "未能成功加载数据库联网方式联网配置文件", "DatabaseConfigModel为Null");
@@ -93,8 +91,8 @@ namespace Chioy.Communication.Networking.Client.Client
             try
             {
                 Patient_DTO patient = null;
-                string sql = _config.PatientMapModel.GetPatientInfoSql(_dbConfig.DatabaseSoft);
-                string targetCheck = _config.PatientMapModel.GetTargetCheckByCheckType(1);
+                string sql = Config.PatientMapModel.GetPatientInfoSql(_dbConfig.DatabaseSoft);
+                string targetCheck = Config.PatientMapModel.GetTargetCheckByCheckType(1);
 
                 sql = string.Format(sql, patientId, targetCheck);
                 Trace.WriteLine(string.Format("根据patientId:{0}去数据库取病人信息,Sql 语句为:{2}", patientId, sql));
@@ -202,7 +200,6 @@ namespace Chioy.Communication.Networking.Client.Client
             }
             return null;
         }
-
         public override KRResponse PostExamResult(ExamResultMetadata<T> result)
         {
             var response = new KRResponse();
@@ -211,7 +208,7 @@ namespace Chioy.Communication.Networking.Client.Client
             bool isSuccDataSave = false;
             try
             {
-                switch (_config.ReportSaveModel.ReportSaveType)
+                switch (Config.ReportSaveModel.ReportSaveType)
                 {
                     case "无":
                         isSuccSaveReport = isSuccDataSave = nh.SaveCallBackData();

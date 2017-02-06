@@ -153,7 +153,7 @@ namespace Chioy.Communication.Networking.Client.DB.DBModels
             }
         }
 
-        public string ResultParamter
+        public string ResultParameterName
         {
             get { return _resultParamterName; }
             set
@@ -161,7 +161,7 @@ namespace Chioy.Communication.Networking.Client.DB.DBModels
                 if (_resultParamterName != value)
                 {
                     _resultParamterName = value;
-                    RaisePropertyChanged("ResultParamter");
+                    RaisePropertyChanged("ResultParameterName");
                 }
             }
         }

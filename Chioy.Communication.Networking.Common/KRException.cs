@@ -14,7 +14,7 @@ namespace Chioy.Communication.Networking.Common
         {
             ExceptionMethodName = method;
             Description = description;
-            Msg = message;
+            Msg = string.Format("在方法{0}中出现错误:{1},错误原因：{2}", method, description, message);
         }
 
         public string ExceptionMethodName { get; set; }

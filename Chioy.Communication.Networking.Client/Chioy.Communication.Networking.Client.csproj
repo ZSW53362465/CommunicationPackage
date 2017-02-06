@@ -86,7 +86,7 @@
     <Compile Include="DB\DBModels\ReportSaveModel.cs" />
     <Compile Include="DB\DBModels\TableMapModel.cs" />
     <Compile Include="DB\DBModels\WcfConfigModel.cs" />
-    <Compile Include="DB\KRNetworkingConfig.cs" />
+    <Compile Include="KRNetworkingConfig.cs" />
     <Compile Include="DB\KRNetworkingHelper.cs" />
     <Compile Include="FTP\FtpHelper.cs" />
     <Compile Include="FTP\DownloadFileCompletedEventLibArgs.cs" />

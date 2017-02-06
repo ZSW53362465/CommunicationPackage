@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Data;
-using KRBMDCommon;
-using KRBMDCommon.NetWorking.DBHelper;
-using KRBMDCommon.NetWorking.Model;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
+using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Common;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
+using KRNetWorkingTool.ViewModel;
+using DatabaseSoft = Chioy.Communication.Networking.Client.DB.Models.DatabaseSoft;
+
+namespace KRNetWorkingTool.Command
 {
     public class QueryTargetPatientFieldCommand : CommandBase
     {
@@ -17,7 +19,7 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
         public override void Execute(object parameter)
         {
             DatabaseConfigModel dbConfig = NetworkingViewModel.DatabaseConfigModel;
-            DatabaseEnum databaseEnum = KRBMDUtility.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting);
+            DatabaseEnum databaseEnum = DataBaseSoft.TransDatabaseSoft(dbConfig.DatabaseSoft, dbConfig.IsAdvancedSetting);
             IDatabaseHelper db = DatabaseHelper.Open(databaseEnum, dbConfig.ConnectionString);
             if (string.IsNullOrEmpty(dbConfig.User) || string.IsNullOrEmpty(dbConfig.Password))
             {

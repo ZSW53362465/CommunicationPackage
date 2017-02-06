@@ -1,20 +1,19 @@
-using Chioy.Communication.Networking.Client.Client;
-using Chioy.Communication.Networking.Client.DB.Models;
-using Chioy.Communication.Networking.Common;
 using System;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using Chioy.Communication.Networking.Client.Client;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
 using Chioy.Communication.Networking.Client.DB.DBModels;
+using Chioy.Communication.Networking.Client.DB.Models;
 
-
-namespace Chioy.Communication.Networking.Client.DB
+namespace Chioy.Communication.Networking.Client
 {
     /// <summary>
     /// 联网设置
     /// </summary>
-    public class KRNetworkingConfig
+    public class KRNetworkingConfig: INotifyPropertyChanged
     {
         #region 成员变量
 
@@ -23,7 +22,7 @@ namespace Chioy.Communication.Networking.Client.DB
         private const string FileBak = "_Bak";
         private const string FileExtDefault = ".xml";
         private static string _version = "1.00";
-
+        private string _netType;
         #endregion
 
         #region 公有属性
@@ -37,6 +36,20 @@ namespace Chioy.Communication.Networking.Client.DB
             get { return _version; }
             set { _version = value; }
         }
+
+        public string NetType
+        {
+            get { return _netType; }
+            set
+            {
+                if (_netType != value)
+                {
+                    _netType = value;
+                    RaisePropertyChanged("NetType");
+                }
+            }
+        }
+
 
         /// <summary>
         /// 数据库接连设置
@@ -71,11 +84,11 @@ namespace Chioy.Communication.Networking.Client.DB
             {
                 var xs = new XmlSerializer(typeof(KRNetworkingConfig));
 
-                fs = new FileStream(path, FileMode.OpenOrCreate);
+                fs = new FileStream(path, FileMode.Create);
                 writer = new System.Xml.XmlTextWriter(fs, System.Text.Encoding.UTF8);
                 xs.Serialize(writer, this);
             }
-            catch (IOException ioex)
+            catch (IOException ex)
             {
                 throw;
             }
@@ -284,7 +297,7 @@ namespace Chioy.Communication.Networking.Client.DB
             if (p_isInstantiation)
             {
                 DatabaseConfigModel = new DatabaseConfigModel();
-                PatientMapModel = new PatientMapModel(ConnectionString.Value);
+                PatientMapModel = new PatientMapModel(DatabaseHelper.LocalConnStr);
                 ReportSaveModel = new ReportSaveModel();
                 DataCallBackModel = new DataCallBackModel();
                 HttpConfigModel = new HttpConfigModel();
@@ -294,6 +307,31 @@ namespace Chioy.Communication.Networking.Client.DB
 
         public KRNetworkingConfig()
         {
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void RaisePropertyChanged(string p_propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(p_propertyName));
+            }
+        }
+
+        public void RaisePropertiesChanged(params string[] p_propertyNames)
+        {
+            if (PropertyChanged != null)
+            {
+                foreach (string propertyName in p_propertyNames)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                }
+            }
         }
 
         #endregion

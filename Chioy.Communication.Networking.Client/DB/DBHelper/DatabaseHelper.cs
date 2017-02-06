@@ -1,12 +1,39 @@
 ﻿using Chioy.Communication.Networking.Common;
 using System;
 using System.Data;
+using System.Diagnostics;
+using System.Text;
 using Chioy.Communication.Networking.Client.DB.Models;
 
 namespace Chioy.Communication.Networking.Client.DB.DBHelper
 {
     public class DatabaseHelper
     {
+        public static string _localConnStr = string.Empty;
+        private const string _connectionStringPath = "../Conf/Common.ini";
+        public static string LocalConnStr
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_localConnStr))
+                {
+                    Trace.WriteLine("进来了");
+                    string connectionStringTemplete ="Data Source={0};Initial Catalog={1};Persist Security Info=True;User ID={2};Password={3}";
+                    var server = new StringBuilder(32);
+                    var database = new StringBuilder(32);
+                    var user = new StringBuilder(32);
+                    var password = new StringBuilder(32);
+                    CommunicationHelper.GetPrivateProfileString("DATABASE", "DOMAINNAME", null, server, 32, _connectionStringPath);
+                    CommunicationHelper.GetPrivateProfileString("DATABASE", "DBNAME", null, database, 32, _connectionStringPath);
+                    CommunicationHelper.GetPrivateProfileString("DATABASE", "USERNAME", null, user, 32, _connectionStringPath);
+                    CommunicationHelper.GetPrivateProfileString("DATABASE", "PASSWORD", null, password, 32, _connectionStringPath);
+                    _localConnStr = string.Format(connectionStringTemplete, server, database, user, password);
+                    Trace.WriteLine("_localConnStr:"+_localConnStr);
+                }
+                return _localConnStr;
+            }
+        }
+
         /// <summary>
         /// 打开数据库连接
         /// </summary>

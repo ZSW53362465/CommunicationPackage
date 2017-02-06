@@ -64,7 +64,7 @@ namespace TestCallWebServiceClient
 
             //};
             ClientProxy<APIPWVCheckResult> proxy = new ClientProxy<APIPWVCheckResult>();
-            proxy.ConfigClient(Protocol.Http);
+            //proxy.ConfigClient(Protocol.Http);
             ExamResultMetadata<APIPWVCheckResult> ABIPWV = new ExamResultMetadata<APIPWVCheckResult>()
             {
                 Diagnosis = "everything is good",

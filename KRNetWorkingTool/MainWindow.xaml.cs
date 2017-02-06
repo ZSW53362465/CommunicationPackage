@@ -8,15 +8,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Chioy.Communication.Networking.Client;
 using Chioy.Communication.Networking.Client.DB;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
 
-namespace Chioy.Communication.Networking.Chioy.Communication.Networking.KRNetWorkingTool
+using KRNetWorkingTool.ViewModel;
+using MessageBox = System.Windows.MessageBox;
+
+namespace KRNetWorkingTool
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
@@ -39,11 +43,13 @@ namespace Chioy.Communication.Networking.Chioy.Communication.Networking.KRNetWor
 
 
             var config = new KRNetworkingConfig();
+            config.NetType = vm.NetworkingConfig.NetType;
             config.DatabaseConfigModel = vm.DatabaseConfigModel;
             config.PatientMapModel = vm.PatientMapModel;
             config.ReportSaveModel = vm.ReportSaveModel;
             config.DataCallBackModel = vm.DataCallBackModel;
-
+            config.HttpConfigModel = vm.HttpConfigModel;
+            config.WcfConfigModel = vm.WcfConfigModel;
             config.Save();
         }
 
@@ -73,6 +79,20 @@ namespace Chioy.Communication.Networking.Chioy.Communication.Networking.KRNetWor
                 MessageBox.Show("获取帮助失败！ " + exception.Message);
             }
             
+        }
+
+        private void TextBox_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+          
+        }
+
+        private void txt_ForlderPath_GotFocus(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                txt_ForlderPath.Text = fbd.SelectedPath;
+            }
         }
     }
 }

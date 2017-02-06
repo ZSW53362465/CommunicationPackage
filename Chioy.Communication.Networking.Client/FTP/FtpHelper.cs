@@ -171,7 +171,7 @@ namespace Chioy.Communication.Networking.Client.FTP
                 }
                 else
                 {
-                    uri = new Uri("ftp://" + _host + ":" + Port + "/" + remoteDirectory + "/" + remoteFileName);
+                    uri = new Uri("ftp://" + _host +":" + Port + "/" + remoteDirectory + "/" + remoteFileName);
                 }
 
 
@@ -804,16 +804,27 @@ namespace Chioy.Communication.Networking.Client.FTP
             catch { }
         }//method
 
-        public bool Delete(string p_filename)
+        public bool Delete(string p_filename, string method = null)
         {
-            var fileInf = new FileInfo(p_filename);
-            string uri = Path.Combine(Host, fileInf.Name);
+            Uri uri = null;
+            if (Host.Contains("ftp://"))
+            {
+                uri = new Uri(Host + "/" + p_filename);
+            }
+            else
+            {
+                uri = new Uri("ftp://" + Host + ":" + Port + "/" + p_filename);
+            }
 
             try
             {
-                var listRequest = (FtpWebRequest)WebRequest.Create(new Uri(uri));
+                var listRequest = (FtpWebRequest)WebRequest.Create(uri);
 
-                listRequest.Method = WebRequestMethods.Ftp.DeleteFile;
+                if (string.IsNullOrEmpty(method))
+                {
+                    method = WebRequestMethods.Ftp.DeleteFile;
+                }
+                listRequest.Method = method;
 
                 listRequest.Credentials = new NetworkCredential(UserName, Password);
 

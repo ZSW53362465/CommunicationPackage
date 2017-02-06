@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Converter
+namespace KRNetWorkingTool.Converter
 {
     public class StringToVisibility : IValueConverter
     {

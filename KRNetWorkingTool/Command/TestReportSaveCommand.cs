@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using KRBMDCommon.NetWorking;
-using KRBMDCommon.NetWorking.Model;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
+using Chioy.Communication.Networking.Client.DB.Models;
+using Chioy.Communication.Networking.Client.FTP;
+using KRNetWorkingTool.ViewModel;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
+namespace KRNetWorkingTool.Command
 {
     public class TestReportSaveCommand : CommandBase
     {
@@ -22,7 +22,7 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
             {
                 try
                 {
-                    string path = Path.Combine(reprotConfig.DirAdresse, string.Format("test.{0}", reprotConfig.ImageExt));
+                    string path = Path.Combine(reprotConfig.DirAddress, string.Format("test.{0}", reprotConfig.ImageExt));
 
                     var fs = new FileStream(path, FileMode.Create);
                     fs.Close();
@@ -53,12 +53,14 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
                     fs.Close();
 
                     var ftpHelper = new FtpHelper(reprotConfig.FtpAdresse, reprotConfig.FtpUser,
-                                                  reprotConfig.FtpPassword);
+                        reprotConfig.FtpPassword, 21);
+                    var currentDateTime = DateTime.Now.ToLongDateString();
+                    ftpHelper.Upload(filePath, currentDateTime, filePath);
 
-                    ftpHelper.Upload(reprotConfig.FtpAdresse, filePath);
-
-                    if (ftpHelper.Delete(filePath))
+                    if (ftpHelper.Delete(currentDateTime+ "\\" + filePath, "DELE"))
                     {
+                        ftpHelper.Delete(currentDateTime, "RMD");
+
                         MessageBox.Show("Ftp地址及用户测试通过！");
                     }
                 }

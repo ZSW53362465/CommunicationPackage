@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Properties
+namespace KRNetWorkingTool.Properties
 {
 
 

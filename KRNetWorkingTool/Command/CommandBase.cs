@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Input;
-using Chioy.Communication.Networking.KRNetWorkingTool.ViewModel;
+using KRNetWorkingTool.ViewModel;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.Command
+namespace KRNetWorkingTool.Command
 {
     public class CommandBase : ICommand
     {

@@ -24,14 +24,14 @@ namespace Chioy.Communication.Networking.Client.Client
             _helper.DownloadFileCompleted += _helper_DownloadFileCompleted;
             _helper.DownloadProgressChanged += _helper_DownloadProgressChanged;
         }
-        public override void ConfigClient(Protocol protocol)
+        protected override void ConfigClient()
         {
             try
             {
-                base.ConfigClient(protocol);
-                _helper.Host = Address.FTPAddress;
-                _helper.UserName = Address.FTPUserName;
-                _helper.Password = Address.FTPPassword;
+                base.ConfigClient();
+                _helper.Host = Config.ReportSaveModel.FtpAdresse;
+                _helper.UserName = Config.ReportSaveModel.FtpUser;
+                _helper.Password = Config.ReportSaveModel.FtpPassword;
             }
             catch (KRException ex)
             {
@@ -39,13 +39,13 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public void UploadFile(string filename, string remoteFileName)
+        public void UploadFile(string localDir,string filename, string remoteFileName)
         {
             try
             {
                 if (_helper != null)
                 {
-                    _helper.Upload(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                    _helper.Upload(localDir,filename,Config.ReportSaveModel.DirAddress, remoteFileName);
                 }
             }
             catch (Exception ex)
@@ -56,13 +56,13 @@ namespace Chioy.Communication.Networking.Client.Client
 
         }
 
-        public void UploadAsync(string filename, string remoteFileName, string localDir = null)
+        public void UploadAsync(string localDir,string filename, string remoteFileName)
         {
             try
             {
                 if (_helper != null)
                 {
-                    _helper.UploadAsync(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                    _helper.UploadAsync(localDir, filename, Config.ReportSaveModel.DirAddress, remoteFileName);
                 }
             }
             catch (Exception)
@@ -73,13 +73,13 @@ namespace Chioy.Communication.Networking.Client.Client
 
         }
 
-        public void DownLoadFile(string filename, string remoteFileName)
+        public void DownLoadFile(string localDir, string filename, string remoteFileName)
         {
             try
             {
                 if (_helper != null)
                 {
-                    _helper.Download(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                    _helper.Download(localDir, filename, Config.ReportSaveModel.DirAddress, remoteFileName);
                 }
             }
             catch (Exception)
@@ -89,13 +89,13 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
-        public void DownloadAsync(string filename, string remoteFileName)
+        public void DownloadAsync(string localDir, string filename, string remoteFileName)
         {
             try
             {
                 if (_helper != null)
                 {
-                    _helper.DownloadAsync(Address.FTPLocalDir, filename, Address.FTPRemoteDir, remoteFileName);
+                    _helper.DownloadAsync(localDir, filename, Config.ReportSaveModel.DirAddress, remoteFileName);
                 }
             }
             catch (Exception)

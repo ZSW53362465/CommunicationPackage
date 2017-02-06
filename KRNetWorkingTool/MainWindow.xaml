@@ -1,10 +1,10 @@
-﻿<Window x:Class="Chioy.Communication.Networking.Chioy.Communication.Networking.KRNetWorkingTool.MainWindow"
+﻿<Window x:Class="KRNetWorkingTool.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:converter="clr-namespace:Chioy.Communication.Networking.KRNetWorkingTool.Converter"
+        xmlns:converter="clr-namespace:KRNetWorkingTool.Converter"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:viewModel="clr-namespace:Chioy.Communication.Networking.KRNetWorkingTool.ViewModel"
+        xmlns:viewModel="clr-namespace:KRNetWorkingTool.ViewModel"
         xmlns:models="clr-namespace:Chioy.Communication.Networking.Client.DB.Models;assembly=Chioy.Communication.Networking.Client"
         Title="联网配置工具" Height="550" Width="800" FontSize="16">
     <Window.Resources>
@@ -17,9 +17,96 @@
     </Window.Resources>
     <Grid DataContext="{StaticResource NetworkingViewModel}">
         <xctk:Wizard Finish="OnFinished" HelpButtonContent="帮助" CancelButtonContent="取消" BackButtonContent="&lt; 上一步"
-                     NextButtonContent="下一步 &gt;" FinishButtonContent="完成">
+                     NextButtonContent="下一步 &gt;" FinishButtonContent="完成" >
             <!--CancelButtonContent="取消" BackButtonContent="< 上一步" NextButtonContent="下一步 >" FinishButtonContent="完成"-->
             <!--TabControl-->
+            <xctk:WizardPage Title="配置请求地址" PageType="Interior" CanFinish="True">
+                <StackPanel Orientation="Vertical">
+                    <ComboBox Name="cbx_type" Width="100" HorizontalAlignment="Right"  SelectedValuePath="Content" SelectedValue="{Binding NetworkingConfig.NetType ,Mode=TwoWay }">
+                        <ComboBoxItem Content="DB" />
+                        <ComboBoxItem Content="Http" />
+                        <ComboBoxItem Content="WebService" />
+                        <ComboBoxItem Content="WCF-Http"/>
+                        <ComboBoxItem Content="WCF-Tcp"/>
+                    </ComboBox>
+                    <GroupBox x:Name="DBGroup" Visibility="{Binding Text, ConverterParameter=DB, Converter={StaticResource StringToVisibility}, ElementName=cbx_type}">
+                        <TextBlock FontSize="25" Foreground="Black" Text="DB请点击下一步" HorizontalAlignment="Center"></TextBlock>
+                    </GroupBox>
+
+                    <GroupBox x:Name="HttpGroup" Visibility="{Binding Text, ConverterParameter=Http, Converter={StaticResource StringToVisibility}, ElementName=cbx_type}">
+                        <Grid Margin="10,10,10,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="8.5*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="0" FontSize="16" HorizontalAlignment="Right">获取病人地址:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_PatientUrl" Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding HttpConfigModel.PatientUrl, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
+                            <TextBlock Margin="10,5" Grid.Column="0" Grid.Row="1" FontSize="16" HorizontalAlignment="Right">结果参数名:</TextBlock>
+                            <TextBox  Margin="10,5" Name="txt_paramterName" Grid.Column="1" Grid.Row="1" FontSize="16" Text="{Binding HttpConfigModel.ResultParameterName, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <TextBlock Margin="10,5" Grid.Column="0" Grid.Row="2" FontSize="16" HorizontalAlignment="Right">发送结果地址:</TextBlock>
+                            <TextBox  Margin="10,5" Name="txt_PostResultUrl" Grid.Column="1" Grid.Row="2" FontSize="16" Text="{Binding HttpConfigModel.PostCheckResultUrl, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="3" FontSize="16" HorizontalAlignment="Right">Token地址:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_TokenUrl" Grid.Column="1" Grid.Row="3" FontSize="16" IsEnabled="{Binding ElementName=chk_UseToker, Path=IsChecked}" 
+                                     Text="{Binding HttpConfigModel.TokenUrl, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <CheckBox Margin="10,5" Name="chk_UseToker" Grid.Column="2" Grid.Row="3" IsChecked="{Binding HttpConfigModel.IsUseToken}" >启用</CheckBox>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="4" FontSize="16" HorizontalAlignment="Right"> 端口号:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_http_Port" Grid.Column="1" Grid.Row="4" FontSize="16" IsEnabled="{Binding ElementName=chk_http_Port, Path=IsChecked}"></TextBox>
+                            <CheckBox Margin="10,5" Name="chk_http_Port" Grid.Column="2" Grid.Row="4" IsChecked="{Binding HttpConfigModel.IsUsePort}" >启用</CheckBox>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox x:Name="WebServiceGroup" Visibility="{Binding Text, ConverterParameter=WebService, Converter={StaticResource StringToVisibility}, ElementName=cbx_type}">
+                        <Grid Margin="10,10,10,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="8.5*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="0" FontSize="16" HorizontalAlignment="Right">服务地址:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_WebServiceAddress" Grid.Column="1" Grid.Row="0" FontSize="16" ></TextBox>
+                            <TextBlock Margin="10,5" Grid.Column="0" Grid.Row="1" FontSize="16" HorizontalAlignment="Right">服务名称:</TextBlock>
+                            <TextBox  Margin="10,5" Name="txt_WebServiceName" Grid.Column="1" Grid.Row="1" FontSize="16"></TextBox>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="2" FontSize="16" HorizontalAlignment="Right">端口号:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_webPort" Grid.Column="1" Grid.Row="2" FontSize="16" IsEnabled="{Binding ElementName=chk_Port, Path=IsChecked}"></TextBox>
+                            <CheckBox Margin="10,5" Name="chk_webPort" Grid.Column="2" Grid.Row="2" >启用</CheckBox>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox x:Name="WcfServiceGroup" Visibility="{Binding Text, ConverterParameter=WCF-Tcp|WCF-Http, Converter={StaticResource StringToVisibility}, ElementName=cbx_type}">
+                        <Grid Margin="10,10,10,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="8.5*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="0" FontSize="16" HorizontalAlignment="Right">服务地址:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_WcfServiceAddress" Grid.Column="1" Grid.Row="0" FontSize="16" ></TextBox>
+                            <TextBlock Margin="10,5"  Grid.Column="0" Grid.Row="1" FontSize="16" HorizontalAlignment="Right">端口号:</TextBlock>
+                            <TextBox Margin="10,5" Name="txt_WcfPort" Grid.Column="1" Grid.Row="1" FontSize="16" ></TextBox>
+                        </Grid>
+                    </GroupBox>
+
+                    
+                </StackPanel>
+            </xctk:WizardPage>
+
             <xctk:WizardPage Title="目标数据库设置" PageType="Interior">
                 <Grid Margin="10,10,10,0">
                     <Grid.RowDefinitions>
@@ -191,6 +278,7 @@
                     </StackPanel>
                 </Grid>
             </xctk:WizardPage>
+
             <xctk:WizardPage Title="检查后数据回写" PageType="Interior" CanFinish="True">
                 <!--<TabControl >
                     <xctk:WizardPage Header="ABIPWV" >-->
@@ -255,8 +343,8 @@
                                         <StackPanel Orientation="Horizontal"
                                                     Visibility="{Binding Text, ConverterParameter=文件夹, Converter={StaticResource StringToVisibility}, ElementName=comboBox}">
                                             <TextBlock Text="文件夹地址" VerticalAlignment="Center" />
-                                            <TextBox Width="145" Margin="14,5,0,5"
-                                                     Text="{Binding ReportSaveModel.DirAdresse}" />
+                                            <TextBox Width="145" Margin="14,5,0,5" x:Name="txt_ForlderPath"
+                                                     Text="{Binding ReportSaveModel.DirAddress}"  MouseLeftButtonDown="TextBox_MouseDown" GotFocus="txt_ForlderPath_GotFocus"/>
                                         </StackPanel>
                                     </StackPanel>
 
@@ -293,6 +381,9 @@
                                                    Margin="5,0,0,0" />
                                     </StackPanel>
 
+                                    
+
+
                                     <Grid Grid.Row="6"
                                           Visibility="{Binding Text, ConverterParameter=表, Converter={StaticResource StringToReVisibility}, ElementName=comboBox}">
                                         <Grid.RowDefinitions>
@@ -313,6 +404,11 @@
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
+                                    
+                                    
+                                    
+                                    
+                                    
                                 </Grid>
 
 

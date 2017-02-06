@@ -5,7 +5,7 @@ namespace Chioy.Communication.Networking.Client.DB.Models
     public class ReportSaveModel : ModelBase
     {
         private ObservableCollection<FileFormatModel> _childrenRule = new ObservableCollection<FileFormatModel>();
-        private string _dirAdresse;
+        private string _dirAddress;
         private bool _isReportChecked = true;
         private bool _isImageDataChecked;
         private string _fileFormat;
@@ -42,15 +42,15 @@ namespace Chioy.Communication.Networking.Client.DB.Models
             }
         }
 
-        public string DirAdresse
+        public string DirAddress
         {
-            get { return _dirAdresse; }
+            get { return _dirAddress; }
             set
             {
-                if (_dirAdresse != value)
+                if (_dirAddress != value)
                 {
-                    _dirAdresse = value;
-                    RaisePropertyChanged("DirAdress");
+                    _dirAddress = value;
+                    RaisePropertyChanged("DirAddress");
                 }
             }
         }

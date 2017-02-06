@@ -1,12 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Input;
-using KRBMDCommon;
-using KRBMDCommon.NetWorking;
-using KRBMDCommon.NetWorking.Model;
-using Chioy.Communication.Networking.KRNetWorkingTool.Command;
+using Chioy.Communication.Networking.Client;
+using Chioy.Communication.Networking.Client.DB;
+using Chioy.Communication.Networking.Client.DB.DBHelper;
+using Chioy.Communication.Networking.Client.DB.DBModels;
+using Chioy.Communication.Networking.Client.DB.Models;
+using KRNetWorkingTool.Command;
 
-namespace Chioy.Communication.Networking.KRNetWorkingTool.ViewModel
+namespace KRNetWorkingTool.ViewModel
 {
     public class NetWorkingViewModel : INotifyPropertyChanged
     {
@@ -260,23 +263,69 @@ namespace Chioy.Communication.Networking.KRNetWorkingTool.ViewModel
 
         #endregion
 
+        #region Http参数
+
+        private HttpConfigModel _httpConfigModel;
+        public HttpConfigModel HttpConfigModel
+        {
+            get { return _httpConfigModel; }
+            set
+            {
+                if (_httpConfigModel != value)
+                {
+                    _httpConfigModel = value;
+                    RaisePropertyChanged("HttpConfigModel");
+                }
+            }
+        }
+        #endregion
+
+
+        #region Wcf参数
+        private WcfConfigModel _wcfConfigModel;
+        public WcfConfigModel WcfConfigModel
+        {
+            get { return _wcfConfigModel; }
+            set
+            {
+                if (_wcfConfigModel != value)
+                {
+                    _wcfConfigModel = value;
+                    RaisePropertyChanged("WcfConfigModel");
+                }
+            }
+        }
+        #endregion
+
+        private KRNetworkingConfig _networkingConfig;
+        public KRNetworkingConfig NetworkingConfig
+        {
+            get { return _networkingConfig; }
+            set
+            {
+                if (_networkingConfig != value)
+                {
+                    _networkingConfig = value;
+                    RaisePropertyChanged("NetworkingConfig");
+                }
+            }
+        }
+
         #region 构造函数
 
         public NetWorkingViewModel()
         {
             //var dt = DatabaseHelper.ExecuteQuery("select *,'' as Value from kr_check_type where DeleteFlag = 0");
             //CheckTypeMapList = new CheckTypeMapListModel(dt);
+            Trace.WriteLine("test:1");
+            _networkingConfig = KRNetworkingConfig.Load();
 
-            KRNetworkingConfig config = KRNetworkingConfig.Load();
-
-            DatabaseConfigModel = config.DatabaseConfigModel != null
-                                      ? config.DatabaseConfigModel
-                                      : new DatabaseConfigModel();
-            PatientMapModel = config.PatientMapModel != null
-                                  ? config.PatientMapModel
-                                  : new PatientMapModel(ConnectionString.Value);
-            ReportSaveModel = config.ReportSaveModel != null ? config.ReportSaveModel : new ReportSaveModel();
-            DataCallBackModel = config.DataCallBackModel != null ? config.DataCallBackModel : new DataCallBackModel();
+            DatabaseConfigModel = _networkingConfig.DatabaseConfigModel ?? new DatabaseConfigModel();
+            PatientMapModel = _networkingConfig.PatientMapModel ?? new PatientMapModel(DatabaseHelper.LocalConnStr);
+            ReportSaveModel = _networkingConfig.ReportSaveModel ?? new ReportSaveModel();
+            DataCallBackModel = _networkingConfig.DataCallBackModel ?? new DataCallBackModel();
+            HttpConfigModel = _networkingConfig.HttpConfigModel ?? new HttpConfigModel();
+            WcfConfigModel = _networkingConfig.WcfConfigModel ?? new WcfConfigModel();
             
             _callbackFieldList = new ObservableCollection<string>();
             

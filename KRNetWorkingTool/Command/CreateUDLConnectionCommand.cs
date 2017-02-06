@@ -33,11 +33,11 @@ namespace KRNetWorkingTool.Command
             {
                 var key = new StringBuilder();
 
-                CommunicationHelper.GetPrivateProfileString("oledb", null, null, key, 16, filePath);
+               CommunicationHelper.GetPrivateProfileString("oledb", null, null, key, 16, filePath);
 
                 int size = 4*255;
                 var sb = new StringBuilder(size);
-                IniHelper.GetPrivateProfileString("oledb", key.ToString(), null, sb, size, filePath);
+                CommunicationHelper.GetPrivateProfileString("oledb", key.ToString(), null, sb, size, filePath);
 
                 NetworkingViewModel.DatabaseConfigModel.AdvancedConnectionString = key + " = " + sb;
 

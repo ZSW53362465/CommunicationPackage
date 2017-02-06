@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceHost", "ServiceHost\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCallWebServiceClient", "TestCallWebServiceClient\TestCallWebServiceClient.csproj", "{AA63FB05-C61A-42A2-8E80-55EFCD262923}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KRNetWorkingTool", "KRNetWorkingTool\KRNetWorkingTool.csproj", "{718EBCD1-99F6-414D-8B16-93A12C1AD47F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{AA63FB05-C61A-42A2-8E80-55EFCD262923}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA63FB05-C61A-42A2-8E80-55EFCD262923}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA63FB05-C61A-42A2-8E80-55EFCD262923}.Release|Any CPU.Build.0 = Release|Any CPU
+		{718EBCD1-99F6-414D-8B16-93A12C1AD47F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718EBCD1-99F6-414D-8B16-93A12C1AD47F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718EBCD1-99F6-414D-8B16-93A12C1AD47F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718EBCD1-99F6-414D-8B16-93A12C1AD47F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

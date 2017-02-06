@@ -17,6 +17,7 @@ using Chioy.Communication.Networking.Models.ReportMetadata;
 using Npgsql;
 using NpgsqlTypes;
 using Chioy.Communication.Networking.Client.Client;
+using Chioy.Communication.Networking.Client;
 
 namespace Chioy.Communication.Networking.Client.DB
 {
@@ -65,7 +66,7 @@ namespace Chioy.Communication.Networking.Client.DB
             if (config.ReportSaveModel.ReportSaveType != "文件夹")
                 return false;
 
-            var path = config.ReportSaveModel.DirAdresse;
+            var path = config.ReportSaveModel.DirAddress;
             var chirldDir = string.Empty;
             if (config.ReportSaveModel.IsCreateChildDir)
             {
@@ -136,7 +137,7 @@ namespace Chioy.Communication.Networking.Client.DB
                     Trace.WriteLine("上传失败,开始断点续传....");
                     var directoryInfo = new FileInfo(fileName).Directory;
                     if (directoryInfo != null)
-                        _client.UploadResume(directoryInfo.FullName, fileName, path, fileName);
+                        _client.UploadResume(directoryInfo.FullName, fileName, chirldDir, fileName);
                     Thread.Sleep(500);
                     if (_uploadSuccess) break;
                     reUploadCount--;

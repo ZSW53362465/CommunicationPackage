@@ -17,6 +17,7 @@ namespace Chioy.Communication.Networking.Client.Client
 
         public int Timeout { get; set; }
         public bool NeedUrlDecode { get; set; }
+
         public HttpClient()
         {
             _protocol = Protocol.Http;
@@ -24,56 +25,53 @@ namespace Chioy.Communication.Networking.Client.Client
 
         }
 
-        public override Patient_DTO GetPatient(string patientId, HttpItem pitem = null)
+        #region override
+        public override Patient_DTO GetPatient(string patientId)
         {
             try
             {
+                var patientUrl = Config.HttpConfigModel.PatientUrl;
                 CommunicationHelper.RecordTrace("GetPatient", $"开始获取病人{patientId}的信息");
                 Patient_DTO patient = null;
                 if (_helper == null) return null;
-                CommunicationHelper.RecordTrace("GetPatient", $"获取病人信息地址为{Address.GetPatientUrl}");
+                CommunicationHelper.RecordTrace("GetPatient", $"获取病人信息地址为{patientUrl}");
                 string url = string.Empty;
-                if (Address.GetPatientUrl.EndsWith("=") || Address.GetPatientUrl.EndsWith("/"))
+
+                if (patientUrl.EndsWith("=") || patientUrl.EndsWith("/"))
                 {
-                    url = Address.GetPatientUrl + patientId;
+                    url = patientUrl + patientId;
                 }
                 else
                 {
-                    url = Address.GetPatientUrl + "/" + patientId;
+                    url = patientUrl + "/" + patientId;
                 }
+
+                var finalUrl = AddToken(url);
+
                 _helper.NeedUrlDecode = NeedUrlDecode;
-                patient = _helper.HttpGetData<Patient_DTO>(url, pitem);
+                patient = _helper.HttpGetData<Patient_DTO>(finalUrl);
                 return patient;
             }
-            catch (Exception ex)
+            catch (KRException ex)
             {
-                throw new Exception("获取病人信息失败");
+                throw new Exception(ex.Msg);
             }
         }
 
-        public override KRResponse PostExamResult(ExamResultMetadata<T> checkResult, HttpItem pitem = null)
+        public override KRResponse PostExamResult(ExamResultMetadata<T> checkResult)
         {
             try
             {
-                Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", Address.PostCheckResultUrl));
-                if (!string.IsNullOrEmpty(Address.PostResultParamter))
-                    checkResult.ParamterName = Address.PostResultParamter;
-                if (pitem == null)
-                {
-                    pitem = new HttpItem
-                    {
-                        URL = Address.PostCheckResultUrl,
-                        Method = "Post",
-                        Postdata = !string.IsNullOrEmpty(Address.PostResultParamter)
-                            ? string.Format("{0}={1}", Address.PostResultParamter,
-                                CommunicationHelper.SerializeObjToJsonStr(checkResult))
-                            : CommunicationHelper.SerializeObjToJsonStr(checkResult),
-                        ContentType = "application/x-www-form-urlencoded",
-                        PostEncoding = Encoding.UTF8
+                var postResultUrl = Config.HttpConfigModel.PostCheckResultUrl;
+                var parameterName = Config.HttpConfigModel.ResultParameterName;
+                Trace.WriteLine(string.Format("开始发送检查结果，地址为{0}", postResultUrl));
+                if (!string.IsNullOrEmpty(parameterName))
+                    checkResult.ParamterName = parameterName;
 
-                    };
-                }
-                
+                var pitem = new HttpItem();
+
+                BuildHttpItem(checkResult, pitem, postResultUrl, parameterName);
+
                 var result = PostData(pitem);
 
                 KRResponse response = new KRResponse();
@@ -97,6 +95,50 @@ namespace Chioy.Communication.Networking.Client.Client
             }
         }
 
+        #endregion
+
+        #region private
+        private string AddToken(string url)
+        {
+            if (!Config.HttpConfigModel.IsUseToken) return url;
+
+            var finalUrl = string.Empty;
+
+            try
+            {
+                var token = GetData<string>(Config.HttpConfigModel.TokenUrl);
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    finalUrl = string.Format("{0}&token={1}", url, token);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new KRException("AddToken", "获取Token失败", ex.Message);
+            }
+
+            return finalUrl;
+        }
+        private void BuildHttpItem(ExamResultMetadata<T> checkResult, HttpItem pitem, string postResultUrl, string parameterName)
+        {
+            pitem.URL = postResultUrl;
+            if (string.IsNullOrEmpty(parameterName))
+            {
+                pitem.Postdata = CommunicationHelper.SerializeObjToJsonStr(checkResult);
+                pitem.ContentType = "application/json";
+            }
+            else
+            {
+                pitem.Postdata = AddToken(string.Format("{0}={1}", parameterName,
+                    CommunicationHelper.SerializeObjToJsonStr(checkResult)));
+                pitem.ContentType = "application/x-www-form-urlencoded";
+                pitem.PostEncoding = Encoding.UTF8;
+            }
+        }
+        #endregion
+
+        #region public
         public TOut PostData<TIn, TOut>(string url, TIn obj, HttpItem pitem = null)
         {
             try
@@ -108,7 +150,6 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw new Exception("上传数据失败");
             }
         }
-
         public string PostData<TIn>(string url, TIn obj, HttpItem pitem = null)
         {
             try
@@ -120,7 +161,6 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw new Exception("上传数据失败");
             }
         }
-
         public TOut GetData<TOut>(string url, HttpItem pitem = null)
         {
             try
@@ -132,7 +172,6 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw new Exception("获取数据失败", ex);
             }
         }
-
         public string GetData(string url, HttpItem pitem = null)
         {
             try
@@ -144,7 +183,6 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw new Exception("获取数据失败", ex);
             }
         }
-
         public HttpResult GetData(HttpItem pitem)
         {
             try
@@ -178,6 +216,7 @@ namespace Chioy.Communication.Networking.Client.Client
                 throw new Exception("上传数据失败");
             }
         }
+        #endregion
 
         //public override KRResponse PostOperator(Operator_DTO op)
         //{

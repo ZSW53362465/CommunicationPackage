@@ -11,7 +11,7 @@ namespace Chioy.Communication.Networking.Client.Client
     {
         public static void TraceException(string method,string description,string message)
         {
-            Trace.WriteLine("KRNetError:" + message);
+            Trace.WriteLine("KRNetError:"+ method+ " " + description +" "+ message);
 
             throw new KRException(method, description, message);
         }
